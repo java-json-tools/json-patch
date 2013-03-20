@@ -19,7 +19,7 @@
     <groupId>com.github.fge</groupId>
     <artifactId>json-patch</artifactId>
     <name>json-patch</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>JSON Patch implementation in Java</description>
     <url>https://github.com/fge/json-patch</url>

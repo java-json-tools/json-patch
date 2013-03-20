@@ -12,7 +12,7 @@ Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10) written in J
 
 ## Versions
 
-Soon to come.
+The current version is **1.0**.
 
 ## Maven artifact
 
@@ -25,3 +25,8 @@ Replace _your-version-here_ with the appropriate version:</p>
     <version>your-version-here</version>
 </dependency>
 ```
+
+## Example usage
+
+TODO
+
