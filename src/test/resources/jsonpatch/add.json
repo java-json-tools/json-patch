@@ -1,0 +1,88 @@
+{
+    "errors": [
+        {
+            "patch": { "op": "add", "path": "/a/b/c", "value": 1 },
+            "node": { "a": "b" },
+            "message": "NO_SUCH_PARENT"
+        },
+        {
+            "patch": { "op": "add", "path": "/~1", "value": 1 },
+            "node": [],
+            "message": "NOT_AN_INDEX"
+        },
+        {
+            "patch": { "op": "add", "path": "/3", "value": 1 },
+            "node": [ 1, 2 ],
+            "message": "NO_SUCH_INDEX"
+        },
+        {
+            "patch": { "op": "add", "path": "/-2", "value": 1 },
+            "node": [ 1, 2 ],
+            "message": "NO_SUCH_INDEX"
+        }
+    ],
+    "ops": [
+        {
+            "patch": { "op": "add", "path": "", "value": null },
+            "node": {},
+            "expected": null
+        },
+        {
+            "patch": { "op": "add", "path": "/a", "value": "b" },
+            "node": {},
+            "expected": { "a": "b" }
+        },
+        {
+            "patch": { "op": "add", "path": "/a", "value": 1 },
+            "node": { "a": "b" },
+            "expected": { "a": 1 }
+        },
+        {
+            "patch": { "op": "add", "path": "/array/-", "value": 1 },
+            "node": { "array": [ 2, null, {}, 1 ] },
+            "expected": { "array": [ 2, null, {}, 1, 1 ] }
+        },
+        {
+            "patch": { "op": "add", "path": "/array/2", "value": "hello" },
+            "node": { "array": [ 2, null, {}, 1] },
+            "expected": { "array": [ 2, null, "hello", {}, 1 ] }
+        },
+        {
+            "patch": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "node": {
+                "obj": {
+                    "inner": {
+                        "a": "hello"
+                    }
+                }
+            },
+            "expected": {
+                "obj": {
+                    "inner": {
+                        "a": "hello",
+                        "b": [ 1, 2 ]
+                    }
+                }
+            }
+        },
+        {
+            "patch": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "node": {
+                "obj": {
+                    "inner": {
+                        "a": "hello",
+                        "b": "world"
+                    }
+                }
+            },
+            "expected": {
+                "obj": {
+                    "inner": {
+                        "a": "hello",
+                        "b": [ 1, 2 ]
+                    }
+                }
+            }
+        }
+    ]
+}

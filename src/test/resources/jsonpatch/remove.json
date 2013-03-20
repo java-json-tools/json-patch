@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "patch": { "op": "remove", "path": "/x/y" },
+            "node": { "x": {} },
+            "message": "NO_SUCH_PATH"
+        }
+    ],
+    "ops": [
+        {
+            "patch": { "op": "remove", "path": "/x/y" },
+            "node": { "x": { "a": "b", "y": {} } },
+            "expected": { "x": { "a": "b" } }
+        },
+        {
+            "patch": { "op": "remove", "path": "/0/2" },
+            "node": [ [ "a", "b", "c"], "d", "e" ],
+            "expected": [ [ "a", "b" ], "d", "e" ]
+        },
+        {
+            "patch": { "op": "remove", "path": "/x/0" },
+            "node": { "x": [ "y", "z" ], "foo": "bar" },
+            "expected": { "x": [ "z" ], "foo": "bar" }
+        }
+    ]
+}
