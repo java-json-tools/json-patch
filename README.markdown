@@ -16,7 +16,7 @@ The current version is **1.0**.
 
 ## Maven artifact
 
-Replace _your-version-here_ with the appropriate version:</p>
+Replace _your-version-here_ with the appropriate version:
 
 ```xml
 <dependency>
@@ -28,5 +28,21 @@ Replace _your-version-here_ with the appropriate version:</p>
 
 ## Example usage
 
-TODO
+Both the JSON Patch and data to patch are backed by `JsonNode` instances. As this package depends on
+[jackson-coreutils](https://github.com/fge/jackson-coreutils), you can use this package's
+`JsonLoader` to load your JSON documents.
+
+You then build a JSON Patch from a JsonNode using:
+
+```java
+// Throws IOException if the patch is incorrect
+final JsonPatch patch = JsonPatch.fromJson(node);
+```
+
+You can then apply the patch to your data:
+
+```java
+// Throws JsonPatchException if the patch cannot be applied
+final JsonNode patched = patch.apply(orig);
+```
 
