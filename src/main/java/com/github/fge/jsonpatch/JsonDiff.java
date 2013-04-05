@@ -93,6 +93,19 @@ public final class JsonDiff
     private static void genArrayDiff(final List<JsonNode> ops,
         final JsonPointer ptr, final JsonNode first, final JsonNode second)
     {
+        final int firstSize = first.size();
+        final int secondSize = second.size();
+
+        ObjectNode op;
+
+        /*
+         * Deal with added elements
+         */
+        for (int index = firstSize; index < secondSize; index++) {
+            op = createOp("add", ptr.append("-"));
+            op.put("value", second.get(index));
+            ops.add(op);
+        }
     }
 
     private static ObjectNode createOp(final String name,

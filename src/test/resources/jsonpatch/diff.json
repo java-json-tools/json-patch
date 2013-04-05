@@ -36,5 +36,20 @@
         "patch": [
             { "op": "replace", "path": "/a", "value": "c" }
         ]
+    },
+    {
+        "first": [],
+        "second": [ "a" ],
+        "patch": [
+            { "op": "add", "path": "/-", "value": "a" }
+        ]
+    },
+    {
+        "first": [],
+        "second": [ "a", "b" ],
+        "patch": [
+            { "op": "add", "path": "/-", "value": "a" },
+            { "op": "add", "path": "/-", "value": "b" }
+        ]
     }
 ]
