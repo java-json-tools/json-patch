@@ -66,5 +66,12 @@
             { "op": "remove", "path": "/2" },
             { "op": "remove", "path": "/1" }
         ]
+    },
+    {
+        "first": [ "hello", "world" ],
+        "second": [ "hello", "world!" ],
+        "patch": [
+            { "op": "replace", "path": "/1", "value": "world!" }
+        ]
     }
 ]

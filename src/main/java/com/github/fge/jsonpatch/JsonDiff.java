@@ -112,6 +112,14 @@ public final class JsonDiff
          */
         for (int index = firstSize - 1; index >= secondSize; index--)
             ops.add(createOp("remove", ptr.append(index)));
+
+        /*
+         * Deal with modified elements
+         */
+        final int size = Math.min(firstSize, secondSize);
+        for (int index = 0; index < size; index++)
+            genDiff(ops, ptr.append(index), first.get(index),
+                second.get(index));
     }
 
     private static ObjectNode createOp(final String name,
