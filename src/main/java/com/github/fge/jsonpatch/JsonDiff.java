@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 public final class JsonDiff
@@ -20,7 +21,7 @@ public final class JsonDiff
         final ArrayNode ret = FACTORY.arrayNode();
 
         ObjectNode op;
-        if (!first.equals(second)) {
+        if (!JsonNumEquals.getInstance().equivalent(first, second)) {
             op = createOp("replace", JsonPointer.empty());
             op.put("value", second.deepCopy());
             ret.add(op);

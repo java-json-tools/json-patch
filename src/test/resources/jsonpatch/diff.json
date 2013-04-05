@@ -10,5 +10,10 @@
         "patch": [
             { "op": "replace", "path": "", "value": 1 }
         ]
+    },
+    {
+        "first": 0,
+        "second": 0.0,
+        "patch": []
     }
 ]

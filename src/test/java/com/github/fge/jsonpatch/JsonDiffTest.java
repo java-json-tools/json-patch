@@ -2,6 +2,8 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jackson.JsonNumEquals;
+import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -10,10 +12,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 public final class JsonDiffTest
 {
+    private static final Equivalence<JsonNode> EQUIVALENCE
+        = JsonNumEquals.getInstance();
+
     private final JsonNode data;
 
     public JsonDiffTest()
@@ -44,8 +49,8 @@ public final class JsonDiffTest
             " expectations");
 
         final JsonPatch patch = JsonPatch.fromJson(actual);
-        assertEquals(patch.apply(first), second, "reapplying generated patch" +
-            " does not generate the correct result");
+        assertTrue(EQUIVALENCE.equivalent(patch.apply(first), second),
+            "reapplying generated patch does not generate the correct result");
     }
 
 
