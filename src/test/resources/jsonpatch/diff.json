@@ -15,5 +15,12 @@
         "first": 0,
         "second": 0.0,
         "patch": []
+    },
+    {
+        "first": {},
+        "second": { "a": "b" },
+        "patch": [
+            { "op": "add", "path": "/a", "value": "b" }
+        ]
     }
 ]
