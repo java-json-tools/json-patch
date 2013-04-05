@@ -41,15 +41,22 @@ public final class JsonDiff
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
 
-        ObjectNode op;
+        /*
+         * If types are different, this is a replace operation.
+         *
+         * If types are the same BUT nodes are not containers (ie, objects or
+         * arrays), then this is also a replace operation.
+         */
         if (firstType != secondType || !first.isContainerNode()) {
-            op = createOp("replace", ptr);
+            final ObjectNode op = createOp("replace", ptr);
             op.put("value", second.deepCopy());
             ops.add(op);
             return;
         }
 
-        // Now, either an object or an array
+        /*
+         * Otherwise, recurse into object members/array elements.
+         */
         if (firstType == NodeType.OBJECT)
             genObjectDiff(ops, ptr, first, second);
         else
@@ -103,7 +110,7 @@ public final class JsonDiff
          */
         for (int index = firstSize; index < secondSize; index++) {
             op = createOp("add", ptr.append("-"));
-            op.put("value", second.get(index));
+            op.put("value", second.get(index).deepCopy());
             ops.add(op);
         }
 
