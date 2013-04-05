@@ -51,5 +51,20 @@
             { "op": "add", "path": "/-", "value": "a" },
             { "op": "add", "path": "/-", "value": "b" }
         ]
+    },
+    {
+        "first": [ 1, 2, 3 ],
+        "second": [ 1, 2 ],
+        "patch": [
+            { "op": "remove", "path": "/2" }
+        ]
+    },
+    {
+        "first": [ 1, 2, 3 ],
+        "second": [ 1 ],
+        "patch": [
+            { "op": "remove", "path": "/2" },
+            { "op": "remove", "path": "/1" }
+        ]
     }
 ]

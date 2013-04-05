@@ -106,6 +106,12 @@ public final class JsonDiff
             op.put("value", second.get(index));
             ops.add(op);
         }
+
+        /*
+         * Deal with removed elements
+         */
+        for (int index = firstSize - 1; index >= secondSize; index--)
+            ops.add(createOp("remove", ptr.append(index)));
     }
 
     private static ObjectNode createOp(final String name,
