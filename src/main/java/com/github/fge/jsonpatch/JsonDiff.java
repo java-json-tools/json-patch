@@ -37,6 +37,29 @@ import java.util.Set;
  * therefore the responsibility of the caller to ensure that the calling context
  * is safe (by ensuring, for instance, that only the diff operation has
  * references to the values to be diff'ed).</p>
+ *
+ * <p>Note also that currently, no effort is made to "factorize" operations.
+ * That is, generating the patch for the following two nodes:</p>
+ *
+ * <ul>
+ *     <li>{@code { "a": "b" }} (first),</li>
+ *     <li>{@code { "c": "b" }} (second)</li>
+ * </ul>
+ *
+ * <p>will generate:</p>
+ *
+ * <pre>
+ *     [
+ *         { "op": "add": "path": "/c", "value": "b" },
+ *         { "op": "remove", "path": "/a" }
+ *     ]
+ * </pre>
+ *
+ * <p>even though a shorter version would be:</p>
+ *
+ * <pre>
+ *     [ { "op": "move": "from": "/a", "path": "/c" } ]
+ * </pre>
  */
 public final class JsonDiff
 {
