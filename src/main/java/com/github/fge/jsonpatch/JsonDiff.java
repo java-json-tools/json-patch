@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public final class JsonDiff
 {
@@ -19,14 +22,22 @@ public final class JsonDiff
     public static JsonNode asJson(final JsonNode first, final JsonNode second)
     {
         final ArrayNode ret = FACTORY.arrayNode();
+        final List<JsonNode> ops = Lists.newArrayList();
 
-        ObjectNode op;
-        if (!JsonNumEquals.getInstance().equivalent(first, second)) {
-            op = createOp("replace", JsonPointer.empty());
-            op.put("value", second.deepCopy());
-            ret.add(op);
-        }
+        genDiff(ops, JsonPointer.empty(), first, second);
+        ret.addAll(ops);
         return ret;
+    }
+
+    private static void genDiff(final List<JsonNode> ops, final JsonPointer ptr,
+        final JsonNode first, final JsonNode second)
+    {
+        if (JsonNumEquals.getInstance().equivalent(first, second))
+            return;
+
+        final ObjectNode op = createOp("replace", ptr);
+        op.put("value", second.deepCopy());
+        ops.add(op);
     }
 
     private static ObjectNode createOp(final String name,
