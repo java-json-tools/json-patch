@@ -126,7 +126,7 @@ public final class JsonDiff
         ObjectNode op;
 
         /*
-         * Deal with keys added to the second node
+         * Deal with added members
          */
         final Set<String> added = Sets.difference(secondKeys, firstKeys);
 
@@ -137,7 +137,7 @@ public final class JsonDiff
         }
 
         /*
-         * Deal with keys removed from the second node
+         * Deal with removed members
          */
         final Set<String> removed = Sets.difference(firstKeys, secondKeys);
 
@@ -145,7 +145,7 @@ public final class JsonDiff
             ops.add(createOp("remove", ptr.append(fieldName)));
 
         /*
-         * Deal with modified elements
+         * Deal with modified members
          */
         final Set<String> inCommon = Sets.intersection(firstKeys, secondKeys);
 
