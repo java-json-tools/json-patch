@@ -73,5 +73,20 @@
         "patch": [
             { "op": "replace", "path": "/1", "value": "world!" }
         ]
+    },
+    {
+        "first": { "a": "b", "c": [ "d" ] },
+        "second": { "a": "b", "c": [ "d", "e" ] },
+        "patch": [
+            { "op": "add", "path": "/c/-", "value": "e" }
+        ]
+    },
+    {
+        "first": [ 1, 2, 3, 4 ],
+        "second": [ 0, 2.0, 3 ],
+        "patch": [
+            { "op": "remove", "path": "/3" },
+            { "op": "replace", "path": "/0", "value": 0 }
+        ]
     }
 ]
