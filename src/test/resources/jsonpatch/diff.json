@@ -88,5 +88,16 @@
             { "op": "remove", "path": "/3" },
             { "op": "replace", "path": "/0", "value": 0 }
         ]
+    },
+    {
+        "first": [ "a", { "b": "c" }, { "d": [ 1, 2 ] } ],
+        "second": [ "x", { "b": 1 }, { "d": [ 1.0, 3, "" ] }, null ],
+        "patch": [
+            { "op": "add", "path": "/-", "value": null },
+            { "op": "replace", "path": "/0", "value": "x" },
+            { "op": "replace", "path": "/1/b", "value": 1 },
+            { "op": "add", "path": "/2/d/-", "value": "" },
+            { "op": "replace", "path": "/2/d/1", "value": 3 }
+        ]
     }
 ]
