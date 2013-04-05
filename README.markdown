@@ -9,6 +9,8 @@ This is a full-featured implementation of [JSON
 Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10) written in Java, which uses
 [Jackson](http://jackson.codehaus.org) at its core.
 
+In the next version (1.1), there will also be a "diff" implementation, which allows to generate a
+patch for transforming one node into another.
 
 ## Versions
 
@@ -45,4 +47,22 @@ You can then apply the patch to your data:
 // Throws JsonPatchException if the patch cannot be applied
 final JsonNode patched = patch.apply(orig);
 ```
+
+### JSON diff
+
+The backing class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
+
+```java
+final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
+```
+
+You can then use the generated `JsonNode` to build a patch using the code sample above.
+
+Note that the generated patch will always yield operations in the same order:
+
+* additions,
+* removals,
+* replacements.
+
+The patch is generated recursively, and numeric equality is also respected.
 

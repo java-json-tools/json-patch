@@ -24,5 +24,10 @@
  * encountered.</p>
  *
  * <p>The main class is {@link com.github.fge.jsonpatch.JsonPatch}.</p>
+ *
+ * <p>There is also a limited purpose "diff" class, {@link
+ * com.github.fge.jsonpatch.JsonDiff}, which will generate a JSON Patch from
+ * two JSON values so that applying the patch to the first node returns the
+ * second node.</p>
  */
 package com.github.fge.jsonpatch;

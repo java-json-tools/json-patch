@@ -14,6 +14,30 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * "Reverse" JSON Patch implementation
+ *
+ * <p>This class only has one method, {@link #asJson(JsonNode, JsonNode)}, which
+ * takes two JSON values as arguments and returns a patch as a {@link JsonNode}.
+ * This generated patch can then be used in {@link
+ * JsonPatch#fromJson(JsonNode)}.</p>
+ *
+ * <p>Numeric equivalence is respected. When dealing with container values (ie,
+ * objects or arrays), operations are always generated in the following order:
+ * </p>
+ *
+ * <ul>
+ *     <li>additions,</li>
+ *     <li>removals,</li>
+ *     <li>replacements.</li>
+ * </ul>
+ *
+ * <p>Note that due to the way {@link JsonNode} is implemented, this class is
+ * inherently <b>not</b> thread safe (since {@code JsonNode} is mutable). It is
+ * therefore the responsibility of the caller to ensure that the calling context
+ * is safe (by ensuring, for instance, that only the diff operation has
+ * references to the values to be diff'ed).</p>
+ */
 public final class JsonDiff
 {
     private static final JsonNodeFactory FACTORY = JacksonUtils.nodeFactory();
@@ -22,6 +46,13 @@ public final class JsonDiff
     {
     }
 
+    /**
+     * Generate a patch for transforming the first node into the second node
+     *
+     * @param first the node to be patched
+     * @param second the expected result after applying the patch
+     * @return the patch as a {@link JsonNode}
+     */
     public static JsonNode asJson(final JsonNode first, final JsonNode second)
     {
         final ArrayNode ret = FACTORY.arrayNode();
@@ -90,6 +121,9 @@ public final class JsonDiff
         for (final String fieldName: removed)
             ops.add(createOp("remove", ptr.append(fieldName)));
 
+        /*
+         * Deal with modified elements
+         */
         final Set<String> inCommon = Sets.intersection(firstKeys, secondKeys);
 
         for (final String fieldName: inCommon)
