@@ -22,5 +22,19 @@
         "patch": [
             { "op": "add", "path": "/a", "value": "b" }
         ]
+    },
+    {
+        "first": { "a": "b" },
+        "second": {},
+        "patch": [
+            { "op": "remove", "path": "/a" }
+        ]
+    },
+    {
+        "first": { "a": "b" },
+        "second": { "a": "c" },
+        "patch": [
+            { "op": "replace", "path": "/a", "value": "c" }
+        ]
     }
 ]

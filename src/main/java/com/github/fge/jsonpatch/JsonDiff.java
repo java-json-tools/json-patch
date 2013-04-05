@@ -74,6 +74,20 @@ public final class JsonDiff
             op.put("value", second.get(fieldName).deepCopy());
             ops.add(op);
         }
+
+        /*
+         * Deal with keys removed from the second node
+         */
+        final Set<String> removed = Sets.difference(firstKeys, secondKeys);
+
+        for (final String fieldName: removed)
+            ops.add(createOp("remove", ptr.append(fieldName)));
+
+        final Set<String> inCommon = Sets.intersection(firstKeys, secondKeys);
+
+        for (final String fieldName: inCommon)
+            genDiff(ops, ptr.append(fieldName), first.get(fieldName),
+                second.get(fieldName));
     }
 
     private static void genArrayDiff(final List<JsonNode> ops,
