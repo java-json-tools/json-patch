@@ -3,5 +3,12 @@
         "first": {},
         "second": {},
         "patch": []
+    },
+    {
+        "first": null,
+        "second": 1,
+        "patch": [
+            { "op": "replace", "path": "", "value": 1 }
+        ]
     }
 ]
