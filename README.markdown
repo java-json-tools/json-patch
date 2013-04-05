@@ -9,12 +9,12 @@ This is a full-featured implementation of [JSON
 Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10) written in Java, which uses
 [Jackson](http://jackson.codehaus.org) at its core.
 
-In the next version (1.1), there will also be a "diff" implementation, which allows to generate a
-patch for transforming one node into another.
+There is also a "JSON diff" implementation, insofar as you can generate a JSON Patch from two JSON
+values. More details below.
 
 ## Versions
 
-The current version is **1.0**.
+The current version is **1.1**.
 
 ## Maven artifact
 
@@ -28,7 +28,7 @@ Replace _your-version-here_ with the appropriate version:
 </dependency>
 ```
 
-## Example usage
+## Sample usage: JSON Patch
 
 Both the JSON Patch and data to patch are backed by `JsonNode` instances. As this package depends on
 [jackson-coreutils](https://github.com/fge/jackson-coreutils), you can use this package's
@@ -48,7 +48,7 @@ You can then apply the patch to your data:
 final JsonNode patched = patch.apply(orig);
 ```
 
-### JSON diff
+## Sample usage: JSON diff
 
 The backing class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
 
@@ -65,4 +65,15 @@ Note that the generated patch will always yield operations in the same order:
 * replacements.
 
 The patch is generated recursively, and numeric equality is also respected.
+
+## Notes about JSON diff
+
+There are two things to consider when using JSON diff:
+
+* as for JSON Patch's test operations, numeric JSON values are considered equal if they are
+  mathematically equal;
+* operations are not "factorized" (see the javadoc of `JsonDiff` for more details).
+
+The first point is arguably debatable (for instance, are `[ 1 ]` and `[ 1.0 ]` the same?). The
+second point could probably be fixed. Now, the question is whether it is worth the extra work.
 
