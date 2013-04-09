@@ -128,6 +128,13 @@
                 <role>Initial developer</role>
             </roles>
         </developer>
+        <developer>
+            <name>Randal Watler</name>
+            <email>watler@wispertel.net</email>
+            <roles>
+                <role>Contributor (diff with remove operation)</role>
+            </roles>
+        </developer>
     </developers>
     <parent>
         <groupId>org.sonatype.oss</groupId>
