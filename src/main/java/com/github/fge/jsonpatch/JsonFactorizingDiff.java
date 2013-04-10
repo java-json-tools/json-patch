@@ -193,10 +193,8 @@ public final class JsonFactorizingDiff
         JsonNode lcsElement;
 
         while (firstIndex < firstSize || secondIndex < secondSize) {
-            firstElement = firstIndex < firstSize ? first.get(firstIndex)
-                : null;
-            secondElement = secondIndex < secondSize ? second.get(secondIndex)
-                : null;
+            firstElement = first.get(firstIndex);
+            secondElement = second.get(secondIndex);
             lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (firstElement == null) {
                 // appended elements
