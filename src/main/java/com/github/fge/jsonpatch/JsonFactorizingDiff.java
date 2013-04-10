@@ -200,7 +200,7 @@ public final class JsonFactorizingDiff
             lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (firstElement == null) {
                 // appended elements
-                diffs.add(new Diff(DiffOperation.ADD, path, null, -1,
+                diffs.add(new Diff(DiffOperation.ADD, path, -1, -1,
                         second.get(secondIndex).deepCopy()));
                 secondIndex++;
                 continue;
@@ -213,7 +213,7 @@ public final class JsonFactorizingDiff
                     lcsIndex++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(DiffOperation.ADD, path, null,
+                    diffs.add(new Diff(DiffOperation.ADD, path, -1,
                         secondIndex, second.get(secondIndex).deepCopy()));
                     secondIndex++;
                 }
@@ -341,10 +341,10 @@ public final class JsonFactorizingDiff
                 final Diff diff = diffs.get(diffIndex);
                 if (diff.operation != DiffOperation.ADD)
                     continue;
-                if (!EQUIVALENCE.equivalent(diff.getValue(), removeDiff.getValue()))
+                if (!EQUIVALENCE.equivalent(diff.value, removeDiff.value))
                     continue;
 
-                JsonPointer fromPath = removeDiff.getPath();
+                JsonPointer fromPath = removeDiff.path;
 
                 // adjust fromPath and subsequent diff array indexes
                 final int removeDiffIndex = diffs.indexOf(removeDiff);
@@ -375,7 +375,7 @@ public final class JsonFactorizingDiff
                             final Diff adjustDiff = diffs.get(i);
                             if (!removeDiffArrayPath.equals(adjustDiff.arrayPath))
                                 break;
-                            if (adjustDiff.firstArrayIndex != null)
+                            if (adjustDiff.firstArrayIndex != -1)
                                 adjustDiff.firstArrayIndex--;
                         }
                     }
@@ -384,8 +384,8 @@ public final class JsonFactorizingDiff
                 diffs.remove(removeDiffIndex);
 
                 // convert add into a move diff
-                diff.setOperation(DiffOperation.MOVE);
-                diff.setFromPath(fromPath);
+                diff.operation = DiffOperation.MOVE;
+                diff.fromPath = fromPath;
                 break;
             }
         }
@@ -407,9 +407,9 @@ public final class JsonFactorizingDiff
         private DiffOperation operation;
         private JsonPointer path;
         private JsonPointer arrayPath;
-        private Integer firstArrayIndex;
-        private Integer secondArrayIndex;
-        private JsonNode value;
+        private int firstArrayIndex;
+        private int secondArrayIndex;
+        private final JsonNode value;
         private JsonPointer fromPath;
 
         private Diff(final DiffOperation operation, final JsonPointer path, final JsonNode value)
@@ -419,8 +419,9 @@ public final class JsonFactorizingDiff
             this.value = value;
         }
 
-        private Diff(final DiffOperation operation, final JsonPointer arrayPath, Integer firstArrayIndex,
-                    Integer secondArrayIndex, final JsonNode value)
+        private Diff(final DiffOperation operation, final JsonPointer arrayPath,
+            final int firstArrayIndex, final int secondArrayIndex,
+            final JsonNode value)
         {
             this.operation = operation;
             this.arrayPath = arrayPath;
@@ -432,45 +433,31 @@ public final class JsonFactorizingDiff
         private JsonNode asJsonPatch()
         {
             final ObjectNode patch = FACTORY.objectNode();
-            String path = ((getArrayPath() != null) ? getSecondArrayPath() : getPath()).toString();
+            final JsonPointer ptr = arrayPath != null ? getSecondArrayPath()
+                : path;
             switch (operation)
             {
                 case ADD:
                     patch.put("op", "add");
-                    patch.put("path", path);
+                    patch.put("path", ptr.toString());
                     patch.put("value", value);
                     break;
                 case REMOVE:
                     patch.put("op", "remove");
-                    patch.put("path", path);
+                    patch.put("path", ptr.toString());
                     break;
                 case REPLACE:
                     patch.put("op", "replace");
-                    patch.put("path", path);
+                    patch.put("path", ptr.toString());
                     patch.put("value", value);
                     break;
                 case MOVE:
                     patch.put("op", "move");
                     patch.put("from", fromPath.toString());
-                    patch.put("path", path);
+                    patch.put("path", ptr.toString());
                     break;
             }
             return patch;
-        }
-
-        private DiffOperation getOperation()
-        {
-            return operation;
-        }
-
-        private void setOperation(DiffOperation operation)
-        {
-            this.operation = operation;
-        }
-
-        private JsonPointer getPath()
-        {
-            return path;
         }
 
         private JsonPointer getFirstArrayPath()
@@ -485,41 +472,6 @@ public final class JsonFactorizingDiff
             if (secondArrayIndex != -1)
                 return arrayPath.append(secondArrayIndex);
             return arrayPath.append("-");
-        }
-
-        private JsonPointer getArrayPath()
-        {
-            return arrayPath;
-        }
-
-        private Integer getFirstArrayIndex()
-        {
-            return firstArrayIndex;
-        }
-
-        private void setFirstArrayIndex(int firstArrayIndex)
-        {
-            this.firstArrayIndex = firstArrayIndex;
-        }
-
-        private Integer getSecondArrayIndex()
-        {
-            return secondArrayIndex;
-        }
-
-        private void setSecondArrayIndex(int secondArrayIndex)
-        {
-            this.secondArrayIndex = secondArrayIndex;
-        }
-
-        private JsonNode getValue()
-        {
-            return value;
-        }
-
-        private void setFromPath(JsonPointer fromPath)
-        {
-            this.fromPath = fromPath;
         }
     }
 }
