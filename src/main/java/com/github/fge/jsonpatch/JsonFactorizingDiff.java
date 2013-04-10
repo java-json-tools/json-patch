@@ -40,8 +40,8 @@ import java.util.Set;
  * This generated patch can then be used in {@link
  * JsonPatch#fromJson(JsonNode)}.</p>
  *
- * <p>Numeric equivalence is respected. When dealing with object values, operations
- * are always generated in the following order:
+ * <p>Numeric equivalence is respected. When dealing with object values,
+ * operations are always generated in the following order:
  *
  * <ul>
  *     <li>additions,</li>
@@ -49,9 +49,9 @@ import java.util.Set;
  *     <li>replacements.</li>
  * </ul>
  *
- * Array values generate operations in the order of elements. Factorizing is done
- * to merge add and remove into move operations if values are equivalent. Copy and
- * test operations are not generated.</p>
+ * Array values generate operations in the order of elements. Factorizing is
+ * done to merge add and remove into move operations if values are equivalent.
+ * Copy and test operations are not generated.</p>
  *
  * <p>Note that due to the way {@link JsonNode} is implemented, this class is
  * inherently <b>not</b> thread safe (since {@code JsonNode} is mutable). It is
@@ -62,14 +62,16 @@ import java.util.Set;
 public final class JsonFactorizingDiff
 {
     private static final JsonNodeFactory FACTORY = JacksonUtils.nodeFactory();
-    private static final Equivalence<JsonNode> EQUIVALENCE = JsonNumEquals.getInstance();
+    private static final Equivalence<JsonNode> EQUIVALENCE
+        = JsonNumEquals.getInstance();
 
     private JsonFactorizingDiff()
     {
     }
 
     /**
-     * Generate a factorized patch for transforming the first node into the second node.
+     * Generate a factorized patch for transforming the first node into the
+     * second node.
      *
      * @param first the node to be patched
      * @param second the expected result after applying the patch
@@ -78,7 +80,7 @@ public final class JsonFactorizingDiff
     public static JsonNode asJson(final JsonNode first, final JsonNode second)
     {
         // recursively compute node diffs
-        List<Diff> diffs = Lists.newArrayList();
+        final List<Diff> diffs = Lists.newArrayList();
         generateDiffs(diffs, JsonPointer.empty(), first, second);
 
         // factorize diffs to optimize patch operations
@@ -86,7 +88,7 @@ public final class JsonFactorizingDiff
 
         // generate patch operations from node diffs
         final ArrayNode patch = FACTORY.arrayNode();
-        for (Diff diff : diffs)
+        for (final Diff diff : diffs)
             patch.add(diff.asJsonPatch());
         return patch;
     }
@@ -99,8 +101,8 @@ public final class JsonFactorizingDiff
      * @param first first node to compare
      * @param second second node to compare
      */
-    private static void generateDiffs(final List<Diff> diffs, final JsonPointer path, final JsonNode first,
-                                      final JsonNode second)
+    private static void generateDiffs(final List<Diff> diffs,
+        final JsonPointer path, final JsonNode first, final JsonNode second)
     {
         // compare deep nodes
         if (EQUIVALENCE.equivalent(first, second))
@@ -110,7 +112,7 @@ public final class JsonFactorizingDiff
         // an array or object, this is a replace operation
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
-        if ((firstType != secondType) || !first.isContainerNode())
+        if (firstType != secondType || !first.isContainerNode())
         {
             diffs.add(new Diff(DiffOperation.REPLACE, path, second.deepCopy()));
             return;
@@ -118,11 +120,11 @@ public final class JsonFactorizingDiff
 
         // matching array or object nodes: recursively generate diffs
         // for object members or array elements
-        switch (firstType)
-        {
-            case OBJECT: generateObjectDiffs(diffs, path, first, second); break;
-            case ARRAY: generateArrayDiffs(diffs, path, first, second); break;
-        }
+
+        if (firstType == NodeType.OBJECT)
+            generateObjectDiffs(diffs, path, first, second);
+        else // array
+            generateArrayDiffs(diffs, path, first, second);
     }
 
     /**
@@ -135,27 +137,32 @@ public final class JsonFactorizingDiff
      * @param first first object node to compare
      * @param second second object node to compare
      */
-    private static void generateObjectDiffs(final List<Diff> diffs, final JsonPointer path, final JsonNode first,
-                                            final JsonNode second)
+    private static void generateObjectDiffs(final List<Diff> diffs,
+        final JsonPointer path, final JsonNode first, final JsonNode second)
     {
         // compare different objects fieldwise
-        final Set<String> firstFieldNames = Sets.newHashSet(first.fieldNames());
-        final Set<String> secondFieldNames = Sets.newHashSet(second.fieldNames());
+        final Set<String> inFirst = Sets.newHashSet(first.fieldNames());
+        final Set<String> inSecond = Sets.newHashSet(second.fieldNames());
+
+        Set<String> set;
 
         // added fields
-        for (final String addedFieldName : Sets.difference(secondFieldNames, firstFieldNames))
-            diffs.add(new Diff(DiffOperation.ADD, path.append(addedFieldName),
-                    second.get(addedFieldName).deepCopy()));
+        set = Sets.difference(inSecond, inFirst);
+        for (final String added: set)
+            diffs.add(new Diff(DiffOperation.ADD, path.append(added),
+                    second.get(added).deepCopy()));
 
         // removed fields
-        for (final String removedFieldName : Sets.difference(firstFieldNames, secondFieldNames))
-            diffs.add(new Diff(DiffOperation.REMOVE, path.append(removedFieldName),
-                    first.get(removedFieldName).deepCopy()));
+        set = Sets.difference(inFirst, inSecond);
+        for (final String removed : set)
+            diffs.add(new Diff(DiffOperation.REMOVE, path.append(removed),
+                    first.get(removed).deepCopy()));
 
         // recursively generate diffs for fields in both objects
-        for (final String commonFieldName : Sets.intersection(firstFieldNames, secondFieldNames))
-            generateDiffs(diffs, path.append(commonFieldName), first.get(commonFieldName),
-                    second.get(commonFieldName));
+        set = Sets.intersection(inFirst, inSecond);
+        for (final String common: set)
+            generateDiffs(diffs, path.append(common), first.get(common),
+                    second.get(common));
     }
 
     /**
@@ -168,8 +175,8 @@ public final class JsonFactorizingDiff
      * @param first first array node to compare
      * @param second second array node to compare
      */
-    private static void generateArrayDiffs(final List<Diff> diffs, final JsonPointer path, final JsonNode first,
-                                           final JsonNode second)
+    private static void generateArrayDiffs(final List<Diff> diffs,
+        final JsonPointer path, final JsonNode first, final JsonNode second)
     {
         // compare array elements linearly using longest common subsequence
         // algorithm applied to the array elements
@@ -177,11 +184,18 @@ public final class JsonFactorizingDiff
         final int firstSize = first.size();
         final int secondSize = second.size();
         final int lcsSize = lcs.size();
-        for (int firstIndex = 0, secondIndex = 0, lcsIndex = 0; ((firstIndex < firstSize) || (secondIndex < secondSize));)
-        {
-            final JsonNode firstElement = ((firstIndex < firstSize) ? first.get(firstIndex) : null);
-            final JsonNode secondElement = ((secondIndex < secondSize) ? second.get(secondIndex) : null);
-            final JsonNode lcsElement = ((lcsIndex < lcsSize) ? lcs.get(lcsIndex) : null);
+
+        int firstIndex = 0;
+        int secondIndex = 0;
+        int lcsIndex = 0;
+
+        while (firstIndex < firstSize || secondIndex < secondSize) {
+            final JsonNode firstElement
+                = firstIndex < firstSize ? first.get(firstIndex) : null;
+            final JsonNode secondElement
+                = secondIndex < secondSize ? second.get(secondIndex) : null;
+            final JsonNode lcsElement
+                = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (firstElement != null)
             {
                 if (EQUIVALENCE.equivalent(firstElement, lcsElement))
