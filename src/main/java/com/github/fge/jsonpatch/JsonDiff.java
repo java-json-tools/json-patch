@@ -145,9 +145,7 @@ public final class JsonDiff
         /*
          * Deal with added members
          */
-        final Set<String> added = Sets.difference(secondKeys, firstKeys);
-
-        for (final String fieldName: added) {
+        for (final String fieldName: Sets.difference(secondKeys, firstKeys)) {
             op = createOp("add", ptr.append(fieldName));
             op.put("value", second.get(fieldName).deepCopy());
             ops.add(op);
@@ -156,17 +154,13 @@ public final class JsonDiff
         /*
          * Deal with removed members
          */
-        final Set<String> removed = Sets.difference(firstKeys, secondKeys);
-
-        for (final String fieldName: removed)
+        for (final String fieldName: Sets.difference(firstKeys, secondKeys))
             ops.add(createOp("remove", ptr.append(fieldName)));
 
         /*
          * Deal with modified members
          */
-        final Set<String> inCommon = Sets.intersection(firstKeys, secondKeys);
-
-        for (final String fieldName: inCommon)
+        for (final String fieldName: Sets.intersection(firstKeys, secondKeys))
             genDiff(ops, ptr.append(fieldName), first.get(fieldName),
                 second.get(fieldName));
     }
