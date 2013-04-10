@@ -283,13 +283,19 @@ public final class JsonFactorizingDiff
             final int secondLimit = secondSize - offset - trim;
             final int[][] lengths = new int[firstLimit+1][secondLimit+1];
 
+            JsonNode firstNode;
+            JsonNode secondNode;
+            int newLength;
+
             for (int i = 0; i < firstLimit; i++)
-                for (int j = 0; j < secondLimit; j++)
-                    if (EQUIVALENCE.equivalent(first.get(i + offset), second.get(j + offset)))
-                        lengths[i + 1][j + 1] = lengths[i][j] + 1;
-                    else
-                        lengths[i + 1][j + 1] = Math.max(lengths[i + 1][j],
-                            lengths[i][j + 1]);
+                for (int j = 0; j < secondLimit; j++) {
+                    firstNode = first.get(i + offset);
+                    secondNode = second.get(j + offset);
+                    newLength = EQUIVALENCE.equivalent(firstNode, secondNode)
+                        ? lengths[i][j] + 1
+                        : Math.max(lengths[i + 1][j], lengths[i][j + 1]);
+                    lengths[i + 1][j + 1] = newLength;
+                }
 
             // return result out of the LCS lengths matrix
             int x = firstLimit, y = secondLimit;
