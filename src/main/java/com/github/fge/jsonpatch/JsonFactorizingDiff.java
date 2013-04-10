@@ -200,7 +200,7 @@ public final class JsonFactorizingDiff
             lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (firstElement == null) {
                 // appended elements
-                diffs.add(new Diff(DiffOperation.ADD, path, null, Integer.MAX_VALUE,
+                diffs.add(new Diff(DiffOperation.ADD, path, null, -1,
                         second.get(secondIndex).deepCopy()));
                 secondIndex++;
                 continue;
@@ -361,7 +361,7 @@ public final class JsonFactorizingDiff
                             final Diff adjustDiff = diffs.get(i);
                             if (removeDiffArrayPath.equals(adjustDiff.getArrayPath())) {
                                 final int secondArrayIndex = adjustDiff.getSecondArrayIndex();
-                                if (secondArrayIndex != Integer.MAX_VALUE)
+                                if (secondArrayIndex != -1)
                                     adjustDiff.setSecondArrayIndex(secondArrayIndex+1);
                             }
                         }
@@ -484,7 +484,7 @@ public final class JsonFactorizingDiff
         private JsonPointer getSecondArrayPath()
         {
             // compute path from array path and index
-            if (secondArrayIndex != Integer.MAX_VALUE)
+            if (secondArrayIndex != -1)
                 return arrayPath.append(secondArrayIndex);
             return arrayPath.append("-");
         }
