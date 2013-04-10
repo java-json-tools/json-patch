@@ -112,7 +112,11 @@ The patch is generated recursively, and numeric equality is also respected.
 There is one important thing to consider when using JSON diff: in order to comply with JSON Patch
 test operations, numeric JSON values are considered equal if they are mathematically equal.
 
-This is arguably debatable: for instance, are `[ 1 ]` and `[ 1.0 ]` the same?. Right now, this
+This is arguably debatable: for instance, are `[ 1 ]` and `[ 1.0 ]` the same? Right now, this
 implementation considers that they are. It may, or may not, lead to problems; it is unknown whether
 this will be a problem given the scarce usage of JSON Patch at this point in time.
+
+There is, however, a good reason that the implementation behaves this way: JSON Patch's test
+operation does behave this way -- that is, two numeric JSON values are equal if their _mathematical_
+value is equal.
 
