@@ -418,13 +418,19 @@ public final class JsonFactorizingDiff
             ret.put("path", ptr.toString());
             return ret;
         }
+
+        @Override
+        public String toString()
+        {
+            return opName;
+        }
     }
 
     /**
      * Difference representation. Captures diff information required to
      * generate JSON patch operations and factorize differences.
      */
-    private static class Diff
+    private static final class Diff
     {
         private DiffOperation operation;
         private JsonPointer path;
@@ -486,6 +492,12 @@ public final class JsonFactorizingDiff
             if (secondArrayIndex != -1)
                 return arrayPath.append(secondArrayIndex);
             return arrayPath.append("-");
+        }
+
+        @Override
+        public String toString()
+        {
+            return asJsonPatch().toString();
         }
     }
 }
