@@ -9,8 +9,9 @@ This is a full-featured implementation of [JSON
 Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10) written in Java, which uses
 [Jackson](http://jackson.codehaus.org) at its core.
 
-There is also a "JSON diff" implementation, insofar as you can generate a JSON Patch from two JSON
-values. More details below.
+There is also, as of version 1.1, the ability to generate a "JSON diff"; that is, given two JSON
+values, you can generate a JSON Patch so as to turn one JSON value into another JSON value. See
+below for more information.
 
 ## Versions
 
@@ -27,6 +28,46 @@ Replace _your-version-here_ with the appropriate version:
     <version>your-version-here</version>
 </dependency>
 ```
+
+## JSON "diff": the two implementations
+
+The first implementation, available in 1.1, is fully functional but is quite naive.
+
+It is functional in the sense that given two JSON values, it will always generate the correct JSON
+Patch (as a `JsonNode`). It is however quite naive in the sense that it does not try and factorize
+any operations. That is, given the two following JSON values:
+
+```json
+{ "a": 1 }
+```
+
+and:
+
+```json
+{ "b": 1 }
+```
+
+this naive implementation 
+([link](https://github.com/fge/json-patch/blob/master/src/main/java/com/github/fge/jsonpatch/JsonDiff.java))
+will generate the following:
+
+```json
+[
+    { "op": "add", "path": "/b", "value": 1 },
+    { "op": "remove", "path": "/a" }
+]
+```
+
+There is, however, a second implementation
+([link](https://github.com/fge/json-patch/blob/master/src/main/java/com/github/fge/jsonpatch/JsonFactorizingDiff.java)),
+courtesy of [Randy Watler](https://github.com/rwatler), which is able to generate a "factorized"
+form like this:
+
+```json
+[ { "op": "move", "from": "/a", "path": "/b" } ]
+```
+
+This code will make it in 1.2 and will eventually become the default.
 
 ## Sample usage: JSON Patch
 
@@ -50,7 +91,7 @@ final JsonNode patched = patch.apply(orig);
 
 ## Sample usage: JSON diff
 
-The backing class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
+The backing, naive class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
 
 ```java
 final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
@@ -66,14 +107,12 @@ Note that the generated patch will always yield operations in the same order:
 
 The patch is generated recursively, and numeric equality is also respected.
 
-## Notes about JSON diff
+## Further note about JSON diff
 
-There are two things to consider when using JSON diff:
+There is one important thing to consider when using JSON diff: in order to comply with JSON Patch
+test operations, numeric JSON values are considered equal if they are mathematically equal.
 
-* as for JSON Patch's test operations, numeric JSON values are considered equal if they are
-  mathematically equal;
-* operations are not "factorized" (see the javadoc of `JsonDiff` for more details).
-
-The first point is arguably debatable (for instance, are `[ 1 ]` and `[ 1.0 ]` the same?). The
-second point could probably be fixed. Now, the question is whether it is worth the extra work.
+This is arguably debatable: for instance, are `[ 1 ]` and `[ 1.0 ]` the same?. Right now, this
+implementation considers that they are. It may, or may not, lead to problems; it is unknown whether
+this will be a problem given the scarce usage of JSON Patch at this point in time.
 
