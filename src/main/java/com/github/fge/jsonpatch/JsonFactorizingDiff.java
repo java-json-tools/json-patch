@@ -88,7 +88,7 @@ public final class JsonFactorizingDiff
 
         // generate patch operations from node diffs
         final ArrayNode patch = FACTORY.arrayNode();
-        for (final Diff diff : diffs)
+        for (final Diff diff: diffs)
             patch.add(diff.asJsonPatch());
         return patch;
     }
@@ -112,8 +112,7 @@ public final class JsonFactorizingDiff
         // an array or object, this is a replace operation
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
-        if (firstType != secondType || !first.isContainerNode())
-        {
+        if (firstType != secondType || !first.isContainerNode()) {
             diffs.add(new Diff(DiffOperation.REPLACE, path, second.deepCopy()));
             return;
         }
@@ -189,57 +188,51 @@ public final class JsonFactorizingDiff
         int secondIndex = 0;
         int lcsIndex = 0;
 
+        JsonNode firstElement;
+        JsonNode secondElement;
+        JsonNode lcsElement;
+
         while (firstIndex < firstSize || secondIndex < secondSize) {
-            final JsonNode firstElement
-                = firstIndex < firstSize ? first.get(firstIndex) : null;
-            final JsonNode secondElement
-                = secondIndex < secondSize ? second.get(secondIndex) : null;
-            final JsonNode lcsElement
-                = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
-            if (firstElement != null)
-            {
-                if (EQUIVALENCE.equivalent(firstElement, lcsElement))
-                {
-                    if (EQUIVALENCE.equivalent(firstElement, secondElement))
-                    {
-                        // common subsequence elements
-                        firstIndex++;
-                        secondIndex++;
-                        lcsIndex++;
-                    }
-                    else
-                    {
-                        // inserted elements
-                        diffs.add(new Diff(DiffOperation.ADD, path, null, secondIndex,
-                                second.get(secondIndex).deepCopy()));
-                        secondIndex++;
-                    }
-                }
-                else if ((secondElement != null) && !EQUIVALENCE.equivalent(secondElement, lcsElement))
-                {
-                    // generate diffs for or replaced elements
-                    if (firstIndex == secondIndex)
-                        generateDiffs(diffs, path.append(firstIndex), firstElement, secondElement);
-                    else
-                        diffs.add(new Diff(DiffOperation.REPLACE, path, firstIndex, secondIndex,
-                                second.get(secondIndex).deepCopy()));
-                    firstIndex++;
-                    secondIndex++;
-                }
-                else
-                {
-                    // removed elements
-                    diffs.add(new Diff(DiffOperation.REMOVE, path, firstIndex, secondIndex,
-                            first.get(firstIndex).deepCopy()));
-                    firstIndex++;
-                }
-            }
-            else
-            {
+            firstElement = firstIndex < firstSize ? first.get(firstIndex)
+                : null;
+            secondElement = secondIndex < secondSize ? second.get(secondIndex)
+                : null;
+            lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
+            if (firstElement == null) {
                 // appended elements
                 diffs.add(new Diff(DiffOperation.ADD, path, null, Integer.MAX_VALUE,
                         second.get(secondIndex).deepCopy()));
                 secondIndex++;
+                continue;
+            }
+            if (EQUIVALENCE.equivalent(firstElement, lcsElement)) {
+                if (EQUIVALENCE.equivalent(firstElement, secondElement)) {
+                    // common subsequence elements
+                    firstIndex++;
+                    secondIndex++;
+                    lcsIndex++;
+                } else {
+                    // inserted elements
+                    diffs.add(new Diff(DiffOperation.ADD, path, null,
+                        secondIndex, second.get(secondIndex).deepCopy()));
+                    secondIndex++;
+                }
+            } else if (secondElement != null
+                && !EQUIVALENCE.equivalent(secondElement, lcsElement)) {
+                // generate diffs for or replaced elements
+                if (firstIndex == secondIndex)
+                    generateDiffs(diffs, path.append(firstIndex), firstElement,
+                        secondElement);
+                else
+                    diffs.add(new Diff(DiffOperation.REPLACE, path, firstIndex,
+                        secondIndex, second.get(secondIndex).deepCopy()));
+                firstIndex++;
+                secondIndex++;
+            } else {
+                // removed elements
+                diffs.add(new Diff(DiffOperation.REMOVE, path, firstIndex,
+                    secondIndex, first.get(firstIndex).deepCopy()));
+                firstIndex++;
             }
         }
     }
@@ -260,52 +253,66 @@ public final class JsonFactorizingDiff
      * @param first first array node to compare
      * @param second second array node to compare
      */
-    private static List<JsonNode> getLCSDiffs(final JsonNode first, final JsonNode second)
+    private static List<JsonNode> getLCSDiffs(final JsonNode first,
+        final JsonNode second)
     {
         final int firstSize = first.size();
         final int secondSize = second.size();
+        final int minSize = Math.min(firstSize, secondSize);
 
         // trim common beginning and ending elements
         int offset = 0;
         int trim = 0;
-        for (int i = 0; ((i < firstSize) && (i < secondSize) && EQUIVALENCE.equivalent(first.get(i), second.get(i))); i++)
+
+        for (int index = 0; index < minSize; index++) {
+            if (!EQUIVALENCE.equivalent(first.get(index), second.get(index)))
+                break;
             offset++;
-        for (int i = firstSize-1, j = secondSize-1; ((i > offset) && (j > offset) && EQUIVALENCE.equivalent(first.get(i), second.get(j))); i--, j--)
+        }
+
+        for (int i = firstSize - 1, j = secondSize - 1; i > offset && j > offset;
+            i--, j--) {
+            if (!EQUIVALENCE.equivalent(first.get(i), second.get(j)))
+                break;
             trim++;
+        }
 
         // find longest common subsequence in remaining elements
         List<JsonNode> lcs = Lists.newArrayList();
-        if ((offset < firstSize) && (offset < secondSize))
-        {
+        if (offset < minSize) {
             // construct LCS lengths matrix
-            final int firstLimit = firstSize-offset-trim;
-            final int secondLimit = secondSize-offset-trim;
+            final int firstLimit = firstSize - offset - trim;
+            final int secondLimit = secondSize - offset - trim;
             final int[][] lengths = new int[firstLimit+1][secondLimit+1];
-            for (int i = 0; (i < firstLimit); i++)
-                for (int j = 0; (j < secondLimit); j++)
-                    if (EQUIVALENCE.equivalent(first.get(i+offset), second.get(j+offset)))
-                        lengths[i+1][j+1] = lengths[i][j]+1;
+
+            for (int i = 0; i < firstLimit; i++)
+                for (int j = 0; j < secondLimit; j++)
+                    if (EQUIVALENCE.equivalent(first.get(i + offset), second.get(j + offset)))
+                        lengths[i + 1][j + 1] = lengths[i][j] + 1;
                     else
-                        lengths[i+1][j+1] = Math.max(lengths[i+1][j], lengths[i][j+1]);
+                        lengths[i + 1][j + 1] = Math.max(lengths[i + 1][j],
+                            lengths[i][j + 1]);
 
             // return result out of the LCS lengths matrix
-            for (int x = firstLimit, y = secondLimit; ((x > 0) && (y > 0));)
-                if (lengths[x][y] == lengths[x-1][y])
+            int x = firstLimit, y = secondLimit;
+            while (x > 0 && y > 0) {
+                if (lengths[x][y] == lengths[x - 1][y])
                     x--;
-                else if (lengths[x][y] == lengths[x][y-1])
+                else if (lengths[x][y] == lengths[x][y - 1])
                     y--;
                 else {
-                    lcs.add(first.get(x-1+offset));
+                    lcs.add(first.get(x - 1 + offset));
                     x--;
                     y--;
                 }
+            }
             lcs = Lists.reverse(lcs);
         }
 
         // prepend/append common elements
-        for (int i = 0; (i < offset); i++)
+        for (int i = 0; i < offset; i++)
             lcs.add(i, first.get(i));
-        for (int i = firstSize-trim; (i < firstSize); i++)
+        for (int i = firstSize - trim; i < firstSize; i++)
             lcs.add(first.get(i));
 
         return lcs;
