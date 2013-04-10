@@ -458,8 +458,15 @@ public final class JsonFactorizingDiff
             final JsonPointer ptr = arrayPath != null ? getSecondArrayPath()
                 : path;
             final ObjectNode patch = operation.newOp(ptr);
+            /*
+             * A remomve only has a path
+             */
             if (operation == DiffOperation.REMOVE)
                 return patch;
+            /*
+             * A move has a "source path" (the "from" member), other defined
+             * operations (add and replace) have a value instead.
+             */
             if (operation == DiffOperation.MOVE)
                 patch.put("from", fromPath.toString());
             else
