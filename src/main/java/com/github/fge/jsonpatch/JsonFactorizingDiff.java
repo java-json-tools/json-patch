@@ -27,10 +27,9 @@ import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * "Reverse" factorizing JSON Patch implementation
@@ -139,27 +138,31 @@ public final class JsonFactorizingDiff
     private static void generateObjectDiffs(final List<Diff> diffs,
         final JsonPointer path, final JsonNode first, final JsonNode second)
     {
-        // compare different objects fieldwise
-        final Set<String> inFirst = Sets.newHashSet(first.fieldNames());
-        final Set<String> inSecond = Sets.newHashSet(second.fieldNames());
+        // compare different objects fieldwise in predictable order;
+        // maintaining order is cosmetic, but facilitates test construction
+        final List<String> inFirst = Lists.newArrayList(first.fieldNames());
+        final List<String> inSecond = Lists.newArrayList(second.fieldNames());
 
-        Set<String> set;
+        List<String> fields;
 
         // added fields
-        set = Sets.difference(inSecond, inFirst);
-        for (final String added: set)
+        fields = Lists.newArrayList(inSecond);
+        fields.removeAll(inFirst);
+        for (final String added: fields)
             diffs.add(new Diff(DiffOperation.ADD, path.append(added),
                     second.get(added).deepCopy()));
 
         // removed fields
-        set = Sets.difference(inFirst, inSecond);
-        for (final String removed : set)
+        fields = Lists.newArrayList(inFirst);
+        fields.removeAll(inSecond);
+        for (final String removed: fields)
             diffs.add(new Diff(DiffOperation.REMOVE, path.append(removed),
                     first.get(removed).deepCopy()));
 
         // recursively generate diffs for fields in both objects
-        set = Sets.intersection(inFirst, inSecond);
-        for (final String common: set)
+        fields = Lists.newArrayList(inFirst);
+        fields.retainAll(inSecond);
+        for (final String common: fields)
             generateDiffs(diffs, path.append(common), first.get(common),
                     second.get(common));
     }
@@ -198,7 +201,7 @@ public final class JsonFactorizingDiff
             lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (firstElement == null) {
                 // appended elements
-                diffs.add(new Diff(DiffOperation.ADD, path, -1, -1,
+                diffs.add(new Diff(DiffOperation.ADD, path, firstIndex, -1,
                         second.get(secondIndex).deepCopy()));
                 secondIndex++;
                 continue;
@@ -211,7 +214,7 @@ public final class JsonFactorizingDiff
                     lcsIndex++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(DiffOperation.ADD, path, -1,
+                    diffs.add(new Diff(DiffOperation.ADD, path, firstIndex,
                         secondIndex, second.get(secondIndex).deepCopy()));
                     secondIndex++;
                 }
@@ -315,7 +318,7 @@ public final class JsonFactorizingDiff
 
         // prepend/append common elements
         for (int i = 0; i < offset; i++)
-            lcs.add(first.get(i));
+            lcs.add(0, first.get(i));
         for (int i = firstSize - trim; i < firstSize; i++)
             lcs.add(first.get(i));
 
@@ -332,67 +335,170 @@ public final class JsonFactorizingDiff
      */
     private static void factorizeDiffs(final List<Diff> diffs)
     {
-        // get remove diffs to be factored
-        final List<Diff> removeDiffs = Lists.newArrayList();
-        for (final Diff diff: diffs)
-            if (diff.operation == DiffOperation.REMOVE)
-                removeDiffs.add(diff);
-
-        // pair remove with add diff that has identical values
-        for (final Diff removeDiff: removeDiffs) {
-            for (int diffIndex = 0, diffsSize = diffs.size();
-                 diffIndex < diffsSize; diffIndex++) {
-                final Diff diff = diffs.get(diffIndex);
-                if (diff.operation != DiffOperation.ADD)
-                    continue;
-                if (!EQUIVALENCE.equivalent(diff.value, removeDiff.value))
-                    continue;
-
-                JsonPointer fromPath = removeDiff.path;
-
-                // adjust fromPath and subsequent diff array indexes
-                final int removeDiffIndex = diffs.indexOf(removeDiff);
-                final JsonPointer removeDiffArrayPath = removeDiff.arrayPath;
-                if (removeDiffArrayPath != null)
-                    if (removeDiffIndex < diffIndex) {
-                        // remove deferred with move: use secondary array path for from path
-                        fromPath = removeDiff.getSecondArrayPath();
-
-                        // remove deferred with move: adjust subsequent diff array second
-                        // indexes between the remove diff and the paired diff to reflect the
-                        // fact that the remove will not be done until move diff is applied
-                        for (int i = removeDiffIndex + 1; i < diffIndex; i++) {
-                            final Diff adjustDiff = diffs.get(i);
-                            if (removeDiffArrayPath.equals(adjustDiff.arrayPath)
-                                && adjustDiff.secondArrayIndex != -1)
-                                adjustDiff.secondArrayIndex++;
-
-                        }
-                    } else {
-                        // remove done early with move: use first array path for from path
-                        fromPath = removeDiff.getFirstArrayPath();
-
-                        // remove done early with move: adjust subsequent diff array first
-                        // indexes after the remove diff to reflect the fact that the remove
-                        // will be done before subsequent remove diff are factorized
-                        for (int i = removeDiffIndex + 1; i < diffsSize; i++) {
-                            final Diff adjustDiff = diffs.get(i);
-                            if (!removeDiffArrayPath.equals(adjustDiff.arrayPath))
-                                break;
-                            if (adjustDiff.firstArrayIndex != -1)
-                                adjustDiff.firstArrayIndex--;
-                        }
+        // find add diffs to be factored and pair with remove diffs
+        // that have equivalent values; first matching remove is
+        // paired with each add since there is no context in which to
+        // select a more appropriate pairing
+        for (int addDiffIndex = 0, diffsSize = diffs.size();
+            addDiffIndex < diffsSize; addDiffIndex++) {
+            final Diff addDiff = diffs.get(addDiffIndex);
+            if (addDiff.operation == DiffOperation.ADD) {
+                for (int removeDiffIndex = 0;
+                    removeDiffIndex < diffsSize; removeDiffIndex++) {
+                    final Diff removeDiff = diffs.get(removeDiffIndex);
+                    if (removeDiff.operation == DiffOperation.REMOVE
+                        && EQUIVALENCE.equivalent(removeDiff.value, addDiff.value)) {
+                        // paired add and remove diffs: link and save which diff
+                        // of the pair appears first in the ordered diffs list
+                        addDiff.pairedDiff = removeDiff;
+                        addDiff.firstOfPair = addDiffIndex < removeDiffIndex;
+                        removeDiff.pairedDiff = addDiff;
+                        removeDiff.firstOfPair = removeDiffIndex < addDiffIndex;
+                        break;
                     }
-
-                // remove remove diff to be converted to a move diff
-                diffs.remove(removeDiffIndex);
-
-                // convert add into a move diff
-                diff.operation = DiffOperation.MOVE;
-                diff.fromPath = fromPath;
-                break;
+                }
             }
         }
+
+        // factorize paired add and remove diffs: in this process, removes
+        // are performed out of the original diff ordering just before the
+        // paired add when converted to a move. consequently, moves that are
+        // deferred or advanced must be tracked to allow proper diff array
+        // index adjustments for diffs operating on the same arrays.
+        final List<Diff> deferredArrayRemoves = Lists.newArrayList();
+        final List<Diff> advancedArrayRemoves = Lists.newArrayList();
+        for (final Iterator<Diff> diffIter = diffs.iterator();
+            diffIter.hasNext();) {
+            final Diff diff = diffIter.next();
+
+            // remove paired remove diffs
+            if (diff.operation == DiffOperation.REMOVE
+                && diff.pairedDiff != null) {
+                // track deferred array removes
+                if (diff.arrayPath != null
+                    && diff.firstOfPair)
+                    deferredArrayRemoves.add(diff);
+                // remove paired remove and continue
+                diffIter.remove();
+                continue;
+            }
+
+            // factorize paired add diffs to move diffs
+            if (diff.operation == DiffOperation.ADD
+                && diff.pairedDiff != null) {
+                final Diff removeDiff = diff.pairedDiff;
+                // convert paired add diff into a move
+                diff.operation = DiffOperation.MOVE;
+                diff.pairedDiff = null;
+                // compute move diff from path
+                if (removeDiff.arrayPath == null) {
+                    // paired remove is not from an array: simply use remove
+                    // path for move from
+                    diff.fromPath = removeDiff.path;
+                } else if (diff.firstOfPair) {
+                    // move diff is first of pair: remove will be advanced
+                    // and will use original first indexes into array
+                    int removeIndex = removeDiff.firstArrayIndex;
+                    // adjust remove index for operations on arrays with
+                    // matching advanced array removes
+                    removeIndex = adjustFirstArrayIndex(advancedArrayRemoves,
+                        removeDiff.arrayPath, removeIndex);
+                    // if move diff and remove diff are from the same array,
+                    // remove index must be based on an original index offset
+                    // from the move diff secondary index; this is reflecting
+                    // the fact that array diff operations up to the move diff
+                    // have been applied, but those following the move diff to
+                    // the remove diff have not and thus require original
+                    // first array index adjustments
+                    if (removeDiff.arrayPath.equals(diff.arrayPath)) {
+                        final int moveSecondArrayIndex = adjustSecondArrayIndex(
+                            deferredArrayRemoves, diff.arrayPath,
+                            diff.secondArrayIndex);
+                        final int moveFirstArrayIndex = adjustFirstArrayIndex(
+                            advancedArrayRemoves, diff.arrayPath,
+                            diff.firstArrayIndex);
+                        removeIndex += moveSecondArrayIndex - moveFirstArrayIndex;
+                    }
+                    // set move diff from using adjusted remove index
+                    diff.fromPath = removeDiff.arrayPath.append(removeIndex);
+                    // track advanced array removes
+                    advancedArrayRemoves.add(removeDiff);
+                } else {
+                    // remove diff is first of pair: remove has been deferred
+                    // for this move; remove tracked deferred array remove
+                    deferredArrayRemoves.remove(removeDiff);
+                    // remove can now be moved using second index
+                    int removeIndex = removeDiff.secondArrayIndex;
+                    // adjust remove index for operations on arrays with
+                    // matching deferred array removes
+                    removeIndex = adjustSecondArrayIndex(deferredArrayRemoves,
+                        removeDiff.arrayPath, removeIndex);
+                    // set move diff from using adjusted remove index
+                    diff.fromPath = removeDiff.arrayPath.append(removeIndex);
+                }
+            }
+
+            // adjust secondary index for all array diffs with matching
+            // deferred array removes; note:  all non remove array diffs
+            // have a valid second array index
+            if (diff.arrayPath != null)
+                diff.secondArrayIndex = adjustSecondArrayIndex(deferredArrayRemoves,
+                    diff.arrayPath, diff.secondArrayIndex);
+        }
+    }
+
+    /**
+     * Adjust array index based on advanced array removes before
+     * the specified index to adjust. Missing second array indexes,
+     * (-1), are not adjusted.
+     *
+     * @param advancedArrayRemoves tracked advanced array removes
+     * @param arrayPath array path of array index to adjust
+     * @param arrayIndex index to adjust and upper range of removes
+     * @return index adjusted by advanced array moves in range
+     */
+    private static int adjustFirstArrayIndex(final List<Diff> advancedArrayRemoves,
+        final JsonPointer arrayPath, final int arrayIndex)
+    {
+        if (arrayIndex == -1)
+            return arrayIndex;
+        // adjust remove index for operations on arrays with
+        // matching advanced array removes: for each advanced
+        // remove, decrement the index assuming remove will have
+        // been done before remaining diffs on array
+        int arrayRemoves = 0;
+        for (final Diff advancedArrayRemove: advancedArrayRemoves)
+            if (arrayPath.equals(advancedArrayRemove.arrayPath)
+                && arrayIndex > advancedArrayRemove.firstArrayIndex)
+                arrayRemoves++;
+        return arrayIndex - arrayRemoves;
+    }
+
+    /**
+     * Adjust array index based on deferred array removes before or
+     * at the specified index to adjust. Missing second array indexes,
+     * (-1), are not adjusted.
+     *
+     * @param deferredArrayRemoves tracked deferred array moves
+     * @param arrayPath array path of array index to adjust
+     * @param arrayIndex index to adjust and upper range of moves
+     * @return index adjusted by deferred array moves in range
+     */
+    private static int adjustSecondArrayIndex(final List<Diff> deferredArrayRemoves,
+        final JsonPointer arrayPath, final int arrayIndex)
+    {
+        if (arrayIndex == -1)
+            return arrayIndex;
+        // adjust secondary index for operations on arrays with
+        // matching deferred array removes: for each deferred remove,
+        // increment the index assuming remove will not be done until
+        // the move diff is performed
+        int arrayRemoves = 0;
+        for (final Diff deferredArrayRemove: deferredArrayRemoves)
+            if (arrayPath.equals(deferredArrayRemove.arrayPath)
+                && arrayIndex >= deferredArrayRemove.secondArrayIndex)
+                arrayRemoves++;
+        return arrayIndex + arrayRemoves;
     }
 
     /**
@@ -443,6 +549,8 @@ public final class JsonFactorizingDiff
         private int secondArrayIndex;
         private final JsonNode value;
         private JsonPointer fromPath;
+        private Diff pairedDiff;
+        private boolean firstOfPair;
 
         private Diff(final DiffOperation operation, final JsonPointer path,
             final JsonNode value)
