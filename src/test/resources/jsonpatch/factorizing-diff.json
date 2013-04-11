@@ -130,11 +130,37 @@
         ]
     },
     {
-        "first": { "b": [0, 1, 2, 3], "c": [1]},
+        "first": [0, 1, 2, 3, 4, 5, 6, 7],
+        "second": [3, 6, 4, 5, 7],
+        "patch": [
+            { "op": "remove", "path": "/0" },
+            { "op": "remove", "path": "/0" },
+            { "op": "remove", "path": "/0" },
+            { "op": "move", "from": "/3", "path": "/1" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3], "c": [1] },
         "second": { "b": [1, 3], "c": [0, 1] },
         "patch": [
             { "op": "remove", "path": "/b/2" },
             { "op": "move", "from": "/b/0", "path": "/c/0" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3], "c": [1], "d": [] },
+        "second": { "b": [1, 3], "c": [2, 1], "d": [0] },
+        "patch": [
+            { "op": "move", "from": "/b/2", "path": "/c/0" },
+            { "op": "move", "from": "/b/0", "path": "/d/-" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3], "c": [1], "d": [] },
+        "second": { "b": [1, 3], "c": [0, 1], "d": [2] },
+        "patch": [
+            { "op": "move", "from": "/b/0", "path": "/c/0" },
+            { "op": "move", "from": "/b/1", "path": "/d/-" }
         ]
     },
     {
@@ -158,6 +184,51 @@
             { "op": "move", "from": "/b/0", "path": "/c" },
             { "op": "add", "path": "/b/1", "value": 2 },
             { "op": "remove", "path": "/b/3" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 3, 4, 5] },
+        "second": { "b": [1, 2, 3, 5], "c": 0, "d": 4 },
+        "patch": [
+            { "op": "move", "from": "/b/0", "path": "/c" },
+            { "op": "move", "from": "/b/2", "path": "/d" },
+            { "op": "add", "path": "/b/1", "value": 2 }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 3, 4, 5] },
+        "second": { "b": [1, 2, 3, 5], "c": 4, "d": 0 },
+        "patch": [
+            { "op": "move", "from": "/b/3", "path": "/c" },
+            { "op": "move", "from": "/b/0", "path": "/d" },
+            { "op": "add", "path": "/b/1", "value": 2 }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+        "second": { "b": [1, 6, 2, 3, 5, 7, 0, 8], "c": 4 },
+        "patch": [
+            { "op": "move", "from": "/b/4", "path": "/c" },
+            { "op": "move", "from": "/b/5", "path": "/b/2" },
+            { "op": "move", "from": "/b/0", "path": "/b/6" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+        "second": { "b": [1, 3, 6, 4, 5, 7, 8], "c": 2 },
+        "patch": [
+            { "op": "move", "from": "/b/2", "path": "/c" },
+            { "op": "remove", "path": "/b/0" },
+            { "op": "move", "from": "/b/4", "path": "/b/2" }
+        ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+        "second": { "b": [1, 3, 6, 4, 5, 7, 0, 8], "c": 2 },
+        "patch": [
+            { "op": "move", "from": "/b/2", "path": "/c" },
+            { "op": "move", "from": "/b/5", "path": "/b/3" },
+            { "op": "move", "from": "/b/0", "path": "/b/6" }
         ]
     }
 ]
