@@ -20,6 +20,7 @@ package com.github.fge.jsonpatch.diff;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.google.common.base.Objects;
 
 /**
  * Difference representation. Captures diff information required to
@@ -95,6 +96,12 @@ final class Diff
     @Override
     public String toString()
     {
-        return asJsonPatch().toString();
+        return Objects.toStringHelper(this).add("op", operation)
+            .add("path", path).add("arrayPath", arrayPath)
+            .add("firstArrayIndex", firstArrayIndex)
+            .add("secondArrayIndex", secondArrayIndex)
+            .add("value", value).add("fromPath", fromPath)
+            .add("pairedDiff", pairedDiff).add("firstOfPair", firstOfPair)
+            .toString();
     }
 }
