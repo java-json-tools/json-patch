@@ -47,30 +47,7 @@ final class DiffFactorizer
      */
     public static void factorizeDiffs(final List<Diff> diffs)
     {
-        // find add diffs to be factored and pair with remove diffs
-        // that have equivalent values; first matching remove is
-        // paired with each add since there is no context in which to
-        // select a more appropriate pairing
-        for (int addDiffIndex = 0, diffsSize = diffs.size();
-             addDiffIndex < diffsSize; addDiffIndex++) {
-            final Diff addDiff = diffs.get(addDiffIndex);
-            if (addDiff.operation == DiffOperation.ADD) {
-                for (int removeDiffIndex = 0;
-                     removeDiffIndex < diffsSize; removeDiffIndex++) {
-                    final Diff removeDiff = diffs.get(removeDiffIndex);
-                    if (removeDiff.operation == DiffOperation.REMOVE
-                        && EQUIVALENCE.equivalent(removeDiff.value, addDiff.value)) {
-                        // paired add and remove diffs: link and save which diff
-                        // of the pair appears first in the ordered diffs list
-                        addDiff.pairedDiff = removeDiff;
-                        addDiff.firstOfPair = addDiffIndex < removeDiffIndex;
-                        removeDiff.pairedDiff = addDiff;
-                        removeDiff.firstOfPair = removeDiffIndex < addDiffIndex;
-                        break;
-                    }
-                }
-            }
-        }
+        findPairs(diffs);
 
         // factorize paired add and remove diffs: in this process, removes
         // are performed out of the original diff ordering just before the
@@ -198,6 +175,55 @@ final class DiffFactorizer
             diff.fromPath = addDiff.arrayPath != null
                 ? addDiff.getSecondArrayPath() : addDiff.path;
         }
+    }
+
+    // find add diffs to be factored and pair with remove diffs
+    // that have equivalent values; first matching remove is
+    // paired with each add since there is no context in which to
+    // select a more appropriate pairing
+
+    /**
+     * Find additions/removal pairs
+     *
+     * <p>Find addition operations which can be paired value-wise with removal
+     * operations.</p>
+     *
+     * <p>Note that only the first pair is considered.</p>
+     *
+     * @param diffs the list of diffs
+     */
+    private static void findPairs(final List<Diff> diffs)
+    {
+        final int diffsSize = diffs.size();
+
+        Diff addition, removal;
+
+        for (int addIndex = 0; addIndex < diffsSize; addIndex++) {
+            addition = diffs.get(addIndex);
+            if (addition.operation != DiffOperation.ADD)
+                continue;
+
+            /*
+             * Found an addition: try and find a matching removal
+             */
+            for (int removeIndex = 0; removeIndex < diffsSize; removeIndex++) {
+                removal = diffs.get(removeIndex);
+                if (removal.operation != DiffOperation.REMOVE)
+                    continue;
+                if (!EQUIVALENCE.equivalent(removal.value, addition.value))
+                    continue;
+
+                /*
+                 * Found a pair: record it
+                 */
+                addition.pairedDiff = removal;
+                addition.firstOfPair = addIndex < removeIndex;
+                removal.pairedDiff = addition;
+                removal.firstOfPair = removeIndex < addIndex;
+                break;
+            }
+        }
+
     }
 
     /**
