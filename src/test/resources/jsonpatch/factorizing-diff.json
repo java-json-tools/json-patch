@@ -283,5 +283,10 @@
             { "op": "add", "path": "/4", "value": [ 0 ] },
             { "op": "copy", "from": "/4", "path": "/5" }
         ]
+    },
+    {
+        "first": [ 1, 2 ],
+        "second": [ 2, 1 ],
+        "patch": [ { "op": "move", "from": "/1", "path": "/0" } ]
     }
 ]
