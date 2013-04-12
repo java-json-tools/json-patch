@@ -62,6 +62,11 @@ public final class LCSTest
         ret = ImmutableList.of(1, 2);
         list.add(new Object[]{ l1, l2, ret });
 
+        l1 = ImmutableList.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        l2 = ImmutableList.of(1, 2, 10, 11, 5, 12, 8, 9);
+        ret = ImmutableList.of(1, 2, 5, 8, 9);
+        list.add(new Object[]{ l1, l2, ret });
+
         return list.iterator();
     }
 
