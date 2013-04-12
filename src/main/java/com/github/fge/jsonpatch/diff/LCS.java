@@ -127,7 +127,7 @@ final class LCS
 
         // prepend/append common elements
         for (int i = 0; i < offset; i++)
-            lcs.add(0, first.get(i));
+            lcs.add(i, first.get(i));
         for (int i = firstSize - trim; i < firstSize; i++)
             lcs.add(first.get(i));
 
