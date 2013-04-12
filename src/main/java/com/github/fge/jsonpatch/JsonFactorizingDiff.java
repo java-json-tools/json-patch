@@ -457,29 +457,38 @@ public final class JsonFactorizingDiff
         // to this rule are adds that append to arrays: these have no concrete
         // path that can serve as a copy diff from path.
         final List<Diff> addDiffs = Lists.newArrayList();
-        for (final Diff diff: diffs)
-            if (diff.operation == DiffOperation.ADD)
-                if (diff.value.size() > 0) {
-                    // check add diff value against list of previous add diffs
-                    Diff addDiff = null;
-                    for (final Diff testAddDiff: addDiffs)
-                        if (EQUIVALENCE.equivalent(diff.value, testAddDiff.value)) {
-                            addDiff = testAddDiff;
-                            break;
-                        }
-                    // if not found previously, save add diff, (if not appending
-                    // to an array which can have no concrete from path), and continue
-                    if (addDiff == null) {
-                        if (diff.arrayPath == null || diff.secondArrayIndex != -1)
-                            addDiffs.add(diff);
-                        continue;
-                    }
-                    // previous add diff found by value: convert add diff to copy
-                    // diff with from path set to concrete add diff path
-                    diff.operation = DiffOperation.COPY;
-                    diff.fromPath = addDiff.arrayPath != null ? addDiff.getSecondArrayPath()
-                        : addDiff.path;
+        for (final Diff diff: diffs) {
+            /*
+             * Ignore non add operations
+             */
+            if (diff.operation != DiffOperation.ADD)
+                continue;
+            /*
+             * Skip value nodes or empty objects/arrays
+             */
+            if (diff.value.size() == 0)
+                continue;
+            // check add diff value against list of previous add diffs
+            Diff addDiff = null;
+            for (final Diff testAddDiff : addDiffs)
+                if (EQUIVALENCE.equivalent(diff.value, testAddDiff.value)) {
+                    addDiff = testAddDiff;
+                    break;
                 }
+
+            // if not found previously, save add diff, (if not appending
+            // to an array which can have no concrete from path), and continue
+            if (addDiff == null) {
+                if (diff.arrayPath == null || diff.secondArrayIndex != -1)
+                    addDiffs.add(diff);
+                continue;
+            }
+            // previous add diff found by value: convert add diff to copy
+            // diff with from path set to concrete add diff path
+            diff.operation = DiffOperation.COPY;
+            diff.fromPath = addDiff.arrayPath != null
+                ? addDiff.getSecondArrayPath() : addDiff.path;
+        }
     }
 
     /**
