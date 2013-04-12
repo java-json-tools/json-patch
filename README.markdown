@@ -5,8 +5,8 @@ text.
 
 ## What this is
 
-This is a full-featured implementation of [JSON
-Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10) written in Java, which uses
+This is a full-featured implementation of [RFC 6902 (JSON
+Patch)](http://tools.ietf.org/html/rfc6902) written in Java, which uses
 [Jackson](http://jackson.codehaus.org) at its core.
 
 There is also, as of version 1.1, the ability to generate a "JSON diff"; that is, given two JSON
