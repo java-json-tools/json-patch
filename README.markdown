@@ -15,7 +15,7 @@ below for more information.
 
 ## Versions
 
-The current version is **1.1**.
+The current version is **1.2**.
 
 ## Maven artifact
 
@@ -31,43 +31,24 @@ Replace _your-version-here_ with the appropriate version:
 
 ## JSON "diff": the two implementations
 
-The first implementation, available in 1.1, is fully functional but is quite naive.
+### New implementation (versions 1.2 and above)
+
+The new implementation (`com.github.fge.jsonpatch.diff.JsonDiff`) is able, unlike the old one, to
+factorize add and remove operations into both moves and copies.
+
+This implementation is courtesy of [Randy Watler](https://github.com/rwatler) and should now be used
+in preference to the old one.
+
+### Old implementation (versions 1.1 and below)
+
+The old implementation (`com.github.fge.jsonpatch.JsonDiff`), available since version 1.1, is fully
+functional but is quite naive.
 
 It is functional in the sense that given two JSON values, it will always generate the correct JSON
 Patch (as a `JsonNode`). It is however quite naive in the sense that it does not try and factorize
-any operations. That is, given the two following JSON values:
+any operations.
 
-```json
-{ "a": 1 }
-```
-
-and:
-
-```json
-{ "b": 1 }
-```
-
-this naive implementation 
-([link](https://github.com/fge/json-patch/blob/master/src/main/java/com/github/fge/jsonpatch/JsonDiff.java))
-will generate the following:
-
-```json
-[
-    { "op": "add", "path": "/b", "value": 1 },
-    { "op": "remove", "path": "/a" }
-]
-```
-
-There is, however, a second implementation
-([link](https://github.com/fge/json-patch/blob/master/src/main/java/com/github/fge/jsonpatch/JsonFactorizingDiff.java)),
-courtesy of [Randy Watler](https://github.com/rwatler), which is able to generate a "factorized"
-form like this:
-
-```json
-[ { "op": "move", "from": "/a", "path": "/b" } ]
-```
-
-This code will make it in 1.2 and will eventually become the default.
+Since 1.2, it is marked as obsolete, and you should consider using the newer one.
 
 ## Sample usage: JSON Patch
 
