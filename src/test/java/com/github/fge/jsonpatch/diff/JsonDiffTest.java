@@ -16,14 +16,14 @@ import java.util.List;
 
 import static org.testng.Assert.*;
 
-public final class JsonFactorizingDiffTest
+public final class JsonDiffTest
 {
     private static final Equivalence<JsonNode> EQUIVALENCE
             = JsonNumEquals.getInstance();
 
     private final JsonNode data;
 
-    public JsonFactorizingDiffTest()
+    public JsonDiffTest()
             throws IOException
     {
         data = JsonLoader.fromResource("/jsonpatch/factorizing-diff.json");
@@ -46,7 +46,7 @@ public final class JsonFactorizingDiffTest
         final JsonNode second, final JsonNode expected)
         throws IOException, JsonPatchException
     {
-        final JsonNode actual = JsonFactorizingDiff.asJson(first, second);
+        final JsonNode actual = JsonDiff.asJson(first, second);
         assertEquals(actual, expected,
             "generated patch differs from expectations");
 

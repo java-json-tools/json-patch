@@ -25,6 +25,7 @@ import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.JsonPatch;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 
@@ -37,7 +38,7 @@ import java.util.List;
  * <p>This class only has one method, {@link #asJson(JsonNode, JsonNode)}, which
  * takes two JSON values as arguments and returns a patch as a {@link JsonNode}.
  * This generated patch can then be used in {@link
- * com.github.fge.jsonpatch.JsonPatch#fromJson(JsonNode)}.</p>
+ * JsonPatch#fromJson(JsonNode)}.</p>
  *
  * <p>Numeric equivalence is respected. When dealing with object values,
  * operations are always generated in the following order:
@@ -58,14 +59,17 @@ import java.util.List;
  * therefore the responsibility of the caller to ensure that the calling context
  * is safe (by ensuring, for instance, that only the diff operation has
  * references to the values to be diff'ed).</p>
+ *
+ * @since 1.3
+ * @author Randy Watler <watler@wispertel.net>
  */
-public final class JsonFactorizingDiff
+public final class JsonDiff
 {
     private static final JsonNodeFactory FACTORY = JacksonUtils.nodeFactory();
     private static final Equivalence<JsonNode> EQUIVALENCE
         = JsonNumEquals.getInstance();
 
-    private JsonFactorizingDiff()
+    private JsonDiff()
     {
     }
 
