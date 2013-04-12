@@ -49,8 +49,9 @@ import java.util.List;
  * </ul>
  *
  * Array values generate operations in the order of elements. Factorizing is
- * done to merge add and remove into move operations if values are equivalent.
- * Copy and test operations are not generated.</p>
+ * done to merge add and remove into move operations and convert duplicate
+ * add to copy operations if values are equivalent. Test operations are not
+ * generated.</p>
  *
  * <p>Note that due to the way {@link JsonNode} is implemented, this class is
  * inherently <b>not</b> thread safe (since {@code JsonNode} is mutable). It is
@@ -327,9 +328,11 @@ public final class JsonFactorizingDiff
 
     /**
      * Factorize list of ordered differences. Where removed values are
-     * equivalent to added values, merge add and remove to move operation
-     * differences. Because remove operation differences are relocated in
-     * the process of merging, other differences can be side effected.
+     * equivalent to added values, merge add and remove to move
+     * differences. Because remove differences are relocated in the
+     * process of merging, other differences can be side effected.
+     * Add differences with equivalent values to previous add
+     * differences are converted to copy differences.
      *
      * @param diffs list of ordered differences.
      */
@@ -364,7 +367,8 @@ public final class JsonFactorizingDiff
         // are performed out of the original diff ordering just before the
         // paired add when converted to a move. consequently, moves that are
         // deferred or advanced must be tracked to allow proper diff array
-        // index adjustments for diffs operating on the same arrays.
+        // index adjustments for diffs operating on the same arrays. diff
+        // order is assumed to be acyclic and linearly processing arrays.
         final List<Diff> deferredArrayRemoves = Lists.newArrayList();
         final List<Diff> advancedArrayRemoves = Lists.newArrayList();
         for (final Iterator<Diff> diffIter = diffs.iterator();
@@ -445,6 +449,37 @@ public final class JsonFactorizingDiff
                 diff.secondArrayIndex = adjustSecondArrayIndex(deferredArrayRemoves,
                     diff.arrayPath, diff.secondArrayIndex);
         }
+
+        // Factorize add diffs with equivalent non-empty object or array
+        // values into copy diffs; from paths for copy diffs can be set using
+        // previous add diff paths and/or array paths because diff order is
+        // acyclic and immutable for this factorization. The only exception
+        // to this rule are adds that append to arrays: these have no concrete
+        // path that can serve as a copy diff from path.
+        final List<Diff> addDiffs = Lists.newArrayList();
+        for (final Diff diff: diffs)
+            if (diff.operation == DiffOperation.ADD)
+                if (diff.value.size() > 0) {
+                    // check add diff value against list of previous add diffs
+                    Diff addDiff = null;
+                    for (final Diff testAddDiff: addDiffs)
+                        if (EQUIVALENCE.equivalent(diff.value, testAddDiff.value)) {
+                            addDiff = testAddDiff;
+                            break;
+                        }
+                    // if not found previously, save add diff, (if not appending
+                    // to an array which can have no concrete from path), and continue
+                    if (addDiff == null) {
+                        if (diff.arrayPath == null || diff.secondArrayIndex != -1)
+                            addDiffs.add(diff);
+                        continue;
+                    }
+                    // previous add diff found by value: convert add diff to copy
+                    // diff with from path set to concrete add diff path
+                    diff.operation = DiffOperation.COPY;
+                    diff.fromPath = addDiff.arrayPath != null ? addDiff.getSecondArrayPath()
+                        : addDiff.path;
+                }
     }
 
     /**
@@ -512,6 +547,7 @@ public final class JsonFactorizingDiff
         REMOVE("remove"),
         REPLACE("replace"),
         MOVE("move"),
+        COPY("copy"),
         ;
 
         private final String opName;
@@ -577,7 +613,7 @@ public final class JsonFactorizingDiff
                 : path;
             final ObjectNode patch = operation.newOp(ptr);
             /*
-             * A remomve only has a path
+             * A remove only has a path
              */
             if (operation == DiffOperation.REMOVE)
                 return patch;
@@ -585,7 +621,8 @@ public final class JsonFactorizingDiff
              * A move has a "source path" (the "from" member), other defined
              * operations (add and replace) have a value instead.
              */
-            if (operation == DiffOperation.MOVE)
+            if (operation == DiffOperation.MOVE
+                || operation == DiffOperation.COPY)
                 patch.put("from", fromPath.toString());
             else
                 patch.put("value", value);
