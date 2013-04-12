@@ -70,32 +70,27 @@ final class LCS
         final int secondSize = second.size();
         final int minSize = Math.min(firstSize, secondSize);
 
-        // trim common beginning and ending elements
-        int offset = 0;
-        int trim = 0;
-
         List<JsonNode> l1 = Lists.newArrayList(first);
         List<JsonNode> l2 = Lists.newArrayList(second);
 
         final List<JsonNode> ret = head(l1, l2);
+        final int headSize = ret.size();
 
-        offset = ret.size();
-        l1 = l1.subList(offset, l1.size());
-        l2 = l2.subList(offset, l2.size());
+        l1 = l1.subList(headSize, l1.size());
+        l2 = l2.subList(headSize, l2.size());
 
-        for (int i = firstSize - 1, j = secondSize - 1; i > offset && j > offset;
-             i--, j--) {
-            if (!EQUIVALENCE.equivalent(first.get(i), second.get(j)))
-                break;
-            trim++;
-        }
+        final List<JsonNode> tail = tail(l1, l2);
+        final int trim = tail.size();
+
+        l1 = l1.subList(0, l1.size() - trim);
+        l2 = l2.subList(0, l2.size() - trim);
 
         // find longest common subsequence in remaining elements
         List<JsonNode> lcs = Lists.newArrayList();
-        if (offset < minSize) {
+        if (headSize < minSize) {
             // construct LCS lengths matrix
-            final int firstLimit = firstSize - offset - trim;
-            final int secondLimit = secondSize - offset - trim;
+            final int firstLimit = firstSize - headSize - trim;
+            final int secondLimit = secondSize - headSize - trim;
             final int[][] lengths = new int[firstLimit+1][secondLimit+1];
 
             JsonNode firstNode;
@@ -120,7 +115,7 @@ final class LCS
                 else if (lengths[x][y] == lengths[x][y - 1])
                     y--;
                 else {
-                    lcs.add(first.get(x - 1 + offset));
+                    lcs.add(first.get(x - 1 + headSize));
                     x--;
                     y--;
                 }
@@ -129,9 +124,7 @@ final class LCS
         }
 
         ret.addAll(lcs);
-        for (int i = firstSize - trim; i < firstSize; i++)
-            ret.add(first.get(i));
-
+        ret.addAll(tail);
         return ret;
     }
 
@@ -151,5 +144,12 @@ final class LCS
         }
 
         return ret;
+    }
+
+    private static List<JsonNode> tail(final List<JsonNode> l1,
+        final List<JsonNode> l2)
+    {
+        final List<JsonNode> l = head(Lists.reverse(l1), Lists.reverse(l2));
+        return Lists.reverse(l);
     }
 }
