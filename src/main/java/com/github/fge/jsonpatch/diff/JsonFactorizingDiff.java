@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.fge.jsonpatch;
+package com.github.fge.jsonpatch.diff;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -37,7 +37,7 @@ import java.util.List;
  * <p>This class only has one method, {@link #asJson(JsonNode, JsonNode)}, which
  * takes two JSON values as arguments and returns a patch as a {@link JsonNode}.
  * This generated patch can then be used in {@link
- * JsonPatch#fromJson(JsonNode)}.</p>
+ * com.github.fge.jsonpatch.JsonPatch#fromJson(JsonNode)}.</p>
  *
  * <p>Numeric equivalence is respected. When dealing with object values,
  * operations are always generated in the following order:
