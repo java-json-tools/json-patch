@@ -58,7 +58,7 @@ import java.util.List;
  * is safe (by ensuring, for instance, that only the diff operation has
  * references to the values to be diff'ed).</p>
  *
- * @since 1.3
+ * @since 1.2
  * @author Randy Watler
  */
 public final class JsonDiff

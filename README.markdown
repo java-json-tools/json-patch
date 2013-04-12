@@ -42,7 +42,7 @@ in preference to the old one.
 ### Old implementation (versions 1.1 and below)
 
 The old implementation (`com.github.fge.jsonpatch.JsonDiff`), available since version 1.1, is fully
-functional but is quite naive.
+functional but is quite naive. It is scheduled for removal in version 1.4.
 
 It is functional in the sense that given two JSON values, it will always generate the correct JSON
 Patch (as a `JsonNode`). It is however quite naive in the sense that it does not try and factorize

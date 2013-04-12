@@ -79,7 +79,7 @@ import java.util.Set;
  * </pre>
  *
  * @deprecated use {@link com.github.fge.jsonpatch.diff.JsonDiff} instead; this
- * class is scheduled for removal in 1.3
+ * class is scheduled for removal in 1.4
  */
 @Deprecated
 public final class JsonDiff
