@@ -38,8 +38,8 @@ import java.util.List;
  * This generated patch can then be used in {@link
  * JsonPatch#fromJson(JsonNode)}.</p>
  *
- * <p>Numeric equivalence is respected. When dealing with object values,
- * operations are always generated in the following order:
+ * <p>Numeric equivalence is respected. Operations are always generated in the
+ * following order:</p>
  *
  * <ul>
  *     <li>additions,</li>
@@ -47,10 +47,10 @@ import java.util.List;
  *     <li>replacements.</li>
  * </ul>
  *
- * Array values generate operations in the order of elements. Factorizing is
- * done to merge add and remove into move operations and convert duplicate
- * add to copy operations if values are equivalent. Test operations are not
- * generated.</p>
+ * <p>Array values generate operations in the order of elements. Factorizing is
+ * done to merge add and remove into move operations and convert duplicate add
+ * to copy operations if values are equivalent. No test operations are
+ * generated (they don't really make sense for diffs anyway).</p>
  *
  * <p>Note that due to the way {@link JsonNode} is implemented, this class is
  * inherently <b>not</b> thread safe (since {@code JsonNode} is mutable). It is
@@ -99,19 +99,27 @@ public final class JsonDiff
      * Generate differences between first and second nodes.
      *
      * @param diffs returned ordered differences
-     * @param path path to first and second nodes
+     * @param path common parent path for both nodes
      * @param first first node to compare
      * @param second second node to compare
      */
     private static void generateDiffs(final List<Diff> diffs,
         final JsonPointer path, final JsonNode first, final JsonNode second)
     {
-        // compare deep nodes
+        /*
+         * If both nodes are equivalent, there is nothing to do
+         */
         if (EQUIVALENCE.equivalent(first, second))
             return;
 
-        // compare node types: if types are not the same or if not
-        // an array or object, this is a replace operation
+        /*
+         * Get both node types. We shortcut to a simple replace operation in the
+         * following scenarios:
+         *
+         * - nodes are not the same type; or
+         * - they are the same type, but are not containers (ie, they are
+         *   neither objects nor arrays).
+         */
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
         if (firstType != secondType || !first.isContainerNode()) {
@@ -119,8 +127,10 @@ public final class JsonDiff
             return;
         }
 
-        // matching array or object nodes: recursively generate diffs
-        // for object members or array elements
+        /*
+         * At this point, both nodes are either objects or arrays. Call the
+         * appropriate diff generation methods.
+         */
 
         if (firstType == NodeType.OBJECT)
             generateObjectDiffs(diffs, path, first, second);
@@ -129,12 +139,13 @@ public final class JsonDiff
     }
 
     /**
-     * Generate differences between first and second object nodes. Differences
-     * are generated in the following order: added fields, removed fields, and
-     * common fields differences.
+     * Generate differences between two object nodes
+     *
+     * <p>Differences are generated in the following order: added members,
+     * removed members, modified members.</p>
      *
      * @param diffs returned ordered differences
-     * @param path path to first and second nodes
+     * @param path parent path common to both nodes
      * @param first first object node to compare
      * @param second second object node to compare
      */
@@ -171,72 +182,74 @@ public final class JsonDiff
     }
 
     /**
-     * Generate differences between first and second array nodes. Differences
-     * are generated in order by comparing elements against the longest common
-     * subsequence of elements in both arrays.
+     * Generate differences between two array nodes.
+     *
+     * <p>Differences are generated in order by comparing elements against the
+     * longest common subsequence of elements in both arrays.</p>
      *
      * @param diffs returned ordered differences
-     * @param path path to first and second nodes
+     * @param path parent pointer of both array nodes
      * @param first first array node to compare
      * @param second second array node to compare
+     *
+     * @see LCS#getLCS(JsonNode, JsonNode)
      */
     private static void generateArrayDiffs(final List<Diff> diffs,
         final JsonPointer path, final JsonNode first, final JsonNode second)
     {
         // compare array elements linearly using longest common subsequence
         // algorithm applied to the array elements
+        final int size1 = first.size();
+        final int size2 = second.size();
         final List<JsonNode> lcs = LCS.getLCS(first, second);
-        final int firstSize = first.size();
-        final int secondSize = second.size();
         final int lcsSize = lcs.size();
 
-        int firstIndex = 0;
-        int secondIndex = 0;
+        int index1 = 0;
+        int index2 = 0;
         int lcsIndex = 0;
 
-        JsonNode firstElement;
-        JsonNode secondElement;
-        JsonNode lcsElement;
+        JsonNode node1;
+        JsonNode node2;
+        JsonNode lcsNode;
 
-        while (firstIndex < firstSize || secondIndex < secondSize) {
-            firstElement = first.get(firstIndex);
-            secondElement = second.get(secondIndex);
-            lcsElement = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
-            if (firstElement == null) {
+        while (index1 < size1 || index2 < size2) {
+            node1 = first.get(index1);
+            node2 = second.get(index2);
+            lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
+            if (node1 == null) {
                 // appended elements
-                diffs.add(new Diff(DiffOperation.ADD, path, firstIndex, -1,
-                        second.get(secondIndex).deepCopy()));
-                secondIndex++;
+                diffs.add(new Diff(DiffOperation.ADD, path, index1, -1,
+                        second.get(index2).deepCopy()));
+                index2++;
                 continue;
             }
-            if (EQUIVALENCE.equivalent(firstElement, lcsElement)) {
-                if (EQUIVALENCE.equivalent(firstElement, secondElement)) {
+            if (EQUIVALENCE.equivalent(node1, lcsNode)) {
+                if (EQUIVALENCE.equivalent(node1, node2)) {
                     // common subsequence elements
-                    firstIndex++;
-                    secondIndex++;
+                    index1++;
+                    index2++;
                     lcsIndex++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(DiffOperation.ADD, path, firstIndex,
-                        secondIndex, second.get(secondIndex).deepCopy()));
-                    secondIndex++;
+                    diffs.add(new Diff(DiffOperation.ADD, path, index1,
+                        index2, second.get(index2).deepCopy()));
+                    index2++;
                 }
-            } else if (secondElement != null
-                && !EQUIVALENCE.equivalent(secondElement, lcsElement)) {
+            } else if (node2 != null
+                && !EQUIVALENCE.equivalent(node2, lcsNode)) {
                 // generate diffs for or replaced elements
-                if (firstIndex == secondIndex)
-                    generateDiffs(diffs, path.append(firstIndex), firstElement,
-                        secondElement);
+                if (index1 == index2)
+                    generateDiffs(diffs, path.append(index1), node1, node2);
                 else
-                    diffs.add(new Diff(DiffOperation.REPLACE, path, firstIndex,
-                        secondIndex, second.get(secondIndex).deepCopy()));
-                firstIndex++;
-                secondIndex++;
+                    diffs.add(new Diff(DiffOperation.REPLACE, path, index1,
+                        index2, second.get(index2).deepCopy()));
+                index1++;
+                index2++;
             } else {
                 // removed elements
-                diffs.add(new Diff(DiffOperation.REMOVE, path, firstIndex,
-                    secondIndex, first.get(firstIndex).deepCopy()));
-                firstIndex++;
+                diffs.add(new Diff(DiffOperation.REMOVE, path, index1, index2,
+                    first.get(index1).deepCopy()));
+                index1++;
             }
         }
     }
