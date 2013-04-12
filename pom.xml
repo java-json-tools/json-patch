@@ -47,7 +47,6 @@
                         <link>http://fasterxml.github.com/jackson-core/javadoc/2.1.1/</link>
                         <link>http://docs.oracle.com/javase/6/docs/api</link>
                         <link>http://docs.guava-libraries.googlecode.com/git/javadoc</link>
-                        <link>http://jcip.net.s3-website-us-east-1.amazonaws.com/annotations/doc</link>
                         <link>http://fge.github.com/jackson-coreutils</link>
                     </links>
                     <docfilessubdirs>true</docfilessubdirs>
