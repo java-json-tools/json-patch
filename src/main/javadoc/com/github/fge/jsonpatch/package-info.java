@@ -25,9 +25,8 @@
  *
  * <p>The main class is {@link com.github.fge.jsonpatch.JsonPatch}.</p>
  *
- * <p>There is also a limited purpose "diff" class, {@link
- * com.github.fge.jsonpatch.JsonDiff}, which will generate a JSON Patch from
- * two JSON values so that applying the patch to the first node returns the
- * second node.</p>
+ * <p>Note that at this moment, the only way to build a patch is from a JSON
+ * representation (as a {@link com.fasterxml.jackson.databind.JsonNode}).</p>
+ *
  */
 package com.github.fge.jsonpatch;

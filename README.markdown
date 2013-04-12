@@ -29,28 +29,50 @@ Replace _your-version-here_ with the appropriate version:
 </dependency>
 ```
 
-## JSON "diff": the two implementations
+## JSON "diff"
 
-### New implementation (versions 1.2 and above)
+As its name implies, this is a reverse of the patch operation.
 
-The new implementation (`com.github.fge.jsonpatch.diff.JsonDiff`) is able, unlike the old one, to
-factorize add and remove operations into both moves and copies.
+The implementation takes two JSON values as arguments (as `JsonNode` instances) and returns a JSON
+patch, also as a `JsonNode`.
 
-This implementation is courtesy of [Randy Watler](https://github.com/rwatler) and should now be used
-in preference to the old one.
+This implementation is courtesy of [Randy Watler](https://github.com/rwatler). It is able to
+factorize value removals and additions as moves and copies.
 
-### Old implementation (versions 1.1 and below)
+For instance, given this node to patch:
 
-The old implementation (`com.github.fge.jsonpatch.JsonDiff`), available since version 1.1, is fully
-functional but is quite naive. It is scheduled for removal in version 1.4.
+```json
+{ "a": "b" }
+```
 
-It is functional in the sense that given two JSON values, it will always generate the correct JSON
-Patch (as a `JsonNode`). It is however quite naive in the sense that it does not try and factorize
-any operations.
+in order to obtain:
 
-Since 1.2, it is marked as obsolete, and you should consider using the newer one.
+```json
+{ "c": "b" }
+```
 
-## Sample usage: JSON Patch
+the implementation will return the following patch:
+
+```json
+[ { "op": "move", "from": "/a", "to": "/c" } ]
+```
+
+### Important note
+
+In order to comply with JSON Patch test operations, numeric JSON values are considered equal if they
+are mathematically equal.
+
+This is arguably debatable: for instance, are `[ 1 ]` and `[ 1.0 ]` the same? Right now, this
+implementation considers that they are. It may, or may not, lead to problems; it is unknown whether
+this will be a problem given the scarce usage of JSON Patch at this point in time.
+
+There is, however, a good reason that the implementation behaves this way: JSON Patch's test
+operation does behave this way -- that is, two numeric JSON values are equal if their mathematical
+value is equal.
+
+## Sample usage
+
+### JSON Patch
 
 Both the JSON Patch and data to patch are backed by `JsonNode` instances. As this package depends on
 [jackson-coreutils](https://github.com/fge/jackson-coreutils), you can use this package's
@@ -70,34 +92,13 @@ You can then apply the patch to your data:
 final JsonNode patched = patch.apply(orig);
 ```
 
-## Sample usage: JSON diff
+### JSON diff
 
-The backing, naive class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
+The main class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
 
 ```java
 final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
 ```
 
 You can then use the generated `JsonNode` to build a patch using the code sample above.
-
-Note that the generated patch will always yield operations in the same order:
-
-* additions,
-* removals,
-* replacements.
-
-The patch is generated recursively, and numeric equality is also respected.
-
-## Further note about JSON diff
-
-There is one important thing to consider when using JSON diff: in order to comply with JSON Patch
-test operations, numeric JSON values are considered equal if they are mathematically equal.
-
-This is arguably debatable: for instance, are `[ 1 ]` and `[ 1.0 ]` the same? Right now, this
-implementation considers that they are. It may, or may not, lead to problems; it is unknown whether
-this will be a problem given the scarce usage of JSON Patch at this point in time.
-
-There is, however, a good reason that the implementation behaves this way: JSON Patch's test
-operation does behave this way -- that is, two numeric JSON values are equal if their _mathematical_
-value is equal.
 
