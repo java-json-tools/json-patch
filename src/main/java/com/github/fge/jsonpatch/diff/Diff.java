@@ -19,6 +19,7 @@ package com.github.fge.jsonpatch.diff;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.google.common.base.Objects;
 
@@ -91,6 +92,34 @@ final class Diff
         if (secondArrayIndex != -1)
             return arrayPath.append(secondArrayIndex);
         return arrayPath.append("-");
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(operation, path, arrayPath, firstArrayIndex,
+            secondArrayIndex, JsonNumEquals.getInstance().wrap(value),
+            fromPath, pairedDiff, firstOfPair);
+    }
+
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Diff other = (Diff) obj;
+        return operation == other.operation
+            && Objects.equal(path, other.path)
+            && Objects.equal(arrayPath, other.arrayPath)
+            && firstArrayIndex == other.firstArrayIndex
+            && secondArrayIndex == other.secondArrayIndex
+            && JsonNumEquals.getInstance().equivalent(value, other.value)
+            && Objects.equal(fromPath, other.fromPath)
+            && Objects.equal(pairedDiff, other.pairedDiff)
+            && firstOfPair == other.firstOfPair;
     }
 
     @Override
