@@ -59,7 +59,7 @@ import java.util.List;
  * references to the values to be diff'ed).</p>
  *
  * @since 1.3
- * @author Randy Watler <watler@wispertel.net>
+ * @author Randy Watler
  */
 public final class JsonDiff
 {
@@ -72,8 +72,8 @@ public final class JsonDiff
     }
 
     /**
-     * Generate a factorized patch for transforming the first node into the
-     * second node.
+     * Generate a JSON patch for transforming the first node into the second
+     * node
      *
      * @param first the node to be patched
      * @param second the expected result after applying the patch
