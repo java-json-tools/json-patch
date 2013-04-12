@@ -66,9 +66,7 @@ final class LCS
             "LCS can only work on JSON arrays");
         Preconditions.checkArgument(second.isArray(),
             "LCS can only work on JSON arrays");
-        final int firstSize = first.size();
-        final int secondSize = second.size();
-        final int minSize = Math.min(firstSize, secondSize);
+        final int minSize = Math.min(first.size(), second.size());
 
         List<JsonNode> l1 = Lists.newArrayList(first);
         List<JsonNode> l2 = Lists.newArrayList(second);
@@ -96,6 +94,10 @@ final class LCS
      *
      * <p>When entering this function, both lists are trimmed from their
      * common leading and trailing nodes.</p>
+     *
+     * @param l1 the first list
+     * @param l2 the second list
+     * @return the longest common subsequence
      */
     private static List<JsonNode> doLCS(final List<JsonNode> l1,
         final List<JsonNode> l2)
@@ -135,6 +137,15 @@ final class LCS
         return Lists.reverse(lcs);
     }
 
+    /**
+     * Return a list with common head elements of two lists
+     *
+     * <p>Note that the arguments are NOT altered.</p>
+     *
+     * @param l1 first list
+     * @param l2 second list
+     * @return a list of common head elements
+     */
     private static List<JsonNode> head(final List<JsonNode> l1,
         final List<JsonNode> l2)
     {
@@ -153,6 +164,16 @@ final class LCS
         return ret;
     }
 
+    /**
+     * Return the list of common tail elements of two lists
+     *
+     * <p>Note that the arguments are NOT altered. Elements are returned in
+     * their order of appearance.</p>
+     *
+     * @param l1 first list
+     * @param l2 second list
+     * @return a list of common tail elements
+     */
     private static List<JsonNode> tail(final List<JsonNode> l1,
         final List<JsonNode> l2)
     {
