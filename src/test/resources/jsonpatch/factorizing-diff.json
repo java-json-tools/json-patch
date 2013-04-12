@@ -230,5 +230,58 @@
             { "op": "move", "from": "/b/5", "path": "/b/3" },
             { "op": "move", "from": "/b/0", "path": "/b/6" }
         ]
+    },
+    {
+        "first": { "b": [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+        "second": { "b": [1, 3, 6, 4, 5, 7, 0, 8], "c": 2 },
+        "patch": [
+            { "op": "move", "from": "/b/2", "path": "/c" },
+            { "op": "move", "from": "/b/5", "path": "/b/3" },
+            { "op": "move", "from": "/b/0", "path": "/b/6" }
+        ]
+    },
+    {
+        "first": {},
+        "second": { "a": 1, "b": 1},
+        "patch": [
+            { "op": "add", "path": "/a", "value": 1 },
+            { "op": "add", "path": "/b", "value": 1 }
+        ]
+    },
+    {
+        "first": {},
+        "second": { "a": {}, "b": {}},
+        "patch": [
+            { "op": "add", "path": "/a", "value": {} },
+            { "op": "add", "path": "/b", "value": {} }
+        ]
+    },
+    {
+        "first": {},
+        "second": { "a": { "a": 1 }, "b": { "a": 1.0 }},
+        "patch": [
+            { "op": "add", "path": "/a", "value": { "a": 1 } },
+            { "op": "copy", "from": "/a", "path": "/b" }
+        ]
+    },
+    {
+        "first": [],
+        "second": [ [ 0 ], [ 0 ] ],
+        "patch": [
+            { "op": "add", "path": "/-", "value": [ 0 ] },
+            { "op": "add", "path": "/-", "value": [ 0 ] }
+        ]
+    },
+    {
+        "first": [ "eol" ],
+        "second": [ { "a": 1 }, { "a": 1.0 }, [], [], [ 0 ], [ 0 ], "eol" ],
+        "patch": [
+            { "op": "add", "path": "/0", "value": { "a": 1 } },
+            { "op": "copy", "from": "/0", "path": "/1" },
+            { "op": "add", "path": "/2", "value": [] },
+            { "op": "add", "path": "/3", "value": [] },
+            { "op": "add", "path": "/4", "value": [ 0 ] },
+            { "op": "copy", "from": "/4", "path": "/5" }
+        ]
     }
 ]
