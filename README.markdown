@@ -15,7 +15,7 @@ below for more information.
 
 ## Versions
 
-The current version is **1.2**.
+The current version is **1.3**.
 
 ## Maven artifact
 
