@@ -85,47 +85,54 @@ final class LCS
         l1 = l1.subList(0, l1.size() - trim);
         l2 = l2.subList(0, l2.size() - trim);
 
-        // find longest common subsequence in remaining elements
-        List<JsonNode> lcs = Lists.newArrayList();
-        if (headSize < minSize) {
-            // construct LCS lengths matrix
-            final int firstLimit = firstSize - headSize - trim;
-            final int secondLimit = secondSize - headSize - trim;
-            final int[][] lengths = new int[firstLimit+1][secondLimit+1];
-
-            JsonNode firstNode;
-            JsonNode secondNode;
-            int newLength;
-
-            for (int i = 0; i < firstLimit; i++)
-                for (int j = 0; j < secondLimit; j++) {
-                    firstNode = l1.get(i);
-                    secondNode = l2.get(j);
-                    newLength = EQUIVALENCE.equivalent(firstNode, secondNode)
-                        ? lengths[i][j] + 1
-                        : Math.max(lengths[i + 1][j], lengths[i][j + 1]);
-                    lengths[i + 1][j + 1] = newLength;
-                }
-
-            // return result out of the LCS lengths matrix
-            int x = firstLimit, y = secondLimit;
-            while (x > 0 && y > 0) {
-                if (lengths[x][y] == lengths[x - 1][y])
-                    x--;
-                else if (lengths[x][y] == lengths[x][y - 1])
-                    y--;
-                else {
-                    lcs.add(first.get(x - 1 + headSize));
-                    x--;
-                    y--;
-                }
-            }
-            lcs = Lists.reverse(lcs);
-        }
-
-        ret.addAll(lcs);
+        if (headSize < minSize)
+            ret.addAll(doLCS(l1, l2));
         ret.addAll(tail);
         return ret;
+    }
+
+    /**
+     * Compute longest common subsequence out of two lists
+     *
+     * <p>When entering this function, both lists are trimmed from their
+     * common leading and trailing nodes.</p>
+     */
+    private static List<JsonNode> doLCS(final List<JsonNode> l1,
+        final List<JsonNode> l2)
+    {
+        final List<JsonNode> lcs = Lists.newArrayList();
+        // construct LCS lengths matrix
+        final int size1 = l1.size();
+        final int size2 = l2.size();
+        final int[][] lengths = new int[size1 + 1][size2 + 1];
+
+        JsonNode node1;
+        JsonNode node2;
+        int len;
+
+        for (int i = 0; i < size1; i++)
+            for (int j = 0; j < size2; j++) {
+                node1 = l1.get(i);
+                node2 = l2.get(j);
+                len = EQUIVALENCE.equivalent(node1, node2) ? lengths[i][j] + 1
+                    : Math.max(lengths[i + 1][j], lengths[i][j + 1]);
+                lengths[i + 1][j + 1] = len;
+            }
+
+        // return result out of the LCS lengths matrix
+        int x = size1, y = size2;
+        while (x > 0 && y > 0) {
+            if (lengths[x][y] == lengths[x - 1][y])
+                x--;
+            else if (lengths[x][y] == lengths[x][y - 1])
+                y--;
+            else {
+                lcs.add(l1.get(x - 1));
+                x--;
+                y--;
+            }
+        }
+        return Lists.reverse(lcs);
     }
 
     private static List<JsonNode> head(final List<JsonNode> l1,
