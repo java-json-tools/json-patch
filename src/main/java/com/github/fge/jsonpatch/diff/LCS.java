@@ -74,11 +74,14 @@ final class LCS
         int offset = 0;
         int trim = 0;
 
-        for (int index = 0; index < minSize; index++) {
-            if (!EQUIVALENCE.equivalent(first.get(index), second.get(index)))
-                break;
-            offset++;
-        }
+        List<JsonNode> l1 = Lists.newArrayList(first);
+        List<JsonNode> l2 = Lists.newArrayList(second);
+
+        final List<JsonNode> ret = head(l1, l2);
+
+        offset = ret.size();
+        l1 = l1.subList(offset, l1.size());
+        l2 = l2.subList(offset, l2.size());
 
         for (int i = firstSize - 1, j = secondSize - 1; i > offset && j > offset;
              i--, j--) {
@@ -101,8 +104,8 @@ final class LCS
 
             for (int i = 0; i < firstLimit; i++)
                 for (int j = 0; j < secondLimit; j++) {
-                    firstNode = first.get(i + offset);
-                    secondNode = second.get(j + offset);
+                    firstNode = l1.get(i);
+                    secondNode = l2.get(j);
                     newLength = EQUIVALENCE.equivalent(firstNode, secondNode)
                         ? lengths[i][j] + 1
                         : Math.max(lengths[i + 1][j], lengths[i][j + 1]);
@@ -125,12 +128,28 @@ final class LCS
             lcs = Lists.reverse(lcs);
         }
 
-        // prepend/append common elements
-        for (int i = 0; i < offset; i++)
-            lcs.add(i, first.get(i));
+        ret.addAll(lcs);
         for (int i = firstSize - trim; i < firstSize; i++)
-            lcs.add(first.get(i));
+            ret.add(first.get(i));
 
-        return lcs;
+        return ret;
+    }
+
+    private static List<JsonNode> head(final List<JsonNode> l1,
+        final List<JsonNode> l2)
+    {
+        final List<JsonNode> ret = Lists.newArrayList();
+        final int len = Math.min(l1.size(), l2.size());
+
+        JsonNode node;
+
+        for (int index = 0; index < len; index++) {
+            node = l1.get(index);
+            if (!EQUIVALENCE.equivalent(node, l2.get(index)))
+                break;
+            ret.add(node);
+        }
+
+        return ret;
     }
 }
