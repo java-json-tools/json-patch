@@ -30,6 +30,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+import static com.github.fge.jsonpatch.diff.DiffOperation.*;
+
 /**
  * "Reverse" factorizing JSON Patch implementation
  *
@@ -123,7 +125,7 @@ public final class JsonDiff
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
         if (firstType != secondType || !first.isContainerNode()) {
-            diffs.add(new Diff(DiffOperation.REPLACE, path, second.deepCopy()));
+            diffs.add(new Diff(REPLACE, path, second.deepCopy()));
             return;
         }
 
@@ -163,15 +165,15 @@ public final class JsonDiff
         fields = Lists.newArrayList(inSecond);
         fields.removeAll(inFirst);
         for (final String added: fields)
-            diffs.add(new Diff(DiffOperation.ADD, path.append(added),
+            diffs.add(new Diff(ADD, path.append(added),
                     second.get(added).deepCopy()));
 
         // removed fields
         fields = Lists.newArrayList(inFirst);
         fields.removeAll(inSecond);
         for (final String removed: fields)
-            diffs.add(new Diff(DiffOperation.REMOVE, path.append(removed),
-                    first.get(removed).deepCopy()));
+            diffs.add(new Diff(REMOVE, path.append(removed),
+                first.get(removed).deepCopy()));
 
         // recursively generate diffs for fields in both objects
         fields = Lists.newArrayList(inFirst);
@@ -218,7 +220,7 @@ public final class JsonDiff
             lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (node1 == null) {
                 // appended elements
-                diffs.add(new Diff(DiffOperation.ADD, path, index1, -1,
+                diffs.add(new Diff(ADD, path, index1, -1,
                         second.get(index2).deepCopy()));
                 index2++;
                 continue;
@@ -231,8 +233,8 @@ public final class JsonDiff
                     lcsIndex++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(DiffOperation.ADD, path, index1,
-                        index2, second.get(index2).deepCopy()));
+                    diffs.add(new Diff(ADD, path, index1, index2,
+                        second.get(index2).deepCopy()));
                     index2++;
                 }
             } else if (node2 != null
@@ -241,13 +243,13 @@ public final class JsonDiff
                 if (index1 == index2)
                     generateDiffs(diffs, path.append(index1), node1, node2);
                 else
-                    diffs.add(new Diff(DiffOperation.REPLACE, path, index1,
-                        index2, second.get(index2).deepCopy()));
+                    diffs.add(new Diff(REPLACE, path, index1, index2,
+                        second.get(index2).deepCopy()));
                 index1++;
                 index2++;
             } else {
                 // removed elements
-                diffs.add(new Diff(DiffOperation.REMOVE, path, index1, index2,
+                diffs.add(new Diff(REMOVE, path, index1, index2,
                     first.get(index1).deepCopy()));
                 index1++;
             }
