@@ -26,6 +26,7 @@ import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.google.common.base.Equivalence;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -251,11 +252,9 @@ public final class JsonDiff
             } else if (node2 != null
                 && !EQUIVALENCE.equivalent(node2, lcsNode)) {
                 // generate diffs for or replaced elements
-                if (index1 == index2)
-                    generateDiffs(diffs, path.append(index1), node1, node2);
-                else
-                    diffs.add(new Diff(REPLACE, path, index1, index2,
-                        second.get(index2).deepCopy()));
+                Preconditions.checkArgument(index1 == index2,
+                    "expected array indices to be equal for both nodes");
+                generateDiffs(diffs, path.append(index1), node1, node2);
                 index1++;
                 index2++;
             } else {
