@@ -80,12 +80,6 @@ final class Diff
         return patch;
     }
 
-    JsonPointer getFirstArrayPath()
-    {
-        // compute path from array path and index
-        return arrayPath.append(firstArrayIndex);
-    }
-
     JsonPointer getSecondArrayPath()
     {
         // compute path from array path and index
