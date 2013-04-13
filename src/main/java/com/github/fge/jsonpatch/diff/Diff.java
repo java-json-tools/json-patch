@@ -100,7 +100,7 @@ final class Diff
     {
         return Objects.hashCode(operation, path, arrayPath, firstArrayIndex,
             secondArrayIndex, JsonNumEquals.getInstance().wrap(value),
-            fromPath, pairedDiff, firstOfPair);
+            fromPath, pairedDiff != null, firstOfPair);
     }
 
     @Override
@@ -118,7 +118,7 @@ final class Diff
             && secondArrayIndex == other.secondArrayIndex
             && JsonNumEquals.getInstance().equivalent(value, other.value)
             && Objects.equal(fromPath, other.fromPath)
-            && Objects.equal(pairedDiff, other.pairedDiff)
+            && Objects.equal(pairedDiff != null, other.pairedDiff != null)
             && firstOfPair == other.firstOfPair;
     }
 
@@ -130,7 +130,7 @@ final class Diff
             .add("firstArrayIndex", firstArrayIndex)
             .add("secondArrayIndex", secondArrayIndex)
             .add("value", value).add("fromPath", fromPath)
-            .add("pairedDiff", pairedDiff).add("firstOfPair", firstOfPair)
+            .add("paired", pairedDiff != null).add("firstOfPair", firstOfPair)
             .toString();
     }
 }
