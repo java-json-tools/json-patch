@@ -219,11 +219,14 @@ public final class JsonDiff
             node2 = second.get(index2);
             lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (node1 == null) {
-                // appended elements
-                diffs.add(new Diff(ADD, path, index1, -1,
-                        second.get(index2).deepCopy()));
-                index2++;
-                continue;
+                /*
+                 * Here, the LCS is "empty", and the first array has no
+                 * elements left.
+                 *
+                 * This means all that remains is additions to the second array.
+                 */
+                addRemaining(diffs, path, second, index1, index2);
+                break;
             }
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
                 if (EQUIVALENCE.equivalent(node1, node2)) {
@@ -253,6 +256,22 @@ public final class JsonDiff
                     first.get(index1).deepCopy()));
                 index1++;
             }
+        }
+    }
+
+    private static void addRemaining(final List<Diff> diffs,
+        final JsonPointer path, final JsonNode node2, final int index1,
+        final int startingIndex)
+    {
+        final int size = node2.size();
+
+        Diff diff;
+        JsonNode node;
+
+        for (int index = startingIndex; index < size; index++) {
+            node = node2.get(index).deepCopy();
+            diff = new Diff(ADD, path, index1, -1, node);
+            diffs.add(diff);
         }
     }
 }
