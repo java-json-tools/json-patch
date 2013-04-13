@@ -218,15 +218,23 @@ public final class JsonDiff
             node1 = first.get(index1);
             node2 = second.get(index2);
             lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
-            if (node1 == null) {
+            if (lcsNode == null) { // LCS is now empty
+                if (node1 == null) {
                 /*
-                 * Here, the LCS is "empty", and the first array has no
-                 * elements left.
+                 * Here, the first array has no elements left.
                  *
                  * This means all that remains is additions to the second array.
                  */
-                addRemaining(diffs, path, second, index2);
-                break;
+                    addRemaining(diffs, path, second, index2);
+                    break;
+                } else if (node2 == null) {
+                    /*
+                     * Here, the second array has no elements left. Also that
+                     * is left is therefore removals.
+                     */
+                    removeRemaining(diffs, path, first, index1, index2);
+                    break;
+                }
             }
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
                 if (EQUIVALENCE.equivalent(node1, node2)) {
@@ -270,6 +278,22 @@ public final class JsonDiff
         for (int index = startingIndex; index < size; index++) {
             node = node2.get(index).deepCopy();
             diff = new Diff(ADD, path, -1, -1, node);
+            diffs.add(diff);
+        }
+    }
+
+    private static void removeRemaining(final List<Diff> diffs,
+        final JsonPointer path, final JsonNode node1, final int startingIndex,
+        final int index2)
+    {
+        final int size = node1.size();
+
+        Diff diff;
+        JsonNode node;
+
+        for (int index = startingIndex; index < size; index++) {
+            node = node1.get(index).deepCopy();
+            diff = new Diff(REMOVE, path, index, index2, node);
             diffs.add(diff);
         }
     }
