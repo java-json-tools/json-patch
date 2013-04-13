@@ -225,7 +225,7 @@ public final class JsonDiff
                  *
                  * This means all that remains is additions to the second array.
                  */
-                addRemaining(diffs, path, second, index1, index2);
+                addRemaining(diffs, path, second, index2);
                 break;
             }
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
@@ -260,8 +260,7 @@ public final class JsonDiff
     }
 
     private static void addRemaining(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode node2, final int index1,
-        final int startingIndex)
+        final JsonPointer path, final JsonNode node2, final int startingIndex)
     {
         final int size = node2.size();
 
@@ -270,7 +269,7 @@ public final class JsonDiff
 
         for (int index = startingIndex; index < size; index++) {
             node = node2.get(index).deepCopy();
-            diff = new Diff(ADD, path, index1, -1, node);
+            diff = new Diff(ADD, path, -1, -1, node);
             diffs.add(diff);
         }
     }
