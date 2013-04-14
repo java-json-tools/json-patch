@@ -236,6 +236,8 @@ public final class JsonDiff
                     removeRemaining(diffs, path, first, index1, index2);
                     break;
                 }
+                // FIXME: find last possible case; separate into its own
+                // method
             }
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
                 if (EQUIVALENCE.equivalent(node1, node2)) {
