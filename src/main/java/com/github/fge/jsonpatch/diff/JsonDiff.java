@@ -377,7 +377,7 @@ public final class JsonDiff
             if (!match1) {
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
-            } else { // !match2, as a consequence
+            } else { // !match2, as a consequence, since match is exclusive
                 diffs.add(Diff.arrayInsert(path, array1, array2));
                 array2.shift();
             }
