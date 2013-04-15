@@ -214,7 +214,7 @@ public final class JsonDiff
         while (!array1.isEmpty() || !array2.isEmpty()) {
             node1 = array1.getElement();
             node2 = array2.getElement();
-            if (lcsArray.isEmpty()) { // LCS is now empty
+            if (lcsArray.isEmpty()) {
                 if (node1 == null && node2 == null)
                     return;
                 if (node1 == null) {
@@ -254,8 +254,7 @@ public final class JsonDiff
                     diffs.add(Diff.arrayInsert(path, array1, array2));
                     array2.shift();
                 }
-            } else if (node2 != null
-                && !EQUIVALENCE.equivalent(node2, lcsNode)) {
+            } else if (!EQUIVALENCE.equivalent(node2, lcsNode)) {
                 // generate diffs for or replaced elements
                 generateDiffs(diffs, path.append(array1.getIndex()), node1,
                     node2);
