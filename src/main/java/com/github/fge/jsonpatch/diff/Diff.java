@@ -52,6 +52,12 @@ final class Diff
             removalIndex, victim.deepCopy());
     }
 
+    static Diff arrayRemove(final JsonPointer basePath,
+        final IndexedJsonArray array1, final IndexedJsonArray array2)
+    {
+        return new Diff(DiffOperation.REMOVE, basePath, array1.getIndex(),
+            array2.getIndex(), array1.getElement().deepCopy());
+    }
     static Diff arrayAdd(final JsonPointer basePath, final JsonNode node)
     {
         return new Diff(DiffOperation.ADD, basePath, -1, -1, node.deepCopy());
@@ -72,7 +78,7 @@ final class Diff
         this.value = value;
     }
 
-    Diff(final DiffOperation operation, final JsonPointer arrayPath,
+    private Diff(final DiffOperation operation, final JsonPointer arrayPath,
         final int firstArrayIndex, final int secondArrayIndex,
         final JsonNode value)
     {

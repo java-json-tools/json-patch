@@ -263,8 +263,7 @@ public final class JsonDiff
                 array2.shift();
             } else {
                 // removed elements
-                diffs.add(new Diff(REMOVE, path, array1.getIndex(),
-                    array2.getIndex(), array1.getElement().deepCopy()));
+                diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
             }
         }
