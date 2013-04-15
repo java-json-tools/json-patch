@@ -202,10 +202,7 @@ public final class JsonDiff
     {
         // compare array elements linearly using longest common subsequence
         // algorithm applied to the array elements
-        final int size1 = first.size();
-        final int size2 = second.size();
         final List<JsonNode> lcs = LCS.getLCS(first, second);
-        final int lcsSize = lcs.size();
 
         final IndexedJsonArray array1 = new IndexedJsonArray(first);
         final IndexedJsonArray array2 = new IndexedJsonArray(second);
