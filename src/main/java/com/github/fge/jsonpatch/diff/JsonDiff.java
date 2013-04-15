@@ -207,19 +207,21 @@ public final class JsonDiff
         final List<JsonNode> lcs = LCS.getLCS(first, second);
         final int lcsSize = lcs.size();
 
+        final IndexedJsonArray array1 = new IndexedJsonArray(first);
+        final IndexedJsonArray array2 = new IndexedJsonArray(second);
+        final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
+
         int index1 = 0;
         int index2 = 0;
-        int lcsIndex = 0;
 
         JsonNode node1;
         JsonNode node2;
         JsonNode lcsNode;
 
-        while (index1 < size1 || index2 < size2) {
-            node1 = first.get(index1);
-            node2 = second.get(index2);
-            lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
-            if (lcsNode == null) { // LCS is now empty
+        while (!array1.isEmpty() || !array2.isEmpty()) {
+            node1 = array1.getElement();
+            node2 = array2.getElement();
+            if (lcsArray.isEmpty()) { // LCS is now empty
                 if (node1 == null && node2 == null)
                     return;
                 if (node1 == null) {
@@ -228,34 +230,42 @@ public final class JsonDiff
                  *
                  * This means all that remains is additions to the second array.
                  */
-                    addRemaining(diffs, path, second, index2);
+                    addRemaining(diffs, path, second, array2.getIndex());
                     break;
                 } else if (node2 == null) {
                     /*
                      * Here, the second array has no elements left. Also that
                      * is left is therefore removals.
                      */
-                    removeRemaining(diffs, path, first, index1);
+                    removeRemaining(diffs, path, first, array1.getIndex());
                     break;
                 } else {
                     // Here we know that the two elements are not null _and_
                     // that they are different, since we have exhausted the LCS
-                    generateDiffs(diffs, path.append(index1), node1, node2);
+                    generateDiffs(diffs, path.append(array1.getIndex()), node1,
+                        node2);
+                    array1.shift();
+                    array2.shift();
                     index1++;
                     index2++;
                     continue;
                 }
             }
+            lcsNode = lcsArray.getElement();
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
                 if (EQUIVALENCE.equivalent(node1, node2)) {
                     // common subsequence elements
+                    array1.shift();
+                    array2.shift();
+                    lcsArray.shift();
                     index1++;
                     index2++;
-                    lcsIndex++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(ADD, path, index1, index2,
-                        second.get(index2).deepCopy()));
+                    diffs.add(new Diff(ADD, path, array1.getIndex(),
+                        array2.getIndex(),
+                        array2.getElement().deepCopy()));
+                    array2.shift();
                     index2++;
                 }
             } else if (node2 != null
@@ -264,12 +274,15 @@ public final class JsonDiff
                 Preconditions.checkArgument(index1 == index2,
                     "expected array indices to be equal for both nodes");
                 generateDiffs(diffs, path.append(index1), node1, node2);
+                array1.shift();
+                array2.shift();
                 index1++;
                 index2++;
             } else {
                 // removed elements
-                diffs.add(new Diff(REMOVE, path, index1, index2,
-                    first.get(index1).deepCopy()));
+                diffs.add(new Diff(REMOVE, path, array1.getIndex(),
+                    array2.getIndex(), array1.getElement().deepCopy()));
+                array1.shift();
                 index1++;
             }
         }
