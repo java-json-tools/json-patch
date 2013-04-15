@@ -253,14 +253,12 @@ public final class JsonDiff
             if (EQUIVALENCE.equivalent(node1, node2)) {
                 // common subsequence elements
                 array1.shift();
-                array2.shift();
                 lcsArray.shift();
             } else {
                 // inserted elements
                 diffs.add(Diff.arrayInsert(path, array1, array2));
-                array2.shift();
             }
-
+            array2.shift();
         }
     }
 
