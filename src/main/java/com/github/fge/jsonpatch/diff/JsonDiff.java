@@ -244,22 +244,23 @@ public final class JsonDiff
                 }
             }
             lcsNode = lcsArray.getElement();
-            if (EQUIVALENCE.equivalent(node1, lcsNode)) {
-                if (EQUIVALENCE.equivalent(node1, node2)) {
-                    // common subsequence elements
-                    array1.shift();
-                    array2.shift();
-                    lcsArray.shift();
-                } else {
-                    // inserted elements
-                    diffs.add(Diff.arrayInsert(path, array1, array2));
-                    array2.shift();
-                }
-            }  else {
+            if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
                 // removed elements
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
+                continue;
             }
+            if (EQUIVALENCE.equivalent(node1, node2)) {
+                // common subsequence elements
+                array1.shift();
+                array2.shift();
+                lcsArray.shift();
+            } else {
+                // inserted elements
+                diffs.add(Diff.arrayInsert(path, array1, array2));
+                array2.shift();
+            }
+
         }
     }
 
