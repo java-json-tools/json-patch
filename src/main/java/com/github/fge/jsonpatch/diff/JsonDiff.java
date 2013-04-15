@@ -218,8 +218,6 @@ public final class JsonDiff
             node1 = array1.getElement();
             node2 = array2.getElement();
             if (lcsArray.isEmpty()) {
-                if (node1 == null && node2 == null)
-                    return;
                 if (node1 == null) {
                 /*
                  * Here, the first array has no elements left.
