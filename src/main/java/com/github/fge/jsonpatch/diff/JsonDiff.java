@@ -371,33 +371,13 @@ public final class JsonDiff
              * first LCS array element. Break out of this loop and deal with
              * that.
              */
-            break;
-        }
-
-        /*
-         * If we reach this point, one array has to catch up in order to reach
-         * the first element of the LCS:
-         *
-         * - if the first array has to catch up, it means this array's elements
-         *   have been removed from the second array; generate remove operations
-         *   until an element is reached which matches the target node;
-         * - if the second array has to catch up, it means the first array's
-         *   elements are inserted into the second array.
-         *
-         * In both cases, since there can be more than one step in order to
-         * catch up, we just reuse the boolean variables defined earlier and
-         * loop over them. We are ensured that only one of them will ever
-         * generate a loop anyway.
-         */
-        while (!match1) {
-            diffs.add(Diff.arrayRemove(path, array1, array2));
-            array1.shift();
-            match1 = EQUIVALENCE.equivalent(array1.getElement(), targetNode);
-        }
-        while (!match2) {
-            diffs.add(Diff.arrayInsert(path, array1, array2));
-            array2.shift();
-            match2 = EQUIVALENCE.equivalent(array2.getElement(), targetNode);
+            if (!match1) {
+                diffs.add(Diff.arrayRemove(path, array1, array2));
+                array1.shift();
+            } else { // !match2, as a consequence
+                diffs.add(Diff.arrayInsert(path, array1, array2));
+                array2.shift();
+            }
         }
     }
 }
