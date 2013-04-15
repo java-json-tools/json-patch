@@ -356,7 +356,7 @@ public final class JsonDiff
              *
              * By virtue of using an LCS (and that we didn't reach a situation
              * where either node matches the first element of this LCS), we also
-             * know that  indices in both arrays to be compared are equivalent.
+             * know that indices in both arrays to be compared are equivalent.
              */
             if (nrEquivalences == 0) {
                 generateDiffs(diffs, path.append(array1.getIndex()), node1,
