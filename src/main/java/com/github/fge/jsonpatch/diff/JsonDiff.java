@@ -237,9 +237,14 @@ public final class JsonDiff
                      */
                     removeRemaining(diffs, path, first, index1);
                     break;
+                } else {
+                    // Here we know that the two elements are not null _and_
+                    // that they are different, since we have exhausted the LCS
+                    generateDiffs(diffs, path.append(index1), node1, node2);
+                    index1++;
+                    index2++;
+                    continue;
                 }
-                // FIXME: find last possible case; separate into its own
-                // method
             }
             if (EQUIVALENCE.equivalent(node1, lcsNode)) {
                 if (EQUIVALENCE.equivalent(node1, node2)) {
