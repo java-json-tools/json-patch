@@ -233,7 +233,7 @@ public final class JsonDiff
                      * Here, the second array has no elements left. Also that
                      * is left is therefore removals.
                      */
-                    removeRemaining(diffs, path, first, index1, index2);
+                    removeRemaining(diffs, path, first, index1);
                     break;
                 }
                 // FIXME: find last possible case; separate into its own
@@ -284,8 +284,7 @@ public final class JsonDiff
     }
 
     private static void removeRemaining(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode node1, final int startingIndex,
-        final int index2)
+        final JsonPointer path, final JsonNode node1, final int startingIndex)
     {
         final int size = node1.size();
 
@@ -294,7 +293,7 @@ public final class JsonDiff
 
         for (int index = startingIndex; index < size; index++) {
             node = node1.get(index).deepCopy();
-            diff = new Diff(REMOVE, path, index, index2, node);
+            diff = new Diff(REMOVE, path, startingIndex, startingIndex, node);
             diffs.add(diff);
         }
     }
