@@ -211,6 +211,9 @@ public final class JsonDiff
         JsonNode node2;
         JsonNode lcsNode;
 
+        if (!lcsArray.isEmpty())
+            preLCS(diffs, path, lcsArray, array1, array2);
+
         while (!array1.isEmpty() || !array2.isEmpty()) {
             node1 = array1.getElement();
             node2 = array2.getElement();
@@ -254,13 +257,7 @@ public final class JsonDiff
                     diffs.add(Diff.arrayInsert(path, array1, array2));
                     array2.shift();
                 }
-            } else if (!EQUIVALENCE.equivalent(node2, lcsNode)) {
-                // generate diffs for or replaced elements
-                generateDiffs(diffs, path.append(array1.getIndex()), node1,
-                    node2);
-                array1.shift();
-                array2.shift();
-            } else {
+            }  else {
                 // removed elements
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
@@ -295,6 +292,112 @@ public final class JsonDiff
             array.shift();
             diff = Diff.arrayRemove(path, startingIndex, node);
             diffs.add(diff);
+        }
+    }
+
+    /*
+     * First method entered. It is run under the condition that LCS is not
+     * empty.
+     *
+     * Since there is at least one element in the LCS, it means that neither
+     * array1 nor array2 are empty either.
+     *
+     * This function will therefore run until the elements extracted from both
+     * arrays are equivalent to the first element of the LCS. On exit, we are
+     * guaranteed that all three arrays (LCS, array1, array2) still have
+     * elements left.
+     */
+    private static void preLCS(final List<Diff> diffs, final JsonPointer path,
+        final IndexedJsonArray lcs, final IndexedJsonArray array1,
+        final IndexedJsonArray array2)
+    {
+        /*
+         * This is our sentinel: if nodes from both the first array and the
+         * second array are equivalent to this done, we are done.
+         */
+        final JsonNode targetNode = lcs.getElement();
+
+        /*
+         *Those two variables hold nodes for the first and second array in the
+         * main loop. Matching booleans tell whether each node is considered
+         * equivalent to the target node.
+         */
+        JsonNode node1;
+        boolean match1;
+        JsonNode node2;
+        boolean match2;
+
+        /*
+         * This records the number of equivalences between the LCS node and
+         * nodes from array1 and array2.
+         */
+        int nrEquivalences;
+
+        while (true) {
+            nrEquivalences = 0;
+            node1 = array1.getElement();
+            match1 = EQUIVALENCE.equivalent(targetNode, node1);
+            node2 = array2.getElement();
+            match2 = EQUIVALENCE.equivalent(targetNode, node2);
+            if (match1)
+                nrEquivalences++;
+            if (match2)
+                nrEquivalences++;
+            /*
+             * If both node1 and node2 are equivalent to the target LCS node,
+             * we are done; this is our exit condition.
+             */
+            if (nrEquivalences == 2)
+                return;
+            /*
+             * If none of them are equivalent to the LCS node, compute diffs
+             * in first array so that the element in this array's index be
+             * transformed into the matching element in the second array.
+             *
+             * By virtue of using an LCS (and that we didn't reach a situation
+             * where either node matches the first element of this LCS), we also
+             * know that  indices in both arrays to be compared are equivalent.
+             */
+            if (nrEquivalences == 0) {
+                generateDiffs(diffs, path.append(array1.getIndex()), node1,
+                    node2);
+                array1.shift();
+                array2.shift();
+                continue;
+            }
+            /*
+             * If we reach this point it means nrEquivalences is 1. Which means
+             * one of the two arrays has to play catchup in order to reach the
+             * first LCS array element. Break out of this loop and deal with
+             * that.
+             */
+            break;
+        }
+
+        /*
+         * If we reach this point, one array has to catch up in order to reach
+         * the first element of the LCS:
+         *
+         * - if the first array has to catch up, it means this array's elements
+         *   have been removed from the second array; generate remove operations
+         *   until an element is reached which matches the target node;
+         * - if the second array has to catch up, it means the first array's
+         *   elements are inserted into the second array.
+         *
+         * In both cases, since there can be more than one step in order to
+         * catch up, we just reuse the boolean variables defined earlier and
+         * loop over them. We are ensured that only one of them will ever
+         * generate a loop anyway.
+         */
+        while (!match1) {
+            diffs.add(Diff.arrayRemove(path, array1, array2));
+            array1.shift();
+            match1 = EQUIVALENCE.equivalent(array1.getElement(), targetNode);
+        }
+        while (!match2) {
+            diffs.add(Diff.arrayInsert(path, array1, array2));
+            array2.shift();
+            match2 = EQUIVALENCE.equivalent(array2.getElement(), targetNode);
         }
     }
 }
