@@ -126,7 +126,7 @@ public final class JsonDiff
         final NodeType firstType = NodeType.getNodeType(first);
         final NodeType secondType = NodeType.getNodeType(second);
         if (firstType != secondType || !first.isContainerNode()) {
-            diffs.add(new Diff(REPLACE, path, second.deepCopy()));
+            diffs.add(Diff.simpleDiff(REPLACE, path, second));
             return;
         }
 
@@ -166,15 +166,15 @@ public final class JsonDiff
         fields = Lists.newArrayList(inSecond);
         fields.removeAll(inFirst);
         for (final String added: fields)
-            diffs.add(new Diff(ADD, path.append(added),
-                    second.get(added).deepCopy()));
+            diffs.add(Diff.simpleDiff(ADD, path.append(added),
+                second.get(added)));
 
         // removed fields
         fields = Lists.newArrayList(inFirst);
         fields.removeAll(inSecond);
         for (final String removed: fields)
-            diffs.add(new Diff(REMOVE, path.append(removed),
-                first.get(removed).deepCopy()));
+            diffs.add(Diff.simpleDiff(REMOVE, path.append(removed),
+                first.get(removed)));
 
         // recursively generate diffs for fields in both objects
         fields = Lists.newArrayList(inFirst);

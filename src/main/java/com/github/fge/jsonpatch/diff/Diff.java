@@ -39,7 +39,13 @@ final class Diff
     Diff pairedDiff;
     boolean firstOfPair;
 
-    Diff(final DiffOperation operation, final JsonPointer path,
+    static Diff simpleDiff(final DiffOperation operation,
+        final JsonPointer path, final JsonNode value)
+    {
+        return new Diff(operation, path, value.deepCopy());
+    }
+
+    private Diff(final DiffOperation operation, final JsonPointer path,
         final JsonNode value)
     {
         this.operation = operation;
