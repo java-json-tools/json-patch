@@ -26,7 +26,6 @@ import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.google.common.base.Equivalence;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -208,9 +207,6 @@ public final class JsonDiff
         final IndexedJsonArray array2 = new IndexedJsonArray(second);
         final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
 
-        int index1 = 0;
-        int index2 = 0;
-
         JsonNode node1;
         JsonNode node2;
         JsonNode lcsNode;
@@ -243,8 +239,6 @@ public final class JsonDiff
                         node2);
                     array1.shift();
                     array2.shift();
-                    index1++;
-                    index2++;
                     continue;
                 }
             }
@@ -255,31 +249,23 @@ public final class JsonDiff
                     array1.shift();
                     array2.shift();
                     lcsArray.shift();
-                    index1++;
-                    index2++;
                 } else {
                     // inserted elements
-                    diffs.add(new Diff(ADD, path, array1.getIndex(),
-                        array2.getIndex(), array2.getElement().deepCopy()));
+                    diffs.add(Diff.arrayInsert(path, array1, array2));
                     array2.shift();
-                    index2++;
                 }
             } else if (node2 != null
                 && !EQUIVALENCE.equivalent(node2, lcsNode)) {
                 // generate diffs for or replaced elements
-                Preconditions.checkArgument(index1 == index2,
-                    "expected array indices to be equal for both nodes");
-                generateDiffs(diffs, path.append(index1), node1, node2);
+                generateDiffs(diffs, path.append(array1.getIndex()), node1,
+                    node2);
                 array1.shift();
                 array2.shift();
-                index1++;
-                index2++;
             } else {
                 // removed elements
                 diffs.add(new Diff(REMOVE, path, array1.getIndex(),
                     array2.getIndex(), array1.getElement().deepCopy()));
                 array1.shift();
-                index1++;
             }
         }
     }
@@ -293,7 +279,7 @@ public final class JsonDiff
         while (!array.isEmpty()) {
             node = array.getElement().deepCopy();
             array.shift();
-            diff = new Diff(ADD, path, -1, -1, node);
+            diff = Diff.arrayAdd(path, node);
             diffs.add(diff);
         }
     }
@@ -309,7 +295,7 @@ public final class JsonDiff
         while (!array.isEmpty()) {
             node = array.getElement();
             array.shift();
-            diff = new Diff(REMOVE, path, startingIndex, startingIndex, node);
+            diff = Diff.arrayRemove(path, startingIndex, node);
             diffs.add(diff);
         }
     }
