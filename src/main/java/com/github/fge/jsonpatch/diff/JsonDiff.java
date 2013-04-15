@@ -366,10 +366,13 @@ public final class JsonDiff
                 continue;
             }
             /*
-             * If we reach this point it means nrEquivalences is 1. Which means
-             * one of the two arrays has to play catchup in order to reach the
-             * first LCS array element. Break out of this loop and deal with
-             * that.
+             * If we reach this point, one array has to catch up in order to
+             * reach the first element of the LCS
+             *
+             * - if the first array has to catch up, it means this array's
+             *   element has been removed from the second array;
+             * - if the second array has to catch up, it means the first array's
+             *   element is being inserted into the second array.
              */
             if (!match1) {
                 diffs.add(Diff.arrayRemove(path, array1, array2));
