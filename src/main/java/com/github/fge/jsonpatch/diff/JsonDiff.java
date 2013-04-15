@@ -220,6 +220,8 @@ public final class JsonDiff
             node2 = second.get(index2);
             lcsNode = lcsIndex < lcsSize ? lcs.get(lcsIndex) : null;
             if (lcsNode == null) { // LCS is now empty
+                if (node1 == null && node2 == null)
+                    return;
                 if (node1 == null) {
                 /*
                  * Here, the first array has no elements left.
@@ -296,5 +298,37 @@ public final class JsonDiff
             diff = new Diff(REMOVE, path, startingIndex, startingIndex, node);
             diffs.add(diff);
         }
+    }
+
+    // Note: offset is the same at the end of the LCS
+    private static void postLCS(final List<Diff> diffs, final JsonPointer path,
+        final JsonNode node1, final JsonNode node2, final int offset)
+    {
+        final int size1 = node1.size();
+        final int size2 = node2.size();
+        final int limit = Math.min(size1, size2) - offset;
+        final int minSize = Math.min(size1, size2);
+
+        int index = offset;
+
+        /*
+         * Here, we have replacements only
+         */
+        while (index < minSize) {
+            generateDiffs(diffs, path.append(index), node1.get(index),
+                node2.get(index));
+            index++;
+        }
+
+        /*
+         * Now, either we have exhausted node1 or exhausted node2.
+         *
+         * If we have exhausted node2, we need to generate removals. If we have
+         * exhausted node1, we need to generate additions.
+         */
+        if (index < size2)
+            addRemaining(diffs, path, node2, index);
+        else
+            removeRemaining(diffs, path, node1, index);
     }
 }
