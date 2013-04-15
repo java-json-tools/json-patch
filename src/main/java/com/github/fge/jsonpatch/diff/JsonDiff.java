@@ -227,14 +227,14 @@ public final class JsonDiff
                  *
                  * This means all that remains is additions to the second array.
                  */
-                    addRemaining(diffs, path, second, array2.getIndex());
+                    addRemaining(diffs, path, array2);
                     break;
                 } else if (node2 == null) {
                     /*
                      * Here, the second array has no elements left. Also that
                      * is left is therefore removals.
                      */
-                    removeRemaining(diffs, path, first, array1.getIndex());
+                    removeRemaining(diffs, path, array1);
                     break;
                 } else {
                     // Here we know that the two elements are not null _and_
@@ -260,8 +260,7 @@ public final class JsonDiff
                 } else {
                     // inserted elements
                     diffs.add(new Diff(ADD, path, array1.getIndex(),
-                        array2.getIndex(),
-                        array2.getElement().deepCopy()));
+                        array2.getIndex(), array2.getElement().deepCopy()));
                     array2.shift();
                     index2++;
                 }
@@ -286,30 +285,30 @@ public final class JsonDiff
     }
 
     private static void addRemaining(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode node2, final int startingIndex)
+        final JsonPointer path, final IndexedJsonArray array)
     {
-        final int size = node2.size();
-
         Diff diff;
         JsonNode node;
 
-        for (int index = startingIndex; index < size; index++) {
-            node = node2.get(index).deepCopy();
+        while (!array.isEmpty()) {
+            node = array.getElement().deepCopy();
+            array.shift();
             diff = new Diff(ADD, path, -1, -1, node);
             diffs.add(diff);
         }
     }
 
     private static void removeRemaining(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode node1, final int startingIndex)
+        final JsonPointer path, final IndexedJsonArray array)
     {
-        final int size = node1.size();
+        final int startingIndex = array.getIndex();
 
         Diff diff;
         JsonNode node;
 
-        for (int index = startingIndex; index < size; index++) {
-            node = node1.get(index).deepCopy();
+        while (!array.isEmpty()) {
+            node = array.getElement();
+            array.shift();
             diff = new Diff(REMOVE, path, startingIndex, startingIndex, node);
             diffs.add(diff);
         }
