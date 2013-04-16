@@ -74,18 +74,18 @@ public final class JsonDiff
     }
 
     /**
-     * Generate a JSON patch for transforming the first node into the second
+     * Generate a JSON patch for transforming the source node into the target
      * node
      *
-     * @param first the node to be patched
-     * @param second the expected result after applying the patch
+     * @param source the node to be patched
+     * @param target the expected result after applying the patch
      * @return the patch as a {@link JsonNode}
      */
-    public static JsonNode asJson(final JsonNode first, final JsonNode second)
+    public static JsonNode asJson(final JsonNode source, final JsonNode target)
     {
         // recursively compute node diffs
         final List<Diff> diffs = Lists.newArrayList();
-        generateDiffs(diffs, JsonPointer.empty(), first, second);
+        generateDiffs(diffs, JsonPointer.empty(), source, target);
 
         // factorize diffs to optimize patch operations
         DiffFactorizer.factorizeDiffs(diffs);
@@ -98,20 +98,20 @@ public final class JsonDiff
     }
 
     /**
-     * Generate differences between first and second nodes.
+     * Generate differences between source and target node.
      *
-     * @param diffs returned ordered differences
-     * @param path common parent path for both nodes
-     * @param first first node to compare
-     * @param second second node to compare
+     * @param diffs list of differences (in order)
+     * @param path parent path for both nodes
+     * @param source source node
+     * @param target target node
      */
     private static void generateDiffs(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode first, final JsonNode second)
+        final JsonPointer path, final JsonNode source, final JsonNode target)
     {
         /*
          * If both nodes are equivalent, there is nothing to do
          */
-        if (EQUIVALENCE.equivalent(first, second))
+        if (EQUIVALENCE.equivalent(source, target))
             return;
 
         /*
@@ -122,10 +122,10 @@ public final class JsonDiff
          * - they are the same type, but are not containers (ie, they are
          *   neither objects nor arrays).
          */
-        final NodeType firstType = NodeType.getNodeType(first);
-        final NodeType secondType = NodeType.getNodeType(second);
-        if (firstType != secondType || !first.isContainerNode()) {
-            diffs.add(Diff.simpleDiff(REPLACE, path, second));
+        final NodeType sourceType = NodeType.getNodeType(source);
+        final NodeType targetType = NodeType.getNodeType(target);
+        if (sourceType != targetType || !source.isContainerNode()) {
+            diffs.add(Diff.simpleDiff(REPLACE, path, target));
             return;
         }
 
@@ -134,10 +134,10 @@ public final class JsonDiff
          * appropriate diff generation methods.
          */
 
-        if (firstType == NodeType.OBJECT)
-            generateObjectDiffs(diffs, path, first, second);
+        if (sourceType == NodeType.OBJECT)
+            generateObjectDiffs(diffs, path, source, target);
         else // array
-            generateArrayDiffs(diffs, path, first, second);
+            generateArrayDiffs(diffs, path, source, target);
     }
 
     /**
@@ -146,41 +146,38 @@ public final class JsonDiff
      * <p>Differences are generated in the following order: added members,
      * removed members, modified members.</p>
      *
-     * @param diffs returned ordered differences
+     * @param diffs list of differences (modified)
      * @param path parent path common to both nodes
-     * @param first first object node to compare
-     * @param second second object node to compare
+     * @param source node to patch
+     * @param target node to attain
      */
     private static void generateObjectDiffs(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode first, final JsonNode second)
+        final JsonPointer path, final JsonNode source, final JsonNode target)
     {
         // compare different objects fieldwise in predictable order;
         // maintaining order is cosmetic, but facilitates test construction
-        final List<String> inFirst = Lists.newArrayList(first.fieldNames());
-        final List<String> inSecond = Lists.newArrayList(second.fieldNames());
+        final List<String> inFirst = Lists.newArrayList(source.fieldNames());
+        final List<String> inSecond = Lists.newArrayList(target.fieldNames());
 
         List<String> fields;
 
         // added fields
         fields = Lists.newArrayList(inSecond);
         fields.removeAll(inFirst);
-        for (final String added: fields)
-            diffs.add(Diff.simpleDiff(ADD, path.append(added),
-                second.get(added)));
+        for (final String s: fields)
+            diffs.add(Diff.simpleDiff(ADD, path.append(s), target.get(s)));
 
         // removed fields
         fields = Lists.newArrayList(inFirst);
         fields.removeAll(inSecond);
-        for (final String removed: fields)
-            diffs.add(Diff.simpleDiff(REMOVE, path.append(removed),
-                first.get(removed)));
+        for (final String s: fields)
+            diffs.add(Diff.simpleDiff(REMOVE, path.append(s), source.get(s)));
 
         // recursively generate diffs for fields in both objects
         fields = Lists.newArrayList(inFirst);
         fields.retainAll(inSecond);
-        for (final String common: fields)
-            generateDiffs(diffs, path.append(common), first.get(common),
-                    second.get(common));
+        for (final String s: fields)
+            generateDiffs(diffs, path.append(s), source.get(s), target.get(s));
     }
 
     /**
@@ -189,41 +186,41 @@ public final class JsonDiff
      * <p>Differences are generated in order by comparing elements against the
      * longest common subsequence of elements in both arrays.</p>
      *
-     * @param diffs returned ordered differences
+     * @param diffs list of differences (modified)
      * @param path parent pointer of both array nodes
-     * @param first first array node to compare
-     * @param second second array node to compare
+     * @param source array node to be patched
+     * @param target target node after patching
      *
      * @see LCS#getLCS(JsonNode, JsonNode)
      */
     private static void generateArrayDiffs(final List<Diff> diffs,
-        final JsonPointer path, final JsonNode first, final JsonNode second)
+        final JsonPointer path, final JsonNode source, final JsonNode target)
     {
         // compare array elements linearly using longest common subsequence
         // algorithm applied to the array elements
-        final List<JsonNode> lcs = LCS.getLCS(first, second);
+        final List<JsonNode> lcs = LCS.getLCS(source, target);
 
-        final IndexedJsonArray array1 = new IndexedJsonArray(first);
-        final IndexedJsonArray array2 = new IndexedJsonArray(second);
+        final IndexedJsonArray src = new IndexedJsonArray(source);
+        final IndexedJsonArray dst = new IndexedJsonArray(target);
         final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
 
-        preLCS(diffs, path, lcsArray, array1, array2);
-        inLCS(diffs, path, lcsArray, array1, array2);
-        postLCS(diffs, path, array1, array2);
+        preLCS(diffs, path, lcsArray, src, dst);
+        inLCS(diffs, path, lcsArray, src, dst);
+        postLCS(diffs, path, src, dst);
     }
 
     /*
      * First method entered when computing array diffs. It will exit early if
      * the LCS is empty.
      *
-     * If the LCS is not empty, it means that both array1 and  array2 have at
-     * least one element left. In such a situation, this method will run until
-     * elements extracted from both arrays are equivalent to the first element
-     * of the LCS.
+     * If the LCS is not empty, it means that both the source and target arrays
+     * have at least one element left. In such a situation, this method will run
+     * until elements extracted from both arrays are equivalent to the first
+     * element of the LCS.
      */
     private static void preLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray lcs, final IndexedJsonArray array1,
-        final IndexedJsonArray array2)
+        final IndexedJsonArray lcs, final IndexedJsonArray source,
+        final IndexedJsonArray target)
     {
         if (lcs.isEmpty())
             return;
@@ -237,12 +234,12 @@ public final class JsonDiff
          * Those two variables hold nodes for the first and second array in the
          * main loop.
          */
-        JsonNode node1;
-        JsonNode node2;
+        JsonNode srcNode;
+        JsonNode dstNode;
 
         /*
          * This records the number of equivalences between the LCS node and
-         * nodes from array1 and array2.
+         * nodes from the source and target arrays.
          */
         int nrEquivalences;
 
@@ -251,15 +248,15 @@ public final class JsonDiff
              * At each step, we reset the number of equivalences to 0.
              */
             nrEquivalences = 0;
-            node1 = array1.getElement();
-            node2 = array2.getElement();
-            if (EQUIVALENCE.equivalent(sentinel, node1))
+            srcNode = source.getElement();
+            dstNode = target.getElement();
+            if (EQUIVALENCE.equivalent(sentinel, srcNode))
                 nrEquivalences++;
-            if (EQUIVALENCE.equivalent(sentinel, node2))
+            if (EQUIVALENCE.equivalent(sentinel, dstNode))
                 nrEquivalences++;
             /*
-             * If both node1 and node2 are equivalent to our sentinel, we are
-             * done; this is our exit condition.
+             * If both srcNode and dstNode are equivalent to our sentinel, we
+             * are done; this is our exit condition.
              */
             if (nrEquivalences == 2)
                 return;
@@ -273,13 +270,13 @@ public final class JsonDiff
              * array is equivalent to the first element of the LCS (our
              * sentinel), a consequence is that indices in both arrays are
              * equal. In the path below, we could have equally used the index
-             * from array2.
+             * from the target array.
              */
             if (nrEquivalences == 0) {
-                generateDiffs(diffs, path.append(array1.getIndex()), node1,
-                    node2);
-                array1.shift();
-                array2.shift();
+                generateDiffs(diffs, path.append(source.getIndex()), srcNode,
+                    dstNode);
+                source.shift();
+                target.shift();
                 continue;
             }
             /*
@@ -291,12 +288,12 @@ public final class JsonDiff
              * - if the second array has to catch up, it means the first array's
              *   element is being inserted into the second array.
              */
-            if (!EQUIVALENCE.equivalent(sentinel, node1)) {
-                diffs.add(Diff.arrayRemove(path, array1, array2));
-                array1.shift();
+            if (!EQUIVALENCE.equivalent(sentinel, srcNode)) {
+                diffs.add(Diff.arrayRemove(path, source, target));
+                source.shift();
             } else { // !match2, as a consequence, since match is exclusive
-                diffs.add(Diff.arrayInsert(path, array1, array2));
-                array2.shift();
+                diffs.add(Diff.arrayInsert(path, source, target));
+                target.shift();
             }
         }
     }
@@ -309,74 +306,73 @@ public final class JsonDiff
      * (and, obviously enough, one element left in the LCS).
      */
     private static void inLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray lcsArray, final IndexedJsonArray array1,
-        final IndexedJsonArray array2)
+        final IndexedJsonArray lcsArray, final IndexedJsonArray source,
+        final IndexedJsonArray target)
     {
-        JsonNode node1;
-        JsonNode node2;
+        JsonNode sourceNode;
+        JsonNode targetNode;
         JsonNode lcsNode;
 
         while (!lcsArray.isEmpty()) {
-            node1 = array1.getElement();
-            node2 = array2.getElement();
+            sourceNode = source.getElement();
+            targetNode = target.getElement();
             lcsNode = lcsArray.getElement();
-            if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
+            if (!EQUIVALENCE.equivalent(sourceNode, lcsNode)) {
                 /*
-                 * At this point, the first element of array1 (the array which
-                 * needs to be patched so that it become array2) has failed to
-                 * "reach" a matching element in array2.
+                 * At this point, the first element of our source array (which
+                 * needs to be patched so that it become the target array) has
+                 * failed to "reach" a matching element in the target array.
                  *
                  * Such an element therefore needs to be removed from the
-                 * patched node. We also need to shift array1, and restart the
-                 * loop.
+                 * target node. We also need to shift the source array and
+                 * restart the loop.
                  */
-                diffs.add(Diff.arrayRemove(path, array1, array2));
-                array1.shift();
+                diffs.add(Diff.arrayRemove(path, source, target));
+                source.shift();
                 continue;
             }
             /*
              * When we arrive here, we know that the element extracted from the
-             * first array is equivalent to the LCS element.
+             * source array is equivalent to the LCS element.
              *
-             * Note that from this point on, whatever node2 (ie, the element
-             * extracted from array2) is, we need to shift array2; but in the
-             * event where the nodes from the first and second array differ, we
-             * must first insert the element found in array2 into the patched
-             * node. This is why we need to postpone array2 shifting.
+             * Note that from this point on, whatever targetNode is, we need to
+             * shift our target array; but in the event where the nodes from the
+             * source and target array differ, we must first insert the element
+             * found in the target into the patched node. This is why we need
+             * to postpone the shift of the target array.
              */
-            if (EQUIVALENCE.equivalent(node1, node2)) {
+            if (EQUIVALENCE.equivalent(sourceNode, targetNode)) {
                 /*
                  * When we enter here, we know that the element extracted from
-                 * the second array is equivalent to the LCS element; but it is
-                 * also equivalent to the node extracted from the first array.
+                 * the target array is equivalent to the LCS element; but it is
+                 * also equivalent to the node extracted from the source array.
                  *
                  * We therefore have a common "LCS subsequence" element: what we
-                 * need to do here is to shift elements of all three indexed
-                 * arrays (array1, array2, lcsArray).
+                 * need to do here is to shift elements of all arrays (source,
+                 * target, lcsArray).
                  *
-                 * Note that, as mentioned above, shifting of array2 is
-                 * postponed.
+                 * Note that, as mentioned above, shifting of the target array
+                 * is postponed.
                  */
-                array1.shift();
+                source.shift();
                 lcsArray.shift();
             } else {
                 /*
                  * When we enter here, we know that:
                  *
-                 * - the first element is equivalent to the LCS node;
-                 * - the second node is NOT equivalent to the LCS node.
+                 * - the source element is equivalent to the LCS element;
+                 * - the target element is NOT equivalent to the LCS element.
                  *
                  * This means that we need to _insert_ the element from the
-                 * second array into the patched node, and advance the second
-                 * array only. But since it is always done anyway, we need not
-                 * worry about it at this point.
+                 * target array into the patched node, and advance the target
+                 * array only. But see above (and below).
                  */
-                diffs.add(Diff.arrayInsert(path, array1, array2));
+                diffs.add(Diff.arrayInsert(path, source, target));
             }
             /*
-             * Shift/advance the second array, see above
+             * Shift/advance the target array; always performed, see above
              */
-            array2.shift();
+            target.shift();
         }
     }
 
@@ -384,7 +380,7 @@ public final class JsonDiff
      * This function is run once the LCS has been exhausted.
      *
      * Since the LCS has been exhausted, it means that for whatever nodes node1
-     * and node2 extracted from array1 and array2, they can never be equal.
+     * and node2 extracted from source and target, they can never be equal.
      *
      * The algorithm is therefore as follows:
      *
@@ -400,19 +396,19 @@ public final class JsonDiff
      * results.
      */
     private static void postLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray array1, final IndexedJsonArray array2)
+        final IndexedJsonArray source, final IndexedJsonArray target)
     {
-        JsonNode node1, node2;
+        JsonNode src, dst;
 
-        while (!(array1.isEmpty() || array2.isEmpty())) {
-            node1 = array1.getElement();
-            node2 = array2.getElement();
-            generateDiffs(diffs, path.append(array1.getIndex()), node1, node2);
-            array1.shift();
-            array2.shift();
+        while (!(source.isEmpty() || target.isEmpty())) {
+            src = source.getElement();
+            dst = target.getElement();
+            generateDiffs(diffs, path.append(source.getIndex()), src, dst);
+            source.shift();
+            target.shift();
         }
-        addRemaining(diffs, path, array2);
-        removeRemaining(diffs, path, array1);
+        addRemaining(diffs, path, target);
+        removeRemaining(diffs, path, source);
     }
 
     private static void addRemaining(final List<Diff> diffs,
