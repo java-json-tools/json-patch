@@ -417,9 +417,9 @@ public final class JsonDiff
 
         while (!array.isEmpty()) {
             node = array.getElement().deepCopy();
-            array.shift();
             diff = Diff.arrayAdd(path, node);
             diffs.add(diff);
+            array.shift();
         }
     }
 
@@ -433,10 +433,9 @@ public final class JsonDiff
 
         while (!array.isEmpty()) {
             node = array.getElement();
-            array.shift();
             diff = Diff.arrayRemove(path, startingIndex, node);
             diffs.add(diff);
+            array.shift();
         }
     }
-
 }
