@@ -213,16 +213,13 @@ public final class JsonDiff
     }
 
     /*
-     * First method entered. It is run under the condition that LCS is not
-     * empty.
+     * First method entered when computing array diffs. It will exit early if
+     * the LCS is empty.
      *
-     * Since there is at least one element in the LCS, it means that neither
-     * array1 nor array2 are empty either.
-     *
-     * This function will therefore run until the elements extracted from both
-     * arrays are equivalent to the first element of the LCS. On exit, we are
-     * guaranteed that all three arrays (LCS, array1, array2) still have
-     * elements left.
+     * If the LCS is not empty, it means that both array1 and  array2 have at
+     * least one element left. In such a situation, this method will run
+     * until elements extracted from both arrays are equivalent to the first
+     * element of the LCS.
      */
     private static void preLCS(final List<Diff> diffs, final JsonPointer path,
         final IndexedJsonArray lcs, final IndexedJsonArray array1,
@@ -234,12 +231,12 @@ public final class JsonDiff
          * This is our sentinel: if nodes from both the first array and the
          * second array are equivalent to this done, we are done.
          */
-        final JsonNode targetNode = lcs.getElement();
+        final JsonNode sentinel = lcs.getElement();
 
         /*
-         *Those two variables hold nodes for the first and second array in the
+         * Those two variables hold nodes for the first and second array in the
          * main loop. Matching booleans tell whether each node is considered
-         * equivalent to the target node.
+         * equivalent to the sentinel.
          */
         JsonNode node1;
         boolean match1;
@@ -255,16 +252,16 @@ public final class JsonDiff
         while (true) {
             nrEquivalences = 0;
             node1 = array1.getElement();
-            match1 = EQUIVALENCE.equivalent(targetNode, node1);
+            match1 = EQUIVALENCE.equivalent(sentinel, node1);
             node2 = array2.getElement();
-            match2 = EQUIVALENCE.equivalent(targetNode, node2);
+            match2 = EQUIVALENCE.equivalent(sentinel, node2);
             if (match1)
                 nrEquivalences++;
             if (match2)
                 nrEquivalences++;
             /*
-             * If both node1 and node2 are equivalent to the target LCS node,
-             * we are done; this is our exit condition.
+             * If both node1 and node2 are equivalent to our sentinel, we are
+             * done; this is our exit condition.
              */
             if (nrEquivalences == 2)
                 return;
@@ -273,9 +270,11 @@ public final class JsonDiff
              * in first array so that the element in this array's index be
              * transformed into the matching element in the second array.
              *
-             * By virtue of using an LCS (and that we didn't reach a situation
-             * where either node matches the first element of this LCS), we also
-             * know that indices in both arrays to be compared are equivalent.
+             * Note that since we are using an LCS, and no element of either
+             * array is equivalent to the first element of the LCS (our
+             * sentinel), a consequence is that indices in both arrays are
+             * equal. In the path below, we could have equally used the index
+             * from array2.
              */
             if (nrEquivalences == 0) {
                 generateDiffs(diffs, path.append(array1.getIndex()), node1,
@@ -286,7 +285,7 @@ public final class JsonDiff
             }
             /*
              * If we reach this point, one array has to catch up in order to
-             * reach the first element of the LCS
+             * reach the first element of the LCS. The logic is as follows:
              *
              * - if the first array has to catch up, it means this array's
              *   element has been removed from the second array;
