@@ -341,6 +341,12 @@ public final class JsonDiff
             /*
              * When we arrive here, we know that the element extracted from the
              * first array is equivalent to the LCS element.
+             *
+             * Note that from this point on, whatever node2 (ie, the element
+             * extracted from array2) is, we need to shift array2; but in the
+             * event where the nodes from the first and second array differ, we
+             * must first insert the element found in array2 into the patched
+             * node. This is why we need to postpone array2 shifting.
              */
             if (EQUIVALENCE.equivalent(node1, node2)) {
                 /*
