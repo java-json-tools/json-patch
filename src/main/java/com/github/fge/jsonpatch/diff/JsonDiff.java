@@ -207,18 +207,22 @@ public final class JsonDiff
         final IndexedJsonArray array2 = new IndexedJsonArray(second);
         final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
 
+        preLCS(diffs, path, lcsArray, array1, array2);
+        inLCS(diffs, path, array1, array2, lcsArray);
+        postLCS(diffs, path, array1, array2);
+    }
+
+    private static void inLCS(final List<Diff> diffs, final JsonPointer path,
+        final IndexedJsonArray array1, final IndexedJsonArray array2,
+        final IndexedJsonArray lcsArray)
+    {
         JsonNode node1;
         JsonNode node2;
         JsonNode lcsNode;
 
-        if (!lcsArray.isEmpty())
-            preLCS(diffs, path, lcsArray, array1, array2);
-
-        while (!array1.isEmpty() || !array2.isEmpty()) {
-            if (lcsArray.isEmpty()) {
-                postLCS(diffs, path, array1, array2);
-                break;
-            }
+        while (!lcsArray.isEmpty()) {
+            if (array1.isEmpty() && array2.isEmpty())
+                return;
             node1 = array1.getElement();
             node2 = array2.getElement();
             lcsNode = lcsArray.getElement();
@@ -286,6 +290,8 @@ public final class JsonDiff
         final IndexedJsonArray lcs, final IndexedJsonArray array1,
         final IndexedJsonArray array2)
     {
+        if (lcs.isEmpty())
+            return;
         /*
          * This is our sentinel: if nodes from both the first array and the
          * second array are equivalent to this done, we are done.
