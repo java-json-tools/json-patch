@@ -257,8 +257,6 @@ final class DiffFactorizer
     private static int adjustFirstArrayIndex(final List<Diff> advancedArrayRemoves,
         final JsonPointer arrayPath, final int arrayIndex)
     {
-        if (arrayIndex == -1)
-            return arrayIndex;
         // adjust remove index for operations on arrays with
         // matching advanced array removes: for each advanced
         // remove, decrement the index assuming remove will have
