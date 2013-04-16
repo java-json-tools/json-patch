@@ -208,7 +208,7 @@ public final class JsonDiff
         final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
 
         preLCS(diffs, path, lcsArray, array1, array2);
-        inLCS(diffs, path, array1, array2, lcsArray);
+        inLCS(diffs, path, lcsArray, array1, array2);
         postLCS(diffs, path, array1, array2);
     }
 
@@ -311,8 +311,8 @@ public final class JsonDiff
      * (and, obviously enough, one element left in the LCS).
      */
     private static void inLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray array1, final IndexedJsonArray array2,
-        final IndexedJsonArray lcsArray)
+        final IndexedJsonArray lcsArray, final IndexedJsonArray array1,
+        final IndexedJsonArray array2)
     {
         JsonNode node1;
         JsonNode node2;
