@@ -212,68 +212,6 @@ public final class JsonDiff
         postLCS(diffs, path, array1, array2);
     }
 
-    private static void inLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray array1, final IndexedJsonArray array2,
-        final IndexedJsonArray lcsArray)
-    {
-        JsonNode node1;
-        JsonNode node2;
-        JsonNode lcsNode;
-
-        while (!lcsArray.isEmpty()) {
-            if (array1.isEmpty() && array2.isEmpty())
-                return;
-            node1 = array1.getElement();
-            node2 = array2.getElement();
-            lcsNode = lcsArray.getElement();
-            if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
-                // removed elements
-                diffs.add(Diff.arrayRemove(path, array1, array2));
-                array1.shift();
-                continue;
-            }
-            if (EQUIVALENCE.equivalent(node1, node2)) {
-                // common subsequence elements
-                array1.shift();
-                lcsArray.shift();
-            } else {
-                // inserted elements
-                diffs.add(Diff.arrayInsert(path, array1, array2));
-            }
-            array2.shift();
-        }
-    }
-
-    private static void addRemaining(final List<Diff> diffs,
-        final JsonPointer path, final IndexedJsonArray array)
-    {
-        Diff diff;
-        JsonNode node;
-
-        while (!array.isEmpty()) {
-            node = array.getElement().deepCopy();
-            array.shift();
-            diff = Diff.arrayAdd(path, node);
-            diffs.add(diff);
-        }
-    }
-
-    private static void removeRemaining(final List<Diff> diffs,
-        final JsonPointer path, final IndexedJsonArray array)
-    {
-        final int startingIndex = array.getIndex();
-
-        Diff diff;
-        JsonNode node;
-
-        while (!array.isEmpty()) {
-            node = array.getElement();
-            array.shift();
-            diff = Diff.arrayRemove(path, startingIndex, node);
-            diffs.add(diff);
-        }
-    }
-
     /*
      * First method entered. It is run under the condition that LCS is not
      * empty.
@@ -366,6 +304,43 @@ public final class JsonDiff
     }
 
     /*
+     * This method is called after preLCS(). Its role is to deplete the LCS.
+     *
+     * One particularity of using LCS is that as long as the LCS is not empty,
+     * we can be sure that there is at least one element left in both arrays
+     * (and, obviously enough, one element left in the LCS).
+     */
+    private static void inLCS(final List<Diff> diffs, final JsonPointer path,
+        final IndexedJsonArray array1, final IndexedJsonArray array2,
+        final IndexedJsonArray lcsArray)
+    {
+        JsonNode node1;
+        JsonNode node2;
+        JsonNode lcsNode;
+
+        while (!lcsArray.isEmpty()) {
+            node1 = array1.getElement();
+            node2 = array2.getElement();
+            lcsNode = lcsArray.getElement();
+            if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
+                // removed elements
+                diffs.add(Diff.arrayRemove(path, array1, array2));
+                array1.shift();
+                continue;
+            }
+            if (EQUIVALENCE.equivalent(node1, node2)) {
+                // common subsequence elements
+                array1.shift();
+                lcsArray.shift();
+            } else {
+                // inserted elements
+                diffs.add(Diff.arrayInsert(path, array1, array2));
+            }
+            array2.shift();
+        }
+    }
+
+    /*
      * This function is run once the LCS has been exhausted.
      *
      * Since the LCS has been exhausted, it means that for whatever nodes node1
@@ -396,4 +371,35 @@ public final class JsonDiff
         addRemaining(diffs, path, array2);
         removeRemaining(diffs, path, array1);
     }
+
+    private static void addRemaining(final List<Diff> diffs,
+        final JsonPointer path, final IndexedJsonArray array)
+    {
+        Diff diff;
+        JsonNode node;
+
+        while (!array.isEmpty()) {
+            node = array.getElement().deepCopy();
+            array.shift();
+            diff = Diff.arrayAdd(path, node);
+            diffs.add(diff);
+        }
+    }
+
+    private static void removeRemaining(final List<Diff> diffs,
+        final JsonPointer path, final IndexedJsonArray array)
+    {
+        final int startingIndex = array.getIndex();
+
+        Diff diff;
+        JsonNode node;
+
+        while (!array.isEmpty()) {
+            node = array.getElement();
+            array.shift();
+            diff = Diff.arrayRemove(path, startingIndex, node);
+            diffs.add(diff);
+        }
+    }
+
 }
