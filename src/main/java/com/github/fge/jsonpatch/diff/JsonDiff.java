@@ -218,30 +218,8 @@ public final class JsonDiff
             node1 = array1.getElement();
             node2 = array2.getElement();
             if (lcsArray.isEmpty()) {
-                if (node1 == null) {
-                /*
-                 * Here, the first array has no elements left.
-                 *
-                 * This means all that remains is additions to the second array.
-                 */
-                    addRemaining(diffs, path, array2);
-                    break;
-                } else if (node2 == null) {
-                    /*
-                     * Here, the second array has no elements left. Also that
-                     * is left is therefore removals.
-                     */
-                    removeRemaining(diffs, path, array1);
-                    break;
-                } else {
-                    // Here we know that the two elements are not null _and_
-                    // that they are different, since we have exhausted the LCS
-                    generateDiffs(diffs, path.append(array1.getIndex()), node1,
-                        node2);
-                    array1.shift();
-                    array2.shift();
-                    continue;
-                }
+                postLCS(diffs, path, array1, array2);
+                break;
             }
             lcsNode = lcsArray.getElement();
             if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
@@ -379,5 +357,37 @@ public final class JsonDiff
                 array2.shift();
             }
         }
+    }
+
+    /*
+     * This function is run once the LCS has been exhausted.
+     *
+     * Since the LCS has been exhausted, it means that for whatever nodes node1
+     * and node2 extracted from array1 and array2, they can never be equal.
+     *
+     * The algorithm is therefore as follows:
+     *
+     * - as long as both are not empty, grab both elements from both arrays and
+     *   generate diff operations on them recursively;
+     * - when we are out of this loop, add any elements remaining in the second
+     *   array (if any), and remove any elements remaining in the first array
+     *  (if any).
+     *
+     * Note that at the second step, only one will ever be true.
+     */
+    private static void postLCS(final List<Diff> diffs, final JsonPointer path,
+        final IndexedJsonArray array1, final IndexedJsonArray array2)
+    {
+        JsonNode node1, node2;
+
+        while (!(array1.isEmpty() || array2.isEmpty())) {
+            node1 = array1.getElement();
+            node2 = array2.getElement();
+            generateDiffs(diffs, path.append(array1.getIndex()), node1, node2);
+            array1.shift();
+            array2.shift();
+        }
+        addRemaining(diffs, path, array2);
+        removeRemaining(diffs, path, array1);
     }
 }
