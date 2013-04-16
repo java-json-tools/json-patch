@@ -311,62 +311,51 @@ public final class JsonDiff
         JsonNode targetNode;
         JsonNode lcsNode;
 
+        boolean sourceMatch;
+        boolean targetMatch;
+
         while (!lcs.isEmpty()) {
             sourceNode = source.getElement();
             targetNode = target.getElement();
             lcsNode = lcs.getElement();
-            if (!EQUIVALENCE.equivalent(sourceNode, lcsNode)) {
+            sourceMatch = EQUIVALENCE.equivalent(sourceNode, lcsNode);
+            targetMatch = EQUIVALENCE.equivalent(targetNode, lcsNode);
+
+            if (!sourceMatch) {
                 /*
                  * At this point, the first element of our source array has
                  * failed to "reach" a matching element in the target array.
                  *
                  * Such an element therefore needs to be removed from the target
-                 * array. We also need to shift the source array and restart the
-                 * loop.
+                 * array. We therefore generate a "remove event", shift the
+                 * source array and restart the loop.
                  */
                 diffs.add(Diff.arrayRemove(path, source, target));
                 source.shift();
                 continue;
             }
             /*
-             * When we arrive here, we know that the element extracted from the
-             * source array is equivalent to the LCS element.
+             * When we reach this point, we know that the element extracted
+             * from the source array is equivalent to the LCS element.
              *
              * Note that from this point on, whatever the target element is, we
-             * need to shift our target array; but in the event where the nodes
-             * from the source and target array differ, we must first insert the
-             * element found in the target into the patched node. This is why we
-             * need to postpone the shift of the target array.
+             * need to shift our target array; there are two different scenarios
+             * we must account for:
+             *
+             * - if the target element is equivalent to the LCS element, we have
+             *   a common subsequence element (remember that the source element
+             *   is also equivalent to this same LCS element at this point); no
+             *   mutation of the target array takes place; we must therefore
+             *   shift all three arrays (source, target, LCS);
+             * - otherwise (target element is not equivalent to the LCS
+             *   element), we need to emit an insertion event of the target
+             *   element, and advance the target array only.
              */
-            if (EQUIVALENCE.equivalent(sourceNode, targetNode)) {
-                /*
-                 * When we enter here, we know that the element extracted from
-                 * the target array is equivalent to the LCS element; but it is
-                 * also equivalent to the node extracted from the source array.
-                 *
-                 * We therefore have a common "LCS subsequence" element: what we
-                 * need to do here is to shift elements of all arrays (source,
-                 * target, lcs).
-                 *
-                 * Note that, as mentioned above, shifting of the target array
-                 * is postponed.
-                 */
+            if (targetMatch) {
                 source.shift();
                 lcs.shift();
-            } else {
-                /*
-                 * When we enter here, we know that:
-                 *
-                 * - the source element is equivalent to the LCS element;
-                 * - the target element is NOT equivalent to the LCS element.
-                 *
-                 * This means that we need to _insert_ the element from the
-                 * target array into the patched node, and advance the target
-                 * array only. We also need to shift the target array index by
-                 * one, which is done below.
-                 */
+            } else
                 diffs.add(Diff.arrayInsert(path, source, target));
-            }
             /*
              * Shift/advance the target array; always performed, see above
              */
