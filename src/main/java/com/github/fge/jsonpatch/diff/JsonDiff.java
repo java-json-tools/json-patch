@@ -229,7 +229,7 @@ public final class JsonDiff
             return;
         /*
          * This is our sentinel: if nodes from both the first array and the
-         * second array are equivalent to this done, we are done.
+         * second array are equivalent to this node, we are done.
          */
         final JsonNode sentinel = lcs.getElement();
 
