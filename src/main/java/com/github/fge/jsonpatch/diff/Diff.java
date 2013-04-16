@@ -45,11 +45,19 @@ final class Diff
         return new Diff(operation, path, value.deepCopy());
     }
 
-    static Diff arrayRemove(final JsonPointer basePath, final int removalIndex,
+    /*
+     * "Stateless" removal of a given node from an array given a base path (the
+     * immediate parent of an array) and an array index; as the name suggests,
+     * this factory method is called only when a node is removed from the tail
+     * of a target array; in other words, the source node has extra elements,
+     * and the only relevant information for generating the removal operation is
+     * the index in the source array.
+     */
+    static Diff tailArrayRemove(final JsonPointer basePath, final int index,
         final JsonNode victim)
     {
-        return new Diff(DiffOperation.REMOVE, basePath, removalIndex,
-            removalIndex, victim.deepCopy());
+        return new Diff(DiffOperation.REMOVE, basePath, index, index,
+            victim.deepCopy());
     }
 
     /*

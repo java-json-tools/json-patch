@@ -422,7 +422,7 @@ public final class JsonDiff
 
         while (!array.isEmpty()) {
             node = array.getElement();
-            diff = Diff.arrayRemove(path, startingIndex, node);
+            diff = Diff.tailArrayRemove(path, startingIndex, node);
             diffs.add(diff);
             array.shift();
         }
