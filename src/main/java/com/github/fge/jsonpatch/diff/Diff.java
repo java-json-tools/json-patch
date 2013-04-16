@@ -52,12 +52,21 @@ final class Diff
             removalIndex, victim.deepCopy());
     }
 
+    /*
+     * FIXME: in both usages of this function, array1 is shifted; but we do not
+     * do that here: doing it would hide an essential piece of information to
+     * the caller.
+     *
+     * In other words, there is some embarrassing entanglement here which needs
+     * to be understood and "decorrelated".
+     */
     static Diff arrayRemove(final JsonPointer basePath,
         final IndexedJsonArray array1, final IndexedJsonArray array2)
     {
         return new Diff(DiffOperation.REMOVE, basePath, array1.getIndex(),
             array2.getIndex(), array1.getElement().deepCopy());
     }
+
     static Diff arrayAdd(final JsonPointer basePath, final JsonNode node)
     {
         return new Diff(DiffOperation.ADD, basePath, -1, -1, node.deepCopy());
