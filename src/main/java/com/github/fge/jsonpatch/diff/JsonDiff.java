@@ -354,7 +354,10 @@ public final class JsonDiff
      *   array (if any), and remove any elements remaining in the first array
      *  (if any).
      *
-     * Note that at the second step, only one will ever be true.
+     * Note that at the second step, only one of the two input arrays will ever
+     * have any elements left; it is therefore safe to call the appropriate
+     * functions for _both_ possibilities since only one will ever produce any
+     * results.
      */
     private static void postLCS(final List<Diff> diffs, final JsonPointer path,
         final IndexedJsonArray array1, final IndexedJsonArray array2)
