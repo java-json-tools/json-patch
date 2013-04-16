@@ -217,9 +217,9 @@ public final class JsonDiff
      * the LCS is empty.
      *
      * If the LCS is not empty, it means that both array1 and  array2 have at
-     * least one element left. In such a situation, this method will run
-     * until elements extracted from both arrays are equivalent to the first
-     * element of the LCS.
+     * least one element left. In such a situation, this method will run until
+     * elements extracted from both arrays are equivalent to the first element
+     * of the LCS.
      */
     private static void preLCS(final List<Diff> diffs, final JsonPointer path,
         final IndexedJsonArray lcs, final IndexedJsonArray array1,
@@ -235,13 +235,10 @@ public final class JsonDiff
 
         /*
          * Those two variables hold nodes for the first and second array in the
-         * main loop. Matching booleans tell whether each node is considered
-         * equivalent to the sentinel.
+         * main loop.
          */
         JsonNode node1;
-        boolean match1;
         JsonNode node2;
-        boolean match2;
 
         /*
          * This records the number of equivalences between the LCS node and
@@ -250,14 +247,15 @@ public final class JsonDiff
         int nrEquivalences;
 
         while (true) {
+            /*
+             * At each step, we reset the number of equivalences to 0.
+             */
             nrEquivalences = 0;
             node1 = array1.getElement();
-            match1 = EQUIVALENCE.equivalent(sentinel, node1);
             node2 = array2.getElement();
-            match2 = EQUIVALENCE.equivalent(sentinel, node2);
-            if (match1)
+            if (EQUIVALENCE.equivalent(sentinel, node1))
                 nrEquivalences++;
-            if (match2)
+            if (EQUIVALENCE.equivalent(sentinel, node2))
                 nrEquivalences++;
             /*
              * If both node1 and node2 are equivalent to our sentinel, we are
@@ -268,7 +266,8 @@ public final class JsonDiff
             /*
              * If none of them are equivalent to the LCS node, compute diffs
              * in first array so that the element in this array's index be
-             * transformed into the matching element in the second array.
+             * transformed into the matching element in the second array; then
+             * restart the loop.
              *
              * Note that since we are using an LCS, and no element of either
              * array is equivalent to the first element of the LCS (our
@@ -292,7 +291,7 @@ public final class JsonDiff
              * - if the second array has to catch up, it means the first array's
              *   element is being inserted into the second array.
              */
-            if (!match1) {
+            if (!EQUIVALENCE.equivalent(sentinel, node1)) {
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
             } else { // !match2, as a consequence, since match is exclusive
@@ -327,11 +326,9 @@ public final class JsonDiff
                  * needs to be patched so that it become array2) has failed to
                  * "reach" a matching element in array2.
                  *
-                 * Such an element therefore needs to be removed from array1.
-                 * One consequence is that we need to shift the first array
-                 * by one element before entering the loop again. And since
-                 * this is a "terminal" condition for this iteration of the
-                 * loop, we have to go over it again; hence the "continue".
+                 * Such an element therefore needs to be removed from the
+                 * patched node. We also need to shift array1, and restart the
+                 * loop.
                  */
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
@@ -349,28 +346,36 @@ public final class JsonDiff
              */
             if (EQUIVALENCE.equivalent(node1, node2)) {
                 /*
-                 * And when we enter here, we also know that the element
-                 * extracted from the second array is equivalent to the LCS
-                 * element (and as such, equivalent to the node extracted from
-                 * the first array.
+                 * When we enter here, we know that the element extracted from
+                 * the second array is equivalent to the LCS element; but it is
+                 * also equivalent to the node extracted from the first array.
                  *
-                 * As all three elements are equivalent, all we have to do is to
-                 * shift all three arrays. No patch operations are needed.
+                 * We therefore have a common "LCS subsequence" element: what we
+                 * need to do here is to shift elements of all three indexed
+                 * arrays (array1, array2, lcsArray).
+                 *
+                 * Note that, as mentioned above, shifting of array2 is
+                 * postponed.
                  */
                 array1.shift();
                 lcsArray.shift();
             } else {
                 /*
-                 * Whereas when we enter here, we know that:
+                 * When we enter here, we know that:
                  *
                  * - the first element is equivalent to the LCS node;
                  * - the second node is NOT equivalent to the LCS node.
                  *
-                 * This means that we need to _insert_ this second node into the
-                 * patched node, and advance the second array only.
+                 * This means that we need to _insert_ the element from the
+                 * second array into the patched node, and advance the second
+                 * array only. But since it is always done anyway, we need not
+                 * worry about it at this point.
                  */
                 diffs.add(Diff.arrayInsert(path, array1, array2));
             }
+            /*
+             * Shift/advance the second array, see above
+             */
             array2.shift();
         }
     }
