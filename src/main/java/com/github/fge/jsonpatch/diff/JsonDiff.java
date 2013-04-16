@@ -215,12 +215,12 @@ public final class JsonDiff
             preLCS(diffs, path, lcsArray, array1, array2);
 
         while (!array1.isEmpty() || !array2.isEmpty()) {
-            node1 = array1.getElement();
-            node2 = array2.getElement();
             if (lcsArray.isEmpty()) {
                 postLCS(diffs, path, array1, array2);
                 break;
             }
+            node1 = array1.getElement();
+            node2 = array2.getElement();
             lcsNode = lcsArray.getElement();
             if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
                 // removed elements
