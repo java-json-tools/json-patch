@@ -198,14 +198,12 @@ public final class JsonDiff
     {
         // compare array elements linearly using longest common subsequence
         // algorithm applied to the array elements
-        final List<JsonNode> lcs = LCS.getLCS(source, target);
-
         final IndexedJsonArray src = new IndexedJsonArray(source);
         final IndexedJsonArray dst = new IndexedJsonArray(target);
-        final IndexedJsonArray lcsArray = new IndexedJsonArray(lcs);
+        final IndexedJsonArray lcs = LCS.doLCS(source, target);
 
-        preLCS(diffs, path, lcsArray, src, dst);
-        inLCS(diffs, path, lcsArray, src, dst);
+        preLCS(diffs, path, lcs, src, dst);
+        inLCS(diffs, path, lcs, src, dst);
         postLCS(diffs, path, src, dst);
     }
 
@@ -283,15 +281,15 @@ public final class JsonDiff
              * If we reach this point, one array has to catch up in order to
              * reach the first element of the LCS. The logic is as follows:
              *
-             * - if the first array has to catch up, it means this array's
-             *   element has been removed from the second array;
-             * - if the second array has to catch up, it means the first array's
-             *   element is being inserted into the second array.
+             * - if the source array has to catch up, it means its elements have
+             *   been removed from the target array;
+             * - if the target array has to catch up, it means the source
+             *   array's elements are being inserted into the target array.
              */
             if (!EQUIVALENCE.equivalent(sentinel, srcNode)) {
                 diffs.add(Diff.arrayRemove(path, source, target));
                 source.shift();
-            } else { // !match2, as a consequence, since match is exclusive
+            } else {
                 diffs.add(Diff.arrayInsert(path, source, target));
                 target.shift();
             }
@@ -302,30 +300,29 @@ public final class JsonDiff
      * This method is called after preLCS(). Its role is to deplete the LCS.
      *
      * One particularity of using LCS is that as long as the LCS is not empty,
-     * we can be sure that there is at least one element left in both arrays
-     * (and, obviously enough, one element left in the LCS).
+     * we can be sure that there is at least one element left in both the source
+     * and target array.
      */
     private static void inLCS(final List<Diff> diffs, final JsonPointer path,
-        final IndexedJsonArray lcsArray, final IndexedJsonArray source,
+        final IndexedJsonArray lcs, final IndexedJsonArray source,
         final IndexedJsonArray target)
     {
         JsonNode sourceNode;
         JsonNode targetNode;
         JsonNode lcsNode;
 
-        while (!lcsArray.isEmpty()) {
+        while (!lcs.isEmpty()) {
             sourceNode = source.getElement();
             targetNode = target.getElement();
-            lcsNode = lcsArray.getElement();
+            lcsNode = lcs.getElement();
             if (!EQUIVALENCE.equivalent(sourceNode, lcsNode)) {
                 /*
-                 * At this point, the first element of our source array (which
-                 * needs to be patched so that it become the target array) has
+                 * At this point, the first element of our source array has
                  * failed to "reach" a matching element in the target array.
                  *
-                 * Such an element therefore needs to be removed from the
-                 * target node. We also need to shift the source array and
-                 * restart the loop.
+                 * Such an element therefore needs to be removed from the target
+                 * array. We also need to shift the source array and restart the
+                 * loop.
                  */
                 diffs.add(Diff.arrayRemove(path, source, target));
                 source.shift();
@@ -335,11 +332,11 @@ public final class JsonDiff
              * When we arrive here, we know that the element extracted from the
              * source array is equivalent to the LCS element.
              *
-             * Note that from this point on, whatever targetNode is, we need to
-             * shift our target array; but in the event where the nodes from the
-             * source and target array differ, we must first insert the element
-             * found in the target into the patched node. This is why we need
-             * to postpone the shift of the target array.
+             * Note that from this point on, whatever the target element is, we
+             * need to shift our target array; but in the event where the nodes
+             * from the source and target array differ, we must first insert the
+             * element found in the target into the patched node. This is why we
+             * need to postpone the shift of the target array.
              */
             if (EQUIVALENCE.equivalent(sourceNode, targetNode)) {
                 /*
@@ -349,13 +346,13 @@ public final class JsonDiff
                  *
                  * We therefore have a common "LCS subsequence" element: what we
                  * need to do here is to shift elements of all arrays (source,
-                 * target, lcsArray).
+                 * target, lcs).
                  *
                  * Note that, as mentioned above, shifting of the target array
                  * is postponed.
                  */
                 source.shift();
-                lcsArray.shift();
+                lcs.shift();
             } else {
                 /*
                  * When we enter here, we know that:
@@ -365,7 +362,8 @@ public final class JsonDiff
                  *
                  * This means that we need to _insert_ the element from the
                  * target array into the patched node, and advance the target
-                 * array only. But see above (and below).
+                 * array only. We also need to shift the target array index by
+                 * one, which is done below.
                  */
                 diffs.add(Diff.arrayInsert(path, source, target));
             }

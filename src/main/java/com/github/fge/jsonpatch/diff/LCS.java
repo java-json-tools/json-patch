@@ -20,6 +20,7 @@ package com.github.fge.jsonpatch.diff;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.fge.jackson.JsonNumEquals;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Equivalence;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -60,6 +61,7 @@ final class LCS
      * @param first first array node to compare
      * @param second second array node to compare
      */
+    @VisibleForTesting
     static List<JsonNode> getLCS(final JsonNode first, final JsonNode second)
     {
         Preconditions.checkArgument(first.isArray(),
@@ -87,6 +89,11 @@ final class LCS
             ret.addAll(doLCS(l1, l2));
         ret.addAll(tail);
         return ret;
+    }
+
+    static IndexedJsonArray doLCS(final JsonNode first, final JsonNode second)
+    {
+        return new IndexedJsonArray(getLCS(first, second));
     }
 
     /**
