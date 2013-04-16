@@ -323,17 +323,47 @@ public final class JsonDiff
             node2 = array2.getElement();
             lcsNode = lcsArray.getElement();
             if (!EQUIVALENCE.equivalent(node1, lcsNode)) {
-                // removed elements
+                /*
+                 * At this point, the first element of array1 (the array which
+                 * needs to be patched so that it become array2) has failed to
+                 * "reach" a matching element in array2.
+                 *
+                 * Such an element therefore needs to be removed from array1.
+                 * One consequence is that we need to shift the first array
+                 * by one element before entering the loop again. And since
+                 * this is a "terminal" condition for this iteration of the
+                 * loop, we have to go over it again; hence the "continue".
+                 */
                 diffs.add(Diff.arrayRemove(path, array1, array2));
                 array1.shift();
                 continue;
             }
+            /*
+             * When we arrive here, we know that the element extracted from the
+             * first array is equivalent to the LCS element.
+             */
             if (EQUIVALENCE.equivalent(node1, node2)) {
-                // common subsequence elements
+                /*
+                 * And when we enter here, we also know that the element
+                 * extracted from the second array is equivalent to the LCS
+                 * element (and as such, equivalent to the node extracted from
+                 * the first array.
+                 *
+                 * As all three elements are equivalent, all we have to do is to
+                 * shift all three arrays. No patch operations are needed.
+                 */
                 array1.shift();
                 lcsArray.shift();
             } else {
-                // inserted elements
+                /*
+                 * Whereas when we enter here, we know that:
+                 *
+                 * - the first element is equivalent to the LCS node;
+                 * - the second node is NOT equivalent to the LCS node.
+                 *
+                 * This means that we need to _insert_ this second node into the
+                 * patched node, and advance the second array only.
+                 */
                 diffs.add(Diff.arrayInsert(path, array1, array2));
             }
             array2.shift();
