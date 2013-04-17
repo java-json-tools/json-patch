@@ -179,62 +179,8 @@ final class DiffFactorizer
              * Turn paired additions into move operations
              */
             if (diff.operation == DiffOperation.ADD
-                && diff.pairedDiff != null) {
-                final Diff removal = diff.pairedDiff;
-                // convert paired add diff into a move
-                diff.operation = DiffOperation.MOVE;
-                diff.pairedDiff = null;
-                /*
-                 * Now, compute the "from" path of this move operation
-                 */
-                if (removal.arrayPath == null) {
-                    /*
-                     * If removal was not from an array, we just need to grab
-                     * the path of this remove operation as the origin path
-                     * for this move
-                     */
-                    diff.fromPath = removal.path;
-                } else if (diff.firstOfPair) {
-                    // move diff is first of pair: remove will be advanced
-                    // and will use original first indexes into array
-                    int removeIndex = removal.firstArrayIndex;
-                    // adjust remove index for operations on arrays with
-                    // matching advanced array removes
-                    removeIndex = adjustFirstArrayIndex(seenAfter,
-                        removal.arrayPath, removeIndex);
-                    // if move diff and remove diff are from the same array,
-                    // remove index must be based on an original index offset
-                    // from the move diff secondary index; this is reflecting
-                    // the fact that array diff operations up to the move diff
-                    // have been applied, but those following the move diff to
-                    // the remove diff have not and thus require original
-                    // first array index adjustments
-                    if (removal.arrayPath.equals(diff.arrayPath)) {
-                        final int moveSecondArrayIndex = adjustSecondArrayIndex(
-                            seenBefore, diff.arrayPath, diff.secondArrayIndex);
-                        final int moveFirstArrayIndex = adjustFirstArrayIndex(
-                            seenAfter, diff.arrayPath, diff.firstArrayIndex);
-                        removeIndex += moveSecondArrayIndex
-                            - moveFirstArrayIndex;
-                    }
-                    // set move diff from using adjusted remove index
-                    diff.fromPath = removal.arrayPath.append(removeIndex);
-                    // track advanced array removes
-                    seenAfter.add(removal);
-                } else {
-                    // remove diff is first of pair: remove has been deferred
-                    // for this move; remove tracked deferred array remove
-                    seenBefore.remove(removal);
-                    // remove can now be moved using second index
-                    int removeIndex = removal.secondArrayIndex;
-                    // adjust remove index for operations on arrays with
-                    // matching deferred array removes
-                    removeIndex = adjustSecondArrayIndex(seenBefore,
-                        removal.arrayPath, removeIndex);
-                    // set move diff from using adjusted remove index
-                    diff.fromPath = removal.arrayPath.append(removeIndex);
-                }
-            }
+                && diff.pairedDiff != null)
+                transformAddition(seenBefore, seenAfter, diff);
 
             // adjust secondary index for all array diffs with matching
             // deferred array removes; note:  all non remove array diffs
@@ -242,6 +188,68 @@ final class DiffFactorizer
             if (diff.arrayPath != null)
                 diff.secondArrayIndex = adjustSecondArrayIndex(seenBefore,
                     diff.arrayPath, diff.secondArrayIndex);
+        }
+    }
+
+    private static void transformAddition(final List<Diff> seenBefore,
+        final List<Diff> seenAfter, final Diff diff)
+    {
+        final Diff removal = diff.pairedDiff;
+        // convert paired add diff into a move
+        diff.operation = DiffOperation.MOVE;
+        diff.pairedDiff = null;
+
+        /*
+         * Compute the "from" path of this move operation
+         */
+        if (removal.arrayPath == null) {
+            /*
+             * If removal was not from an array, we just need to grab
+             * the path of this remove operation as the origin path
+             * for this move
+             */
+            diff.fromPath = removal.path;
+            return;
+        }
+
+        if (diff.firstOfPair) {
+            // move diff is first of pair: remove will be advanced
+            // and will use original first indexes into array
+            int removeIndex = removal.firstArrayIndex;
+            // adjust remove index for operations on arrays with
+            // matching advanced array removes
+            removeIndex = adjustFirstArrayIndex(seenAfter, removal.arrayPath,
+                removeIndex);
+            // if move diff and remove diff are from the same array,
+            // remove index must be based on an original index offset
+            // from the move diff secondary index; this is reflecting
+            // the fact that array diff operations up to the move diff
+            // have been applied, but those following the move diff to
+            // the remove diff have not and thus require original
+            // first array index adjustments
+            if (removal.arrayPath.equals(diff.arrayPath)) {
+                final int moveSecondArrayIndex = adjustSecondArrayIndex(
+                    seenBefore, diff.arrayPath, diff.secondArrayIndex);
+                final int moveFirstArrayIndex = adjustFirstArrayIndex(seenAfter,
+                    diff.arrayPath, diff.firstArrayIndex);
+                removeIndex += moveSecondArrayIndex - moveFirstArrayIndex;
+            }
+            // set move diff from using adjusted remove index
+            diff.fromPath = removal.arrayPath.append(removeIndex);
+            // track advanced array removes
+            seenAfter.add(removal);
+        } else {
+            // remove diff is first of pair: remove has been deferred
+            // for this move; remove tracked deferred array remove
+            seenBefore.remove(removal);
+            // remove can now be moved using second index
+            int removeIndex = removal.secondArrayIndex;
+            // adjust remove index for operations on arrays with
+            // matching deferred array removes
+            removeIndex = adjustSecondArrayIndex(seenBefore, removal.arrayPath,
+                removeIndex);
+            // set move diff from using adjusted remove index
+            diff.fromPath = removal.arrayPath.append(removeIndex);
         }
     }
 
