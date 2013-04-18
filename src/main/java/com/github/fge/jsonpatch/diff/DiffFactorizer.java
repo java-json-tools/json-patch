@@ -160,27 +160,29 @@ final class DiffFactorizer
         while (iterator.hasNext()) {
             diff = iterator.next();
 
-            // remove paired remove diffs
-            if (diff.operation == DiffOperation.REMOVE
-                && diff.pairedDiff != null) {
-                /*
-                 * If removal is from an array and we reach this point, it means
-                 * the matching addition has not been seen yet. Add this diff to
-                 * the relevant list.
-                 */
-                if (diff.arrayPath != null && diff.firstOfPair)
-                    seenBefore.add(diff);
-                // remove paired remove and continue
-                iterator.remove();
-                continue;
+            if (diff.pairedDiff != null) {
+                switch (diff.operation) {
+                    case REMOVE:
+                        /*
+                         * If removal is from an array and we reach this point,
+                         * it means the matching addition has not been seen yet.
+                         * Add this diff to the relevant list.
+                         */
+                        if (diff.arrayPath != null && diff.firstOfPair)
+                            seenBefore.add(diff);
+                        // remove paired remove and continue
+                        iterator.remove();
+                        continue;
+                    case ADD:
+                        /*
+                         * Turn paired additions into move operations
+                         */
+                        transformAddition(seenBefore, seenAfter, diff);
+                    /*
+                     * Note: a paired diff cannot be of any other type
+                     */
+                }
             }
-
-            /*
-             * Turn paired additions into move operations
-             */
-            if (diff.operation == DiffOperation.ADD
-                && diff.pairedDiff != null)
-                transformAddition(seenBefore, seenAfter, diff);
 
             // adjust secondary index for all array diffs with matching
             // deferred array removes; note:  all non remove array diffs
