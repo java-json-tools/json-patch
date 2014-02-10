@@ -18,17 +18,25 @@ below for more information.
 
 ## Versions
 
-The current version is **1.3**.
+The current version is **1.4**.
 
-## Maven artifact
+## Using it in your project
 
-Replace _your-version-here_ with the appropriate version:
+With Gradle:
+
+```groovy
+dependencies {
+    compile(group: "com.github.fge", name: "json-patch", version: "yourVersionHere");
+}
+```
+
+With Maven:
 
 ```xml
 <dependency>
     <groupId>com.github.fge</groupId>
     <artifactId>json-patch</artifactId>
-    <version>your-version-here</version>
+    <version>yourVersionHere</version>
 </dependency>
 ```
 
