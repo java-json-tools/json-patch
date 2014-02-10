@@ -55,7 +55,9 @@ public final class JsonPatchTestSuite
             final JsonNode actual = patch.apply(source);
             if (!valid)
                 fail("Test was expected to fail!!");
-            assertEquals(actual, expected);
+            // Have to do that... TestNG tries to be too smart with regards
+            // to iterable collections...
+            assertTrue(actual.equals(expected));
         } catch (JsonPatchException ignored) {
             if (valid)
                 fail("Test was expected to succeed!!");
