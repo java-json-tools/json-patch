@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.ReferenceToken;
 import com.github.fge.jackson.jsonpointer.TokenResolver;
+import com.google.common.collect.Iterables;
 
 
 /**
@@ -86,22 +87,21 @@ public final class AddOperation
          * Check the parent node: it must at the very least exist for the add
          * operation to work
          */
-        final SplitPointer split = new SplitPointer(path);
-        final JsonNode parentNode = split.parent.path(node);
+        final JsonNode parentNode = path.parent().path(node);
         if (parentNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchParent"));
         return parentNode.isArray()
-            ? addToArray(split, node)
-            : addToObject(split, node);
+            ? addToArray(path, node)
+            : addToObject(path, node);
     }
 
-    private JsonNode addToArray(final SplitPointer split, final JsonNode node)
+    private JsonNode addToArray(final JsonPointer path, final JsonNode node)
         throws JsonPatchException
     {
         final JsonNode ret = node.deepCopy();
-        final ArrayNode target = (ArrayNode) split.parent.get(ret);
-        final TokenResolver<JsonNode> token = split.lastToken;
+        final ArrayNode target = (ArrayNode) path.parent().get(ret);
+        final TokenResolver<JsonNode> token = Iterables.getLast(path);
 
         if (token.getToken().equals(LAST_ARRAY_ELEMENT)) {
             target.add(value);
@@ -125,11 +125,11 @@ public final class AddOperation
         return ret;
     }
 
-    private JsonNode addToObject(final SplitPointer split, final JsonNode node)
+    private JsonNode addToObject(final JsonPointer path, final JsonNode node)
     {
         final JsonNode ret = node.deepCopy();
-        final ObjectNode target = (ObjectNode) split.parent.get(ret);
-        target.put(split.lastToken.getToken().getRaw(), value);
+        final ObjectNode target = (ObjectNode) path.parent().get(ret);
+        target.put(Iterables.getLast(path).getToken().getRaw(), value);
         return ret;
     }
 

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.google.common.collect.Iterables;
 
 /**
  * JSON Path {@code remove} operation
@@ -50,10 +51,9 @@ public final class RemoveOperation
         if (path.path(node).isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
-        final SplitPointer split = new SplitPointer(path);
         final JsonNode ret = node.deepCopy();
-        final JsonNode parentNode = split.parent.get(ret);
-        final String raw = split.lastToken.getToken().getRaw();
+        final JsonNode parentNode = path.parent().get(ret);
+        final String raw = Iterables.getLast(path).getToken().getRaw();
         if (parentNode.isObject())
             ((ObjectNode) parentNode).remove(raw);
         else

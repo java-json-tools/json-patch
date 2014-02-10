@@ -23,10 +23,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jackson.jsonpointer.TokenResolver;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.Iterables;
 
 import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
@@ -91,27 +89,5 @@ public abstract class JsonPatchOperation
     public String toString()
     {
         return "path = \"" + path + '"';
-    }
-
-    /**
-     * Utility class used by some operations to split a JSON Pointer in two
-     *
-     * <p>The two elements are:</p>
-     *
-     * <ul>
-     *     <p>the immediate parent pointer;</p>
-     *     <p>the {@link TokenResolver} for the last reference token.</p>
-     * </ul>
-     */
-    protected static final class SplitPointer
-    {
-        final JsonPointer parent;
-        final TokenResolver<JsonNode> lastToken;
-
-        SplitPointer(final JsonPointer pointer)
-        {
-            lastToken = Iterables.getLast(pointer);
-            parent = pointer.parent();
-        }
     }
 }
