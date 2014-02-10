@@ -3,12 +3,12 @@
         {
             "patch": { "op": "copy", "from": "/a", "path": "/b" },
             "node": {},
-            "message": "NO_SUCH_PATH"
+            "message": "jsonPatch.noSuchPath"
         },
         {
             "patch": { "op": "copy", "from": "/a", "path": "/b/c" },
             "node": { "a": 1 },
-            "message": "NO_SUCH_PARENT"
+            "message": "jsonPatch.noSuchParent"
         }
     ],
     "ops": [

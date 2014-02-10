@@ -62,7 +62,8 @@ public final class ReplaceOperation
          * that there is no such index in the array.
          */
         if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PATH"));
+            throw new JsonPatchException(BUNDLE.getMessage(
+                "jsonPatch.noSuchPath"));
         final JsonNode replacement = value.deepCopy();
         if (path.isEmpty())
             return replacement;

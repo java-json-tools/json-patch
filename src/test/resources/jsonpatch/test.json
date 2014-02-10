@@ -3,17 +3,17 @@
         {
             "patch": { "op": "test", "path": "/x", "value": {} },
             "node": [ 1, 2 ],
-            "message": "NO_SUCH_PATH"
+            "message": "jsonPatch.noSuchPath"
         },
         {
             "patch": { "op": "test", "path": "", "value": true },
             "node": [ 1, 2 ],
-            "message": "VALUE_TEST_FAILURE"
+            "message": "jsonPatch.valueTestFailure"
         },
         {
             "patch": { "op": "test", "path": "/x", "value": -30.000 },
             "node": { "x": -29.020 },
-            "message": "VALUE_TEST_FAILURE"
+            "message": "jsonPatch.valueTestFailure"
         }
     ],
     "ops": [

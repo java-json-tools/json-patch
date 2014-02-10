@@ -79,7 +79,8 @@ public final class MoveOperation
             return node.deepCopy();
         final JsonNode movedNode = from.path(node);
         if (movedNode.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PATH"));
+            throw new JsonPatchException(BUNDLE.getMessage(
+                "jsonPatch.noSuchPath"));
         final JsonPatchOperation remove = new RemoveOperation(from);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));

@@ -121,7 +121,7 @@ public final class JsonPatch
     public static JsonPatch fromJson(final JsonNode node)
         throws IOException
     {
-        BUNDLE.checkNotNull(node, "NULL_INPUT");
+        BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         return JacksonUtils.getReader().withType(JsonPatch.class)
             .readValue(node);
     }
@@ -137,7 +137,7 @@ public final class JsonPatch
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        BUNDLE.checkNotNull(node, "NULL_INPUT");
+        BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         JsonNode ret = node;
         for (final JsonPatchOperation operation: operations)
             ret = operation.apply(ret);

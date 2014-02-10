@@ -58,7 +58,8 @@ public final class JsonPatchTest
             JsonPatch.fromJson(null);
             fail("No exception thrown!!");
         } catch (NullPointerException e) {
-            assertEquals(e.getMessage(), BUNDLE.getMessage("NULL_INPUT"));
+            assertEquals(e.getMessage(), BUNDLE.getMessage(
+                "jsonPatch.nullInput"));
         }
     }
 
@@ -72,7 +73,8 @@ public final class JsonPatchTest
             patch.apply(null);
             fail("No exception thrown!!");
         } catch (NullPointerException e) {
-            assertEquals(e.getMessage(), BUNDLE.getMessage("NULL_INPUT"));
+            assertEquals(e.getMessage(), BUNDLE.getMessage(
+                "jsonPatch.nullInput"));
         }
     }
 

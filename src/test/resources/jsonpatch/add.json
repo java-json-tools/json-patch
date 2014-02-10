@@ -3,22 +3,22 @@
         {
             "patch": { "op": "add", "path": "/a/b/c", "value": 1 },
             "node": { "a": "b" },
-            "message": "NO_SUCH_PARENT"
+            "message": "jsonPatch.noSuchParent"
         },
         {
             "patch": { "op": "add", "path": "/~1", "value": 1 },
             "node": [],
-            "message": "NOT_AN_INDEX"
+            "message": "jsonPatch.notAnIndex"
         },
         {
             "patch": { "op": "add", "path": "/3", "value": 1 },
             "node": [ 1, 2 ],
-            "message": "NO_SUCH_INDEX"
+            "message": "jsonPatch.noSuchIndex"
         },
         {
             "patch": { "op": "add", "path": "/-2", "value": 1 },
             "node": [ 1, 2 ],
-            "message": "NO_SUCH_INDEX"
+            "message": "jsonPatch.noSuchIndex"
         }
     ],
     "ops": [

@@ -89,7 +89,8 @@ public final class AddOperation
         final SplitPointer split = new SplitPointer(path);
         final JsonNode parentNode = split.parent.path(node);
         if (parentNode.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PARENT"));
+            throw new JsonPatchException(BUNDLE.getMessage(
+                "jsonPatch.noSuchParent"));
         return parentNode.isArray()
             ? addToArray(split, node)
             : addToObject(split, node);
@@ -112,11 +113,13 @@ public final class AddOperation
         try {
             index = Integer.parseInt(token.toString());
         } catch (NumberFormatException ignored) {
-            throw new JsonPatchException(BUNDLE.getMessage("NOT_AN_INDEX"));
+            throw new JsonPatchException(BUNDLE.getMessage(
+                "jsonPatch.notAnIndex"));
         }
 
         if (index < 0 || index > size)
-            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_INDEX"));
+            throw new JsonPatchException(BUNDLE.getMessage(
+                "jsonPatch.noSuchIndex"));
 
         target.insert(index, value);
         return ret;

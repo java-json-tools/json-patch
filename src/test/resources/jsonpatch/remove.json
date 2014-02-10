@@ -3,7 +3,7 @@
         {
             "patch": { "op": "remove", "path": "/x/y" },
             "node": { "x": {} },
-            "message": "NO_SUCH_PATH"
+            "message": "jsonPatch.noSuchPath"
         }
     ],
     "ops": [
