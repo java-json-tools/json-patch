@@ -21,8 +21,6 @@ package com.github.fge.jsonpatch;
 public final class JsonPatchMessages
 {
     public static final String NULL_INPUT = "input cannot be null";
-    public static final String NOT_JSON_PATCH
-        = "input is not a valid JSON Patch";
     public static final String NO_SUCH_PARENT
         = "parent of node to add does not exist";
     public static final String NOT_AN_INDEX
