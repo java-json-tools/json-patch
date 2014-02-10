@@ -48,7 +48,7 @@ public final class RemoveOperation
         if (path.isEmpty())
             return MissingNode.getInstance();
         if (path.path(node).isMissingNode())
-            throw new JsonPatchException(JsonPatchMessages.NO_SUCH_PATH);
+            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PATH"));
         final SplitPointer split = new SplitPointer(path);
         final JsonNode ret = node.deepCopy();
         final JsonNode parentNode = split.parent.get(ret);

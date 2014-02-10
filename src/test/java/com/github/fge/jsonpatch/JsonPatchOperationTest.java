@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
@@ -36,8 +38,8 @@ import static org.testng.Assert.*;
 
 public abstract class JsonPatchOperationTest
 {
-    private static final Class<?> MSGCLASS
-        = com.github.fge.jsonpatch.JsonPatchMessages.class;
+    private static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
 
     private static final Equivalence<JsonNode> EQUIVALENCE
         = JsonNumEquals.getInstance();
@@ -69,7 +71,7 @@ public abstract class JsonPatchOperationTest
             list.add(new Object[]{
                 node.get("patch"),
                 node.get("node"),
-                getMessage(node.get("message").textValue())
+                BUNDLE.getMessage(node.get("message").textValue())
             });
 
         return list.iterator();
@@ -119,12 +121,6 @@ public abstract class JsonPatchOperationTest
         if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
             assertNotSame(node, actual,
                 "operation didn't make a copy of the input node");
-    }
-
-    private static String getMessage(final String name)
-        throws NoSuchFieldException, IllegalAccessException
-    {
-        return (String) MSGCLASS.getDeclaredField(name).get(null);
     }
 }
 

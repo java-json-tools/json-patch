@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.TokenResolver;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -58,6 +60,9 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class JsonPatchOperation
 {
+    protected static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
+
     /*
      * Note: no need for a custom deserializer, Jackson will try and find a
      * constructor with a single string argument and use it

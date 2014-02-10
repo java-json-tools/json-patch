@@ -55,7 +55,7 @@ public final class CopyOperation
     {
         final JsonNode dupData = from.path(node).deepCopy();
         if (dupData.isMissingNode())
-            throw new JsonPatchException(JsonPatchMessages.NO_SUCH_PATH);
+            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PATH"));
         return new AddOperation(path, dupData).apply(node);
     }
 

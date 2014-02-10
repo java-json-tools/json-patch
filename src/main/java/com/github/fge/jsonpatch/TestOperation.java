@@ -57,9 +57,9 @@ public final class TestOperation
     {
         final JsonNode tested = path.path(node);
         if (tested.isMissingNode())
-            throw new JsonPatchException(JsonPatchMessages.NO_SUCH_PATH);
+            throw new JsonPatchException(BUNDLE.getMessage("NO_SUCH_PATH"));
         if (!EQUIVALENCE.equivalent(tested, value))
-            throw new JsonPatchException(JsonPatchMessages.VALUE_TEST_FAILURE);
+            throw new JsonPatchException(BUNDLE.getMessage("VALUE_TEST_FAILURE"));
         return node.deepCopy();
     }
 

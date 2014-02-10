@@ -21,14 +21,13 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
 import java.util.List;
-
-import static com.github.fge.jsonpatch.JsonPatchMessages.*;
 
 /**
  * Implementation of JSON Patch
@@ -88,6 +87,9 @@ import static com.github.fge.jsonpatch.JsonPatchMessages.*;
  */
 public final class JsonPatch
 {
+    private static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
+
     /**
      * List of operations
      */
@@ -119,7 +121,7 @@ public final class JsonPatch
     public static JsonPatch fromJson(final JsonNode node)
         throws IOException
     {
-        Preconditions.checkNotNull(node, NULL_INPUT);
+        BUNDLE.checkNotNull(node, "NULL_INPUT");
         return JacksonUtils.getReader().withType(JsonPatch.class)
             .readValue(node);
     }
@@ -135,7 +137,7 @@ public final class JsonPatch
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        Preconditions.checkNotNull(node, NULL_INPUT);
+        BUNDLE.checkNotNull(node, "NULL_INPUT");
         JsonNode ret = node;
         for (final JsonPatchOperation operation: operations)
             ret = operation.apply(ret);

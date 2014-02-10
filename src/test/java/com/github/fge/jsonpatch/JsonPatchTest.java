@@ -21,6 +21,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.collect.ImmutableList;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeMethod;
@@ -28,13 +30,16 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 
-import static com.github.fge.jsonpatch.JsonPatchMessages.*;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
 
 public final class JsonPatchTest
 {
+    private static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
+
     private static final JsonNodeFactory FACTORY = JacksonUtils.nodeFactory();
+
     private JsonPatchOperation op1;
     private JsonPatchOperation op2;
 
@@ -53,7 +58,7 @@ public final class JsonPatchTest
             JsonPatch.fromJson(null);
             fail("No exception thrown!!");
         } catch (NullPointerException e) {
-            assertEquals(e.getMessage(), NULL_INPUT);
+            assertEquals(e.getMessage(), BUNDLE.getMessage("NULL_INPUT"));
         }
     }
 
@@ -67,7 +72,7 @@ public final class JsonPatchTest
             patch.apply(null);
             fail("No exception thrown!!");
         } catch (NullPointerException e) {
-            assertEquals(e.getMessage(), NULL_INPUT);
+            assertEquals(e.getMessage(), BUNDLE.getMessage("NULL_INPUT"));
         }
     }
 
