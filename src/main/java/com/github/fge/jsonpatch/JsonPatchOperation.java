@@ -26,9 +26,7 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.TokenResolver;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.Lists;
-
-import java.util.List;
+import com.google.common.collect.Iterables;
 
 import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
@@ -112,10 +110,8 @@ public abstract class JsonPatchOperation
 
         SplitPointer(final JsonPointer pointer)
         {
-            final List<TokenResolver<JsonNode>> tokens
-                = Lists.newArrayList(pointer);
-            lastToken = tokens.remove(tokens.size() - 1);
-            parent = new JsonPointer(tokens);
+            lastToken = Iterables.getLast(pointer);
+            parent = pointer.parent();
         }
     }
 }
