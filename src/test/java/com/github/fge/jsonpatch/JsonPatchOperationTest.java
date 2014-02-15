@@ -66,7 +66,7 @@ public abstract class JsonPatchOperationTest
 
         for (final JsonNode node: errors)
             list.add(new Object[]{
-                node.get("patch"),
+                node.get("op"),
                 node.get("node"),
                 BUNDLE.getMessage(node.get("message").textValue())
             });
@@ -96,7 +96,7 @@ public abstract class JsonPatchOperationTest
 
         for (final JsonNode node: ops)
             list.add(new Object[]{
-                node.get("patch"),
+                node.get("op"),
                 node.get("node"),
                 node.get("expected")
             });

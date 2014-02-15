@@ -1,39 +1,39 @@
 {
     "errors": [
         {
-            "patch": { "op": "move", "from": "/a", "path": "/a/b" },
+            "op": { "op": "move", "from": "/a", "path": "/a/b" },
             "node": {},
             "message": "jsonPatch.noSuchPath"
         },
         {
-            "patch": { "op": "move", "from": "/a", "path": "/b/c" },
+            "op": { "op": "move", "from": "/a", "path": "/b/c" },
             "node": { "a": "b" },
             "message": "jsonPatch.noSuchParent"
         }
     ],
     "ops": [
         {
-            "patch": { "op": "move", "from": "/x/a", "path": "/x/b" },
+            "op": { "op": "move", "from": "/x/a", "path": "/x/b" },
             "node": { "x": { "a": "helo" } },
             "expected": { "x": { "b": "helo" } }
         },
         {
-            "patch": { "op": "move", "from": "/x/a", "path": "/x/a" },
+            "op": { "op": "move", "from": "/x/a", "path": "/x/a" },
             "node": { "x": { "a": "helo" } },
             "expected": { "x": { "a": "helo" } }
         },
         {
-            "patch": { "op": "move", "from": "/0", "path": "/0/x" },
+            "op": { "op": "move", "from": "/0", "path": "/0/x" },
             "node": [ "victim", {}, {} ],
             "expected": [ { "x": "victim" }, {} ]
         },
         {
-            "patch": { "op": "move", "from": "/0", "path": "/-" },
+            "op": { "op": "move", "from": "/0", "path": "/-" },
             "node": [ 0, 1, 2 ],
             "expected": [ 1, 2, 0 ]
         },
         {
-            "patch": { "op": "move", "from": "/a", "path": "/b/2" },
+            "op": { "op": "move", "from": "/a", "path": "/b/2" },
             "node": { "a": "helo", "b": [ 1, 2, 3, 4 ] },
             "expected": { "b": [ 1, 2, "helo", 3, 4 ] }
         }

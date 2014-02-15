@@ -1,54 +1,54 @@
 {
     "errors": [
         {
-            "patch": { "op": "add", "path": "/a/b/c", "value": 1 },
+            "op": { "op": "add", "path": "/a/b/c", "value": 1 },
             "node": { "a": "b" },
             "message": "jsonPatch.noSuchParent"
         },
         {
-            "patch": { "op": "add", "path": "/~1", "value": 1 },
+            "op": { "op": "add", "path": "/~1", "value": 1 },
             "node": [],
             "message": "jsonPatch.notAnIndex"
         },
         {
-            "patch": { "op": "add", "path": "/3", "value": 1 },
+            "op": { "op": "add", "path": "/3", "value": 1 },
             "node": [ 1, 2 ],
             "message": "jsonPatch.noSuchIndex"
         },
         {
-            "patch": { "op": "add", "path": "/-2", "value": 1 },
+            "op": { "op": "add", "path": "/-2", "value": 1 },
             "node": [ 1, 2 ],
             "message": "jsonPatch.noSuchIndex"
         }
     ],
     "ops": [
         {
-            "patch": { "op": "add", "path": "", "value": null },
+            "op": { "op": "add", "path": "", "value": null },
             "node": {},
             "expected": null
         },
         {
-            "patch": { "op": "add", "path": "/a", "value": "b" },
+            "op": { "op": "add", "path": "/a", "value": "b" },
             "node": {},
             "expected": { "a": "b" }
         },
         {
-            "patch": { "op": "add", "path": "/a", "value": 1 },
+            "op": { "op": "add", "path": "/a", "value": 1 },
             "node": { "a": "b" },
             "expected": { "a": 1 }
         },
         {
-            "patch": { "op": "add", "path": "/array/-", "value": 1 },
+            "op": { "op": "add", "path": "/array/-", "value": 1 },
             "node": { "array": [ 2, null, {}, 1 ] },
             "expected": { "array": [ 2, null, {}, 1, 1 ] }
         },
         {
-            "patch": { "op": "add", "path": "/array/2", "value": "hello" },
+            "op": { "op": "add", "path": "/array/2", "value": "hello" },
             "node": { "array": [ 2, null, {}, 1] },
             "expected": { "array": [ 2, null, "hello", {}, 1 ] }
         },
         {
-            "patch": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "op": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
             "node": {
                 "obj": {
                     "inner": {
@@ -66,7 +66,7 @@
             }
         },
         {
-            "patch": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "op": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
             "node": {
                 "obj": {
                     "inner": {

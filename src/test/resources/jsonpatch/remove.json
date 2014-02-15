@@ -1,24 +1,24 @@
 {
     "errors": [
         {
-            "patch": { "op": "remove", "path": "/x/y" },
+            "op": { "op": "remove", "path": "/x/y" },
             "node": { "x": {} },
             "message": "jsonPatch.noSuchPath"
         }
     ],
     "ops": [
         {
-            "patch": { "op": "remove", "path": "/x/y" },
+            "op": { "op": "remove", "path": "/x/y" },
             "node": { "x": { "a": "b", "y": {} } },
             "expected": { "x": { "a": "b" } }
         },
         {
-            "patch": { "op": "remove", "path": "/0/2" },
+            "op": { "op": "remove", "path": "/0/2" },
             "node": [ [ "a", "b", "c"], "d", "e" ],
             "expected": [ [ "a", "b" ], "d", "e" ]
         },
         {
-            "patch": { "op": "remove", "path": "/x/0" },
+            "op": { "op": "remove", "path": "/x/0" },
             "node": { "x": [ "y", "z" ], "foo": "bar" },
             "expected": { "x": [ "z" ], "foo": "bar" }
         }

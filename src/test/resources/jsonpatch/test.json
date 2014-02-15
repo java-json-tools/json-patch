@@ -1,29 +1,29 @@
 {
     "errors": [
         {
-            "patch": { "op": "test", "path": "/x", "value": {} },
+            "op": { "op": "test", "path": "/x", "value": {} },
             "node": [ 1, 2 ],
             "message": "jsonPatch.noSuchPath"
         },
         {
-            "patch": { "op": "test", "path": "", "value": true },
+            "op": { "op": "test", "path": "", "value": true },
             "node": [ 1, 2 ],
             "message": "jsonPatch.valueTestFailure"
         },
         {
-            "patch": { "op": "test", "path": "/x", "value": -30.000 },
+            "op": { "op": "test", "path": "/x", "value": -30.000 },
             "node": { "x": -29.020 },
             "message": "jsonPatch.valueTestFailure"
         }
     ],
     "ops": [
         {
-            "patch": { "op": "test", "path": "", "value": 1 },
+            "op": { "op": "test", "path": "", "value": 1 },
             "node": 1.00,
             "expected": 1.00
         },
         {
-            "patch": { "op": "test", "path": "/a/1", "value": "hello" },
+            "op": { "op": "test", "path": "/a/1", "value": "hello" },
             "node": { "a": [ null, "hello", "world" ] },
             "expected": { "a": [ null, "hello", "world" ] }
         }
