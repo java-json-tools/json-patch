@@ -26,6 +26,6 @@ public final class TestOperationTest
     public TestOperationTest()
         throws IOException
     {
-        super("test", TestOperation.class);
+        super("test");
     }
 }

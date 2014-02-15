@@ -46,19 +46,16 @@ public abstract class JsonPatchOperationTest
 
     private final JsonNode errors;
     private final JsonNode ops;
-    private final Class<? extends JsonPatchOperation> opClass;
     private final ObjectReader reader;
 
-    protected JsonPatchOperationTest(final String prefix,
-        final Class<? extends JsonPatchOperation> opClass)
+    protected JsonPatchOperationTest(final String prefix)
         throws IOException
     {
         final String resource = "/jsonpatch/" + prefix + ".json";
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
-        this.opClass = opClass;
-        reader = JacksonUtils.getReader().withType(opClass);
+        reader = JacksonUtils.getReader().withType(JsonPatchOperation.class);
     }
 
     @DataProvider
