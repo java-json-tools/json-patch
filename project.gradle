@@ -51,3 +51,4 @@ javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0");
 javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0");
 javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc");
 javadoc.options.links("http://fge.github.io/msg-simple");
+javadoc.options.links("http://fge.github.io/jackson-coreutils");
