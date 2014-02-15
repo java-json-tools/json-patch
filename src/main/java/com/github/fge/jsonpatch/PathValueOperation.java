@@ -19,19 +19,14 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 /**
  * Base class for patch operations taking a value in addition to a path
- *
- * <p>The JSON value is deserialized using {@link JsonNullAwareDeserializer},
- * since a JSON null is a valid value.</p>
  */
 public abstract class PathValueOperation
     extends JsonPatchOperation
 {
-    @JsonDeserialize(using = JsonNullAwareDeserializer.class)
     protected final JsonNode value;
 
     /**
