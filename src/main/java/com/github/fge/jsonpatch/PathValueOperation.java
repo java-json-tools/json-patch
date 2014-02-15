@@ -19,6 +19,7 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 /**
@@ -27,6 +28,7 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 public abstract class PathValueOperation
     extends JsonPatchOperation
 {
+    @JsonSerialize
     protected final JsonNode value;
 
     /**

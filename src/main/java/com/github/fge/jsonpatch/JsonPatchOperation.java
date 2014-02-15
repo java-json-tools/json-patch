@@ -22,7 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.serialize.JsonPointerSerializer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
@@ -63,6 +65,7 @@ public abstract class JsonPatchOperation
      * Note: no need for a custom deserializer, Jackson will try and find a
      * constructor with a single string argument and use it
      */
+    @JsonSerialize(using = JsonPointerSerializer.class)
     protected final JsonPointer path;
 
     /**
