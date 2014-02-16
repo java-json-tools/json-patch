@@ -20,8 +20,8 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jsonpatch.serialize.JsonPointerSerializer;
 
 /**
  * Base class for JSON Patch operations taking two JSON Pointers as arguments
@@ -30,7 +30,7 @@ import com.github.fge.jsonpatch.serialize.JsonPointerSerializer;
 public abstract class DualPathOperation
     extends JsonPatchOperation
 {
-    @JsonSerialize(using = JsonPointerSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     protected final JsonPointer from;
 
     /**
