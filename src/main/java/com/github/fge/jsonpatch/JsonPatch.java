@@ -19,6 +19,7 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
@@ -94,6 +95,12 @@ public final class JsonPatch
      * List of operations
      */
     private final List<JsonPatchOperation> operations;
+
+    @JsonValue
+    private List<JsonPatchOperation> getOperations()
+    {
+        return operations;
+    }
 
     /**
      * Package-visible constructor
