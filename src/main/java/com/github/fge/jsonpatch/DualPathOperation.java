@@ -33,6 +33,12 @@ public abstract class DualPathOperation
     @JsonSerialize(using = JsonPointerSerializer.class)
     protected final JsonPointer from;
 
+    /**
+     * Protected constructor
+     *
+     * @param from source path
+     * @param path destination path
+     */
     protected DualPathOperation(final JsonPointer from,
         final JsonPointer path)
     {
