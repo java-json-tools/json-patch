@@ -19,6 +19,7 @@
 package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonpatch.JsonPatchException;
 
 final class ArrayMergePatch
     extends JsonMergePatch
@@ -33,6 +34,7 @@ final class ArrayMergePatch
 
     @Override
     public JsonNode apply(final JsonNode input)
+        throws JsonPatchException
     {
         return content.deepCopy();
     }

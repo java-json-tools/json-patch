@@ -36,7 +36,8 @@ public abstract class JsonMergePatch
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
-    public abstract JsonNode apply(final JsonNode input);
+    public abstract JsonNode apply(final JsonNode input)
+        throws JsonPatchException;
 
     public static JsonMergePatch fromJson(final JsonNode input)
         throws JsonPatchException
