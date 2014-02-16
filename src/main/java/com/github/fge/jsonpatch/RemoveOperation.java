@@ -20,13 +20,18 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.google.common.collect.Iterables;
+
+import java.io.IOException;
 
 /**
  * JSON Path {@code remove} operation
@@ -34,7 +39,6 @@ import com.google.common.collect.Iterables;
  * <p>This operation only takes one pointer ({@code path}) as an argument. It
  * is an error condition if no JSON value exists at that pointer.</p>
  */
-@JsonPropertyOrder({ "op", "path" })
 public final class RemoveOperation
     extends JsonPatchOperation
 {
@@ -61,6 +65,25 @@ public final class RemoveOperation
         else
             ((ArrayNode) parentNode).remove(Integer.parseInt(raw));
         return ret;
+    }
+
+    @Override
+    public void serialize(final JsonGenerator jgen,
+        final SerializerProvider provider)
+        throws IOException, JsonProcessingException
+    {
+        jgen.writeStartObject();
+        jgen.writeStringField("op", "remove");
+        jgen.writeStringField("path", path.toString());
+        jgen.writeEndObject();
+    }
+
+    @Override
+    public void serializeWithType(final JsonGenerator jgen,
+        final SerializerProvider provider, final TypeSerializer typeSer)
+        throws IOException, JsonProcessingException
+    {
+        serialize(jgen, provider);
     }
 
     @Override

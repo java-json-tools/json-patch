@@ -18,15 +18,19 @@
 
 package com.github.fge.jsonpatch;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+
+import java.io.IOException;
 
 /**
  * Base class for patch operations taking a value in addition to a path
  */
-@JsonPropertyOrder({"op", "path", "value"})
 public abstract class PathValueOperation
     extends JsonPatchOperation
 {
@@ -45,6 +49,27 @@ public abstract class PathValueOperation
     {
         super(op, path);
         this.value = value.deepCopy();
+    }
+
+    @Override
+    public final void serialize(final JsonGenerator jgen,
+        final SerializerProvider provider)
+        throws IOException, JsonProcessingException
+    {
+        jgen.writeStartObject();
+        jgen.writeStringField("op", op);
+        jgen.writeStringField("path", path.toString());
+        jgen.writeFieldName("value");
+        jgen.writeTree(value);
+        jgen.writeEndObject();
+    }
+
+    @Override
+    public final void serializeWithType(final JsonGenerator jgen,
+        final SerializerProvider provider, final TypeSerializer typeSer)
+        throws IOException, JsonProcessingException
+    {
+        serialize(jgen, provider);
     }
 
     @Override

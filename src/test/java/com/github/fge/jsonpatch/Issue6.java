@@ -43,7 +43,11 @@ public final class Issue6
         final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-        final String jsonPatch = "[{\"op\": \"add\", \"path\": \"/foo/bar\", \"value\": \"baz\"}]";
+        final String jsonPatch = "[" +
+            "{\"op\": \"add\", \"path\": \"/foo/bar\", \"value\": \"baz\"}," +
+            "{\"op\": \"remove\", \"path\": \"/foo/crux\", " +
+            "\"value\": \"baz\"}" +
+            "]";
 
         final JsonPatch patch = mapper.readValue(jsonPatch, JsonPatch.class);
 
