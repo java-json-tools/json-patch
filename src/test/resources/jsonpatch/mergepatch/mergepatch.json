@@ -1,0 +1,32 @@
+[
+    {
+        "doc": null,
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    },
+    {
+        "doc": 1,
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    },
+    {
+        "doc": "",
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    },
+    {
+        "doc": true,
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    },
+    {
+        "doc": [ "foo", "bar" ],
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    },
+    {
+        "doc": { "hello": 1 },
+        "patch": [ 1, 2 ],
+        "expected": [ 1, 2 ]
+    }
+]
