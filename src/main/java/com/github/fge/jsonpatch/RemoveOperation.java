@@ -20,6 +20,7 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
@@ -33,6 +34,7 @@ import com.google.common.collect.Iterables;
  * <p>This operation only takes one pointer ({@code path}) as an argument. It
  * is an error condition if no JSON value exists at that pointer.</p>
  */
+@JsonPropertyOrder({ "op", "path" })
 public final class RemoveOperation
     extends JsonPatchOperation
 {
