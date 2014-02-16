@@ -42,7 +42,7 @@ public final class ReplaceOperation
     public ReplaceOperation(@JsonProperty("path") final JsonPointer path,
         @JsonProperty("value") final JsonNode value)
     {
-        super(path, value);
+        super("replace", path, value);
     }
 
     @Override
@@ -76,11 +76,5 @@ public final class ReplaceOperation
         else
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "replace: " + super.toString();
     }
 }

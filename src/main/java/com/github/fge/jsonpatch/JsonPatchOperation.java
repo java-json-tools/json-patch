@@ -61,6 +61,9 @@ public abstract class JsonPatchOperation
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
+    @JsonSerialize
+    protected final String op;
+
     /*
      * Note: no need for a custom deserializer, Jackson will try and find a
      * constructor with a single string argument and use it
@@ -71,10 +74,12 @@ public abstract class JsonPatchOperation
     /**
      * Constructor
      *
+     * @param op the operation name
      * @param path the JSON Pointer for this operation
      */
-    protected JsonPatchOperation(final JsonPointer path)
+    protected JsonPatchOperation(final String op, final JsonPointer path)
     {
+        this.op = op;
         this.path = path;
     }
 
@@ -89,8 +94,5 @@ public abstract class JsonPatchOperation
         throws JsonPatchException;
 
     @Override
-    public String toString()
-    {
-        return "path = \"" + path + '"';
-    }
+    public abstract String toString();
 }

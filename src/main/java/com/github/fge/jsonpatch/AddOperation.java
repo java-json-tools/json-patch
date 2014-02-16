@@ -73,7 +73,7 @@ public final class AddOperation
     public AddOperation(@JsonProperty("path") final JsonPointer path,
         @JsonProperty("value") final JsonNode value)
     {
-        super(path, value);
+        super("add", path, value);
     }
 
     @Override
@@ -131,11 +131,5 @@ public final class AddOperation
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
         target.put(Iterables.getLast(path).getToken().getRaw(), value);
         return ret;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "add: " + super.toString();
     }
 }

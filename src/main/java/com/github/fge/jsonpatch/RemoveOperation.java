@@ -39,7 +39,7 @@ public final class RemoveOperation
     @JsonCreator
     public RemoveOperation(@JsonProperty("path") final JsonPointer path)
     {
-        super(path);
+        super("remove", path);
     }
 
     @Override
@@ -64,6 +64,6 @@ public final class RemoveOperation
     @Override
     public String toString()
     {
-        return "remove: " + super.toString();
+        return "op: " + op + "; path: \"" + path + '"';
     }
 }

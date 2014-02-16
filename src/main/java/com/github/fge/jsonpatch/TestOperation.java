@@ -48,7 +48,7 @@ public final class TestOperation
     public TestOperation(@JsonProperty("path") final JsonPointer path,
         @JsonProperty("value") final JsonNode value)
     {
-        super(path, value);
+        super("test", path, value);
     }
 
     @Override
@@ -63,11 +63,5 @@ public final class TestOperation
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();
-    }
-
-    @Override
-    public String toString()
-    {
-        return "test: " + super.toString();
     }
 }

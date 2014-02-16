@@ -36,18 +36,20 @@ public abstract class PathValueOperation
     /**
      * Protected constructor
      *
-     * @param path the JSON Pointer for this operation
-     * @param value the JSON value for this operation
+     * @param op operation name
+     * @param path affected path
+     * @param value JSON value
      */
-    protected PathValueOperation(final JsonPointer path, final JsonNode value)
+    protected PathValueOperation(final String op, final JsonPointer path,
+        final JsonNode value)
     {
-        super(path);
+        super(op, path);
         this.value = value.deepCopy();
     }
 
     @Override
-    public String toString()
+    public final String toString()
     {
-        return super.toString() + ", value = " + value;
+        return "op: " + op + "; path: \"" + path + "\"; value: " + value;
     }
 }

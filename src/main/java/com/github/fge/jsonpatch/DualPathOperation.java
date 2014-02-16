@@ -36,19 +36,20 @@ public abstract class DualPathOperation
     /**
      * Protected constructor
      *
+     * @param op operation name
      * @param from source path
      * @param path destination path
      */
-    protected DualPathOperation(final JsonPointer from,
+    protected DualPathOperation(final String op, final JsonPointer from,
         final JsonPointer path)
     {
-        super(path);
+        super(op, path);
         this.from = from;
     }
 
     @Override
-    public String toString()
+    public final String toString()
     {
-        return "from = \"" + from + "', " + super.toString();
+        return "op: " + op + "; from: \"" + from + "\"; path: \"" + path + '"';
     }
 }

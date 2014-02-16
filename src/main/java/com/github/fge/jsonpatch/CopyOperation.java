@@ -46,7 +46,7 @@ public final class CopyOperation
     public CopyOperation(@JsonProperty("from") final JsonPointer from,
         @JsonProperty("path") final JsonPointer path)
     {
-        super(from, path);
+        super("copy", from, path);
     }
 
     @Override
@@ -58,11 +58,5 @@ public final class CopyOperation
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
         return new AddOperation(path, dupData).apply(node);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "copy: " + super.toString();
     }
 }

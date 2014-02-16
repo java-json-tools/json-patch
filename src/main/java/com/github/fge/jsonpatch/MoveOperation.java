@@ -68,7 +68,7 @@ public final class MoveOperation
     public MoveOperation(@JsonProperty("from") final JsonPointer from,
         @JsonProperty("path") final JsonPointer path)
     {
-        super(from, path);
+        super("move", from, path);
     }
 
     @Override
@@ -84,11 +84,5 @@ public final class MoveOperation
         final JsonPatchOperation remove = new RemoveOperation(from);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));
-    }
-
-    @Override
-    public String toString()
-    {
-        return "move: " + super.toString();
     }
 }
