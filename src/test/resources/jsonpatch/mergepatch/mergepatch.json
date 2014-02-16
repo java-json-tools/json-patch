@@ -28,5 +28,43 @@
         "doc": { "hello": 1 },
         "patch": [ 1, 2 ],
         "expected": [ 1, 2 ]
+    },
+    {
+        "doc": { "hello": 1 },
+        "patch": { "hello": "world" },
+        "expected": { "hello": "world" }
+    },
+    {
+        "doc": { "a": "b", "c": "d" },
+        "patch": { "a": null },
+        "expected": { "c": "d" }
+    },
+    {
+        "doc": {
+            "title": "Goodbye!",
+            "author" : {
+                "givenName" : "John",
+                "familyName" : "Doe"
+            },
+            "tags":["example","sample"],
+            "content": "This will be unchanged"
+        },
+        "patch": {
+            "title": "Hello!",
+            "phoneNumber": "+01-123-456-7890",
+            "author": {
+                "familyName": null
+            },
+            "tags": ["example"]
+        },
+        "expected": {
+            "title": "Hello!",
+            "author" : {
+                "givenName" : "John"
+            },
+            "tags":["example"],
+            "content": "This will be unchanged",
+            "phoneNumber": "+01-123-456-7890"
+        }
     }
 ]
