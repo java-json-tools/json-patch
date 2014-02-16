@@ -18,6 +18,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
@@ -25,6 +26,7 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 /**
  * Base class for patch operations taking a value in addition to a path
  */
+@JsonPropertyOrder({"op", "path", "value"})
 public abstract class PathValueOperation
     extends JsonPatchOperation
 {

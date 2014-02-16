@@ -18,6 +18,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.serialize.JsonPointerSerializer;
@@ -25,6 +26,7 @@ import com.github.fge.jsonpatch.serialize.JsonPointerSerializer;
 /**
  * Base class for JSON Patch operations taking two JSON Pointers as arguments
  */
+@JsonPropertyOrder({"op", "from", "path"})
 public abstract class DualPathOperation
     extends JsonPatchOperation
 {
