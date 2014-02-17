@@ -26,7 +26,7 @@ import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
 /**
- * Implementation of <a href="http://tools.ietf.org/html/draft-snell-merge-patch-08">JSON merge patch</a>
+ * Implementation of <a href="http://tools.ietf.org/html/draft-ietf-appsawg-json-merge-patch-02">JSON merge patch</a>
  *
  * <p>Unlike JSON Patch, JSON Merge Patch only applies to JSON Objects or JSON
  * arrays.</p>
