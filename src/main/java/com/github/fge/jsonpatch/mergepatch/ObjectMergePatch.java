@@ -89,14 +89,14 @@ final class ObjectMergePatch
         // Finally, if there are members in the patch not present in the input,
         // fill in members
         for (final String key: Sets.difference(fields.keySet(), map.keySet()))
-            map.put(key, fields.get(key));
+            map.put(key, clearNulls(fields.get(key)));
 
         return mapToNode(map);
     }
 
     private static JsonNode mapToNode(final Map<String, JsonNode> map)
     {
-        final ObjectNode ret = JacksonUtils.nodeFactory().objectNode();
+        final ObjectNode ret = FACTORY.objectNode();
         return ret.putAll(map);
     }
 }

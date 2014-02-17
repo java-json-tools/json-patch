@@ -29,13 +29,13 @@ final class ArrayMergePatch
 
     ArrayMergePatch(final JsonNode content)
     {
-        this.content = content;
+        this.content = clearNulls(content);
     }
 
     @Override
     public JsonNode apply(final JsonNode input)
         throws JsonPatchException
     {
-        return content.deepCopy();
+        return content;
     }
 }
