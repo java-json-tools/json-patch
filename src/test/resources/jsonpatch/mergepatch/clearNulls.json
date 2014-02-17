@@ -14,5 +14,13 @@
     {
         "orig": [ 1, 2, null, 3 ],
         "expected": [ 1, 2, 3 ]
+    },
+    {
+        "orig": { "hello": "world", "foo": null },
+        "expected": { "hello": "world" }
+    },
+    {
+        "orig": [ true, { "a": null }, [ 1, null , { "a": "b", "x": null } ] ],
+        "expected": [ true, {}, [ 1, { "a": "b" } ] ]
     }
 ]
