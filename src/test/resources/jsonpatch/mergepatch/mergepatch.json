@@ -66,5 +66,83 @@
             "content": "This will be unchanged",
             "phoneNumber": "+01-123-456-7890"
         }
+    },
+    {
+        "doc": {
+            "a": "b"
+        },
+        "patch": {
+            "a": "c"
+        },
+        "expected": {
+            "a": "c"
+        }
+    },
+    {
+        "doc": {
+            "a": "b"
+        },
+        "patch": {
+            "b": "c"
+        },
+        "expected": {
+            "a": "b",
+            "b": "c"
+        }
+    },
+    {
+        "doc": {
+            "a": "b"
+        },
+        "patch": {
+            "a": null
+        },
+        "expected": {}
+    },
+    {
+        "doc": {
+            "a": "b",
+            "b": "c"
+        },
+        "patch": {
+            "a": null
+        },
+        "expected": {
+            "b": "c"
+        }
+    },
+    {
+        "doc": {"a":["b"]},
+        "patch": { "a": "c" },
+        "expected": { "a": "c" }
+    },
+    {
+        "doc": {
+            "a": "c"
+        },
+        "patch": {
+            "a": ["b"]
+        },
+        "expected": {
+            "a": ["b"]
+        }
+    },
+    {
+        "doc": {
+            "a": {
+                "b": "c"
+            }
+        },
+        "patch": {
+            "a": {
+                "b": "d",
+                "c": null
+            }
+        },
+        "expected": {
+            "a": {
+                "b": "d"
+            }
+        }
     }
 ]
