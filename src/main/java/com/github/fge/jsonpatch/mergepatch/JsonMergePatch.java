@@ -55,6 +55,14 @@ public abstract class JsonMergePatch
 
     protected final JsonNode origPatch;
 
+    /**
+     * Protected constructor
+     *
+     * <p>Only necessary for serialization purposes. The patching process
+     * itself never requires the full node to operate.</p>
+     *
+     * @param node the original patch node
+     */
     protected JsonMergePatch(final JsonNode node)
     {
         origPatch = node;
@@ -74,6 +82,18 @@ public abstract class JsonMergePatch
             : new ObjectMergePatch(input);
     }
 
+    /**
+     * Clear "null values" from a JSON value
+     *
+     * <p>Non container values are unchanged. For arrays, null elements are
+     * removed. From objects, members whose values are null are removed.</p>
+     *
+     * <p>This method is recursive, therefore arrays within objects, or objects
+     * within arrays, or arrays within arrays etc are also affected.</p>
+     *
+     * @param node the original JSON value
+     * @return a JSON value without null values (see description)
+     */
     protected static JsonNode clearNulls(final JsonNode node)
     {
         if (!node.isContainerNode())

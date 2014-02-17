@@ -26,6 +26,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
+/**
+ * Custom {@link JsonDeserializer} for {@link JsonMergePatch} instances
+ *
+ * <p>Unlike "real" JSON Patches (ie, as defined by RFC 6902), JSON merge patch
+ * instances are "free form", they can be either JSON arrays or JSON objects
+ * without any restriction on the contents; only the content itself may guide
+ * the patching process (null elements in arrays, null values in objects).</p>
+ *
+ * <p>Jackson does not provide a deserializer for such a case; we therefore
+ * write our own here.</p>
+ */
 public final class JsonMergePatchDeserializer
     extends JsonDeserializer<JsonMergePatch>
 {
