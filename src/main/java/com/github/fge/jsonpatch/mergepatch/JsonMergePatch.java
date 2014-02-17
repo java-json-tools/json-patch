@@ -18,8 +18,12 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -30,6 +34,7 @@ import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -41,11 +46,19 @@ import java.util.Map;
  */
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
+    implements JsonSerializable
 {
     protected static final JsonNodeFactory FACTORY = JacksonUtils.nodeFactory();
 
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
+
+    protected final JsonNode origPatch;
+
+    protected JsonMergePatch(final JsonNode node)
+    {
+        origPatch = node;
+    }
 
     public abstract JsonNode apply(final JsonNode input)
         throws JsonPatchException;
@@ -99,5 +112,21 @@ public abstract class JsonMergePatch
         }
 
         return ret;
+    }
+
+    @Override
+    public final void serialize(final JsonGenerator jgen,
+        final SerializerProvider provider)
+        throws IOException
+    {
+        jgen.writeTree(origPatch);
+    }
+
+    @Override
+    public final void serializeWithType(final JsonGenerator jgen,
+        final SerializerProvider provider, final TypeSerializer typeSer)
+        throws IOException
+    {
+        serialize(jgen, provider);
     }
 }

@@ -29,6 +29,7 @@ final class ArrayMergePatch
 
     ArrayMergePatch(final JsonNode content)
     {
+        super(content);
         this.content = clearNulls(content);
     }
 

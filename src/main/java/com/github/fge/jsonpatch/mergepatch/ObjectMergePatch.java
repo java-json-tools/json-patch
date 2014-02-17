@@ -41,6 +41,7 @@ final class ObjectMergePatch
 
     ObjectMergePatch(final JsonNode content)
     {
+        super(content);
         fields = JacksonUtils.asMap(content);
         removals = Sets.newHashSet();
 
