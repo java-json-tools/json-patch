@@ -19,6 +19,7 @@
 package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -37,6 +38,7 @@ import java.util.Map;
  * <p>Unlike JSON Patch, JSON Merge Patch only applies to JSON Objects or JSON
  * arrays.</p>
  */
+@JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
 {
     protected static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
