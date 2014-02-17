@@ -107,7 +107,10 @@ public abstract class JsonMergePatch
     {
         final ArrayNode ret = FACTORY.arrayNode();
 
-        // Unclear whether null elements should be removed... Right now they are
+        /*
+         * Cycle through array elements. If the element is a null node itself,
+         * skip it. Otherwise, add a "cleaned up" element to the result.
+         */
         for (final JsonNode element: node)
             if (!element.isNull())
                 ret.add(clearNulls(element));
@@ -124,6 +127,13 @@ public abstract class JsonMergePatch
         Map.Entry<String, JsonNode> entry;
         JsonNode value;
 
+        /*
+         * When faces with an object, cycle through this object's entries.
+         *
+         * If the value of the entry is a JSON null, don't include it in the
+         * result. If not, include a "cleaned up" value for this key instead of
+         * the original element.
+         */
         while (iterator.hasNext()) {
             entry = iterator.next();
             value = entry.getValue();
