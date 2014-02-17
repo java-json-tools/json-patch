@@ -51,7 +51,7 @@ public abstract class JsonMergePatch
         throws JsonPatchException
     {
         BUNDLE.checkNotNull(input, "jsonPatch.nullInput");
-        BUNDLE.checkArgumentFormat(input.isContainerNode(),
+        BUNDLE.checkArgumentPrintf(input.isContainerNode(),
             "mergePatch.notContainer", NodeType.getNodeType(input));
 
         return input.isArray() ? new ArrayMergePatch(input)
