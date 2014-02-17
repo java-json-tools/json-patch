@@ -25,28 +25,43 @@
         "expected": [ 1, 2 ]
     },
     {
-        "doc": { "hello": 1 },
+        "doc": {
+            "hello": 1
+        },
         "patch": [ 1, 2 ],
         "expected": [ 1, 2 ]
     },
     {
-        "doc": { "hello": 1 },
-        "patch": { "hello": "world" },
-        "expected": { "hello": "world" }
+        "doc": {
+            "hello": 1
+        },
+        "patch": {
+            "hello": "world"
+        },
+        "expected": {
+            "hello": "world"
+        }
     },
     {
-        "doc": { "a": "b", "c": "d" },
-        "patch": { "a": null },
-        "expected": { "c": "d" }
+        "doc": {
+            "a": "b",
+            "c": "d"
+        },
+        "patch": {
+            "a": null
+        },
+        "expected": {
+            "c": "d"
+        }
     },
     {
         "doc": {
             "title": "Goodbye!",
-            "author" : {
-                "givenName" : "John",
-                "familyName" : "Doe"
+            "author": {
+                "givenName": "John",
+                "familyName": "Doe"
             },
-            "tags":["example","sample"],
+            "tags": ["example", "sample"],
             "content": "This will be unchanged"
         },
         "patch": {
@@ -59,10 +74,10 @@
         },
         "expected": {
             "title": "Hello!",
-            "author" : {
-                "givenName" : "John"
+            "author": {
+                "givenName": "John"
             },
-            "tags":["example"],
+            "tags": ["example"],
             "content": "This will be unchanged",
             "phoneNumber": "+01-123-456-7890"
         }
@@ -112,9 +127,15 @@
         }
     },
     {
-        "doc": {"a":["b"]},
-        "patch": { "a": "c" },
-        "expected": { "a": "c" }
+        "doc": {
+            "a": ["b"]
+        },
+        "patch": {
+            "a": "c"
+        },
+        "expected": {
+            "a": "c"
+        }
     },
     {
         "doc": {
@@ -192,6 +213,65 @@
         "expected": {
             "e": null,
             "a": 1
+        }
+    },
+    {
+        "doc": {},
+        "patch": {
+            "a": {
+                "bb": {
+                    "ccc": null
+                }
+            }
+        },
+        "expected": {
+            "a": {
+                "bb": {}
+            }
+        }
+    },
+    {
+        "doc": {
+            "a": "foo"
+        },
+        "patch": {
+            "b": [3, null, {
+                "x": null
+            }]
+        },
+        "expected": {
+            "a": "foo",
+            "b": [3, {}]
+        }
+    },
+    {
+        "doc": [1, 2],
+        "patch": [1, null, 3],
+        "expected": [1, 3]
+    },
+    {
+        "doc": [1, 2],
+        "patch": [1, null, 2],
+        "expected": [1, 2]
+    },
+    {
+        "doc": {
+            "a": "b"
+        },
+        "patch": {
+            "a": [
+                {
+                    "z": 1,
+                    "b": null
+                }
+            ]
+        },
+        "expected": {
+            "a": [
+                {
+                    "z": 1
+                }
+            ]
         }
     }
 ]
