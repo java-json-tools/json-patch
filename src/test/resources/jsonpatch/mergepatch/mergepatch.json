@@ -144,5 +144,54 @@
                 "b": "d"
             }
         }
+    },
+    {
+        "doc": {
+            "a": [
+                {
+                    "b": "c"
+                }
+            ]
+        },
+        "patch": {
+            "a": [1]
+        },
+        "expected": {
+            "a": [1]
+        }
+    },
+    {
+        "doc": ["a", "b"],
+        "patch": ["c", "d"],
+        "expected": ["c", "d"]
+    },
+    {
+        "doc": {
+            "a": "b"
+        },
+        "patch": [ "c" ],
+        "expected": [ "c" ]
+    },
+    {
+        "doc": [1, 2],
+        "patch": {
+            "a": "b",
+            "c": null
+        },
+        "expected": {
+            "a": "b"
+        }
+    },
+    {
+        "doc": {
+            "e": null
+        },
+        "patch": {
+            "a": 1
+        },
+        "expected": {
+            "e": null,
+            "a": 1
+        }
     }
 ]
