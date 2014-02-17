@@ -19,11 +19,17 @@
 package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.NodeType;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Implementation of <a href="http://tools.ietf.org/html/draft-ietf-appsawg-json-merge-patch-02">JSON merge patch</a>
@@ -33,6 +39,8 @@ import com.github.fge.msgsimple.load.MessageBundles;
  */
 public abstract class JsonMergePatch
 {
+    protected static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
+
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
@@ -48,5 +56,45 @@ public abstract class JsonMergePatch
 
         return input.isArray() ? new ArrayMergePatch(input)
             : new ObjectMergePatch(input);
+    }
+
+    protected static JsonNode clearNulls(final JsonNode node)
+    {
+        if (!node.isContainerNode())
+            return node;
+
+        return node.isArray() ? clearNullsFromArray(node)
+            : clearNullsFromObject(node);
+    }
+
+    private static JsonNode clearNullsFromArray(final JsonNode node)
+    {
+        final ArrayNode ret = FACTORY.arrayNode();
+
+        // Unclear whether null elements should be removed... Right now they are
+        for (final JsonNode element: node)
+            if (!element.isNull())
+                ret.add(clearNulls(element));
+
+        return ret;
+    }
+
+    private static JsonNode clearNullsFromObject(final JsonNode node)
+    {
+        final ObjectNode ret = FACTORY.objectNode();
+        final Iterator<Map.Entry<String, JsonNode>> iterator
+            = node.fields();
+
+        Map.Entry<String, JsonNode> entry;
+        JsonNode value;
+
+        while (iterator.hasNext()) {
+            entry = iterator.next();
+            value = entry.getValue();
+            if (!value.isNull())
+                ret.put(entry.getKey(), clearNulls(value));
+        }
+
+        return ret;
     }
 }
