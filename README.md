@@ -85,21 +85,30 @@ value is equal.
 
 ### JSON Patch
 
-Both the JSON Patch and data to patch are backed by `JsonNode` instances. As this package depends on
+As of version 1.5, The `JsonPatch` class, which implements JSON Patch, implements full
+serialization/deserialization via Jackson (2.x, NOT 1.9.x). You can therefore use an `ObjectMapper`
+to read a patch from any source `ObjectMapper` allows. For instance:
+
+```
+final ObjectMapper mapper = new ObjectMapper();
+final InputStream in = ...;
+final JsonPatch patch = mapper.readValue(in, JsonPatch.class);
+```
+
+Alternatively (with 1.5 or older), you can use `JsonNode` instances. As this package depends on
 [jackson-coreutils](https://github.com/fge/jackson-coreutils), you can use this package's
 `JsonLoader` to load your JSON documents.
 
 You then build a JSON Patch from a JsonNode using:
 
 ```java
-// Throws IOException if the patch is incorrect
 final JsonPatch patch = JsonPatch.fromJson(node);
 ```
 
 You can then apply the patch to your data:
 
 ```java
-// Throws JsonPatchException if the patch cannot be applied
+// orig is also a JsonNode
 final JsonNode patched = patch.apply(orig);
 ```
 
@@ -112,4 +121,29 @@ final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
 ```
 
 You can then use the generated `JsonNode` to build a patch using the code sample above.
+
+### JSON Merge Patch (new in 1.5)
+
+Since 1.5, this package also provides support for [JSON Merge
+Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-merge-patch-02). This is an alternative to
+JSON Patch, which is certainly easier to understand, but which is far less powerful.
+
+Just like `JsonPatch`, the implementing class (`JsonMergePatch`) implements full serialization and
+deserialization using Jackson. Therefore you can do:
+
+```
+// With an ObjectMapper
+final JsonMergePatch patch = mapper.readValue(in, JsonMergePatch.class);
+// With a JsonNode
+final JsonMergePatch patch = JsonMergePatch.fromJson(node);
+```
+
+Applying a patch also uses an `.apply()` method:
+
+```java
+// orig is also a JsonNode
+final JsonNode patched = patch.apply(orig);
+```
+
+Note that unlike JSON Patch, it is impossible to generate a diff from two inputs.
 
