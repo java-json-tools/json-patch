@@ -10,11 +10,15 @@ only.
 
 This is a full-featured implementation of [RFC 6902 (JSON
 Patch)](http://tools.ietf.org/html/rfc6902) written in Java, which uses
-[Jackson](http://jackson.codehaus.org) at its core.
+[Jackson](https://github.com/FasterXML/jackson-databind) (2.2.x) at its core.
 
 There is also, as of version 1.1, the ability to generate a "JSON diff"; that is, given two JSON
 values, you can generate a JSON Patch so as to turn one JSON value into another JSON value. See
 below for more information.
+
+Starting from version 1.5, this package also supports [JSON Merge
+Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-merge-patch-02) and full
+serialization/deserialization via Jackson.
 
 ## Versions
 
@@ -131,7 +135,7 @@ JSON Patch, which is certainly easier to understand, but which is far less power
 Just like `JsonPatch`, the implementing class (`JsonMergePatch`) implements full serialization and
 deserialization using Jackson. Therefore you can do:
 
-```
+```java
 // With an ObjectMapper
 final JsonMergePatch patch = mapper.readValue(in, JsonMergePatch.class);
 // With a JsonNode
