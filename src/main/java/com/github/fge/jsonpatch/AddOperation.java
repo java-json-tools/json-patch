@@ -84,8 +84,8 @@ public final class AddOperation
             return value;
 
         /*
-         * Check the parent node: it must at the very least exist for the add
-         * operation to work
+         * Check the parent node: it must exist and be a container (ie an array
+         * or an object) for the add operation to work.
          */
         final JsonNode parentNode = path.parent().path(node);
         if (parentNode.isMissingNode())
