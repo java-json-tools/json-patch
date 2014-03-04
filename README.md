@@ -22,7 +22,7 @@ serialization/deserialization via Jackson.
 
 ## Versions
 
-The current version is **1.4**.
+The current version is **1.5**. See file `RELEASE-NOTES.md` for details.
 
 ## Using it in your project
 
