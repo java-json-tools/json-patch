@@ -97,7 +97,7 @@ public final class AddOperation
             return addToObject(path, node);
         else
             throw new JsonPatchException(BUNDLE.getMessage(
-                    "jsonPatch.noSuchPath"));
+                "jsonPatch.parentNotContainer"));
     }
 
     private JsonNode addToArray(final JsonPointer path, final JsonNode node)

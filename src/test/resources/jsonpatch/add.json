@@ -23,7 +23,7 @@
         {
             "op": { "op": "add", "path": "/foo/f", "value": "bar" },
             "node": { "foo": "bar" },
-            "message": "jsonPatch.noSuchPath"
+            "message": "jsonPatch.parentNotContainer"
         }
     ],
     "ops": [
