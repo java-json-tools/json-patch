@@ -18,13 +18,6 @@
 
 package com.github.fge.jsonpatch;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jackson.jsonpointer.JsonPointerException;
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 
 public final class AddOperationTest
@@ -34,17 +27,5 @@ public final class AddOperationTest
         throws IOException
     {
         super("add");
-    }
-
-    @Test(expectedExceptions = JsonPatchException.class, expectedExceptionsMessageRegExp = "no such path in target JSON document")
-    public void addingToANonContainerNodeThrowsException()
-            throws JsonPatchException, JsonPointerException
-    {
-        final ObjectNode node = JacksonUtils.nodeFactory().objectNode();
-        final TextNode textNode = JacksonUtils.nodeFactory().textNode("bar");
-        node.put("foo", textNode);
-        final JsonPointer p = new JsonPointer("/foo/f");
-        final JsonPatchOperation op = new AddOperation(p, JacksonUtils.nodeFactory().nullNode());
-        op.apply(node);
     }
 }

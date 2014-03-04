@@ -19,6 +19,11 @@
             "op": { "op": "add", "path": "/-2", "value": 1 },
             "node": [ 1, 2 ],
             "message": "jsonPatch.noSuchIndex"
+        },
+        {
+            "op": { "op": "add", "path": "/foo/f", "value": "bar" },
+            "node": { "foo": "bar" },
+            "message": "jsonPatch.noSuchPath"
         }
     ],
     "ops": [
