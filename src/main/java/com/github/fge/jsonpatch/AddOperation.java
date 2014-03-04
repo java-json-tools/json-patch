@@ -91,9 +91,13 @@ public final class AddOperation
         if (parentNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchParent"));
-        return parentNode.isArray()
-            ? addToArray(path, node)
-            : addToObject(path, node);
+        if (parentNode.isArray())
+            return addToArray(path, node);
+        else if (parentNode.isObject())
+            return addToObject(path, node);
+        else
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.noSuchPath"));
     }
 
     private JsonNode addToArray(final JsonPointer path, final JsonNode node)
