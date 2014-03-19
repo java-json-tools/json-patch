@@ -1,0 +1,91 @@
+{
+    "errors": [
+        {
+            "op": { "op": "create", "path": "/a/b/c", "value": 1 },
+            "node": { "a": "b" },
+            "message": "jsonPatch.noSuchParent"
+        },
+        {
+            "op": { "op": "create", "path": "/a", "value": 1 },
+            "node": { "a": "b" },
+            "message": "jsonPatch.valueAtPathAlreadyExists"
+        },
+		{
+            "op": { "op": "create", "path": "/a", "value": 1 },
+            "node": { "a": null },
+            "message": "jsonPatch.valueAtPathAlreadyExists"
+        },
+        {
+            "op": { "op": "create", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "node": {
+                "obj": {
+                    "inner": {
+                        "a": "hello",
+                        "b": "world"
+                    }
+                }
+            },
+            "message": "jsonPatch.valueAtPathAlreadyExists"
+        },
+        {
+            "op": { "op": "create", "path": "/~1", "value": 1 },
+            "node": [],
+            "message": "jsonPatch.notAnIndex"
+        },
+        {
+            "op": { "op": "create", "path": "/3", "value": 1 },
+            "node": [ 1, 2 ],
+            "message": "jsonPatch.noSuchIndex"
+        },
+        {
+            "op": { "op": "create", "path": "/-2", "value": 1 },
+            "node": [ 1, 2 ],
+            "message": "jsonPatch.noSuchIndex"
+        },
+        {
+            "op": { "op": "create", "path": "/foo/f", "value": "bar" },
+            "node": { "foo": "bar" },
+            "message": "jsonPatch.parentNotContainer"
+        }
+    ],
+    "ops": [
+        {
+            "op": { "op": "create", "path": "", "value": null },
+            "node": {},
+            "expected": null
+        },
+        {
+            "op": { "op": "create", "path": "/a", "value": "b" },
+            "node": {},
+            "expected": { "a": "b" }
+        },
+        {
+            "op": { "op": "create", "path": "/array/-", "value": 1 },
+            "node": { "array": [ 2, null, {}, 1 ] },
+            "expected": { "array": [ 2, null, {}, 1, 1 ] }
+        },
+        {
+            "op": { "op": "create", "path": "/array/2", "value": "hello" },
+            "node": { "array": [ 2, null, {}, 1] },
+            "expected": { "array": [ 2, null, "hello", {}, 1 ] }
+        },
+        {
+            "op": { "op": "create", "path": "/obj/inner/b", "value": [ 1, 2 ] },
+            "node": {
+                "obj": {
+                    "inner": {
+                        "a": "hello"
+                    }
+                }
+            },
+            "expected": {
+                "obj": {
+                    "inner": {
+                        "a": "hello",
+                        "b": [ 1, 2 ]
+                    }
+                }
+            }
+        }
+    ]
+}
