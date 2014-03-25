@@ -59,18 +59,12 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  * </pre>
  */
 public final class AddOperation
-    extends AddableValueOperation
+    extends AdditionOperation
 {
     @JsonCreator
     public AddOperation(@JsonProperty("path") final JsonPointer path,
         @JsonProperty("value") final JsonNode value)
     {
-        super("add", path, value);
-    }
-
-    @Override
-    protected JsonNode addToObject(final JsonPointer path, final JsonNode node)
-    {
-        return addToObjectWithOverwrite(path, node);
+        super("add", path, value, true);
     }
 }

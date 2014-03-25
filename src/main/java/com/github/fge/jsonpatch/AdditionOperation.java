@@ -11,15 +11,24 @@ import com.google.common.collect.Iterables;
 /**
  * Represents an operation that can add a {@code value} given a {@code path}.
  */
-public abstract class AddableValueOperation
+public abstract class AdditionOperation
     extends PathValueOperation
 {
     private static final ReferenceToken LAST_ARRAY_ELEMENT
         = ReferenceToken.fromRaw("-");
 
-    public AddableValueOperation(final String op, final JsonPointer path, final JsonNode value)
+    private boolean overwriteExisting;
+
+    /**
+     * @param op operation name
+     * @param path affected path
+     * @param value value to add
+     * @param overwriteExisting whether the operation is allowed to overwrite an existing value at the specified path
+     */
+    protected AdditionOperation(final String op, final JsonPointer path, final JsonNode value, boolean overwriteExisting)
     {
         super(op, path, value);
+        this.overwriteExisting = overwriteExisting;
     }
 
     @Override
@@ -31,7 +40,7 @@ public abstract class AddableValueOperation
 
         /*
          * Check the parent node: it must exist and be a container (ie an array
-         * or an object) for the add operation to work.
+         * or an object) for the addition operation to work.
          */
         final JsonNode parentNode = path.parent().path(node);
         if (parentNode.isMissingNode())
@@ -45,7 +54,7 @@ public abstract class AddableValueOperation
             : addToObject(path, node);
     }
 
-    protected JsonNode addToArray(final JsonPointer path, final JsonNode node)
+    private JsonNode addToArray(final JsonPointer path, final JsonNode node)
         throws JsonPatchException
     {
         final JsonNode ret = node.deepCopy();
@@ -74,11 +83,17 @@ public abstract class AddableValueOperation
         return ret;
     }
 
-    abstract protected JsonNode addToObject(final JsonPointer path, final JsonNode node)
-        throws JsonPatchException;
-
-    protected JsonNode addToObjectWithOverwrite(final JsonPointer path, final JsonNode node)
+    private JsonNode addToObject(final JsonPointer path, final JsonNode node)
+        throws JsonPatchException
     {
+        if (!overwriteExisting)
+        {
+            final JsonNode existingNode = path.path(node);
+            if (!existingNode.isMissingNode())
+                throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.valueAtPathAlreadyExists"));
+        }
+
         final JsonNode ret = node.deepCopy();
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
         target.put(Iterables.getLast(path).getToken().getRaw(), value);
