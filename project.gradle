@@ -35,7 +35,7 @@ dependencies {
     compile(group: "com.google.code.findbugs", name: "jsr305",
         version: "2.0.1");
     compile(group: "com.github.fge", name: "jackson-coreutils",
-        version: "1.5");
+        version: "1.6");
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
