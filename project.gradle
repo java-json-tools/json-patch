@@ -21,12 +21,12 @@
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
 group = "com.github.fge";
-version = "1.6-SNAPSHOT";
+version = "1.6";
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6"; // defaults to sourceCompatibility
 
 project.ext {
-    description = "JSON Patch implementation in Java";
+    description = "JSON Patch (RFC 6902) and JSON merge-patch implementation in Java";
 };
 
 /*
