@@ -1,3 +1,10 @@
+## 1.6
+
+* Update jackson-coreutils dependency.
+* Change license file placement/text.
+* Make all tests run from the command line.
+* Disable propdeps plugin for the moment.
+
 ## 1.5
 
 * Full Jackson serialization/deserialization support.
