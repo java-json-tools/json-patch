@@ -27,24 +27,24 @@
  *
  * https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
  */
-buildscript {
-    repositories {
-        maven {
-            url "http://repo.springsource.org/plugins-release";
-        }
-    }
-    dependencies {
-        classpath(group: "org.springframework.build.gradle",
-            name: "propdeps-plugin", version: "0.0.5");
-    }
-};
-
-configure(allprojects) {
-    apply(plugin: "propdeps");
-    apply(plugin: "propdeps-maven");
-    apply(plugin: "propdeps-idea");
-    apply(plugin: "propdeps-eclipse");
-}
+//buildscript {
+//    repositories {
+//        maven {
+//            url "http://repo.springsource.org/plugins-release";
+//        }
+//    }
+//    dependencies {
+//        classpath(group: "org.springframework.build.gradle",
+//            name: "propdeps-plugin", version: "0.0.5");
+//    }
+//};
+//
+//configure(allprojects) {
+//    apply(plugin: "propdeps");
+//    apply(plugin: "propdeps-maven");
+//    apply(plugin: "propdeps-idea");
+//    apply(plugin: "propdeps-eclipse");
+//}
 
 apply(plugin: "java");
 apply(plugin: "maven");
@@ -65,14 +65,11 @@ repositories {
 /*
  * Necessary! Otherwise TestNG will not be used...
  *
- * Also, we don't want gradle's default HTML report: it does not support
- * parameterized tests which I use a _lot_.
  */
 test {
     useTestNG() {
         useDefaultListeners = true;
     };
-    reports.html.enabled = false;
 }
 
 /*
@@ -101,7 +98,6 @@ artifacts {
     archives jar;
     archives sourcesJar;
     archives javadocJar;
-// bad idea:    archives fatJar;
 }
 
 task wrapper(type: Wrapper) {

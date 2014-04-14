@@ -32,7 +32,7 @@ project.ext {
  * List of dependencies
  */
 dependencies {
-    provided(group: "com.google.code.findbugs", name: "jsr305",
+    compile(group: "com.google.code.findbugs", name: "jsr305",
         version: "2.0.1");
     compile(group: "com.github.fge", name: "jackson-coreutils",
         version: "1.5");
@@ -44,11 +44,11 @@ dependencies {
     testCompile(group: "org.mockito", name: "mockito-core", version: "1.9.5");
 }
 
-javadoc.options.links("http://docs.oracle.com/javase/6/docs/api");
-javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc");
-javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0");
-javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0");
-javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0");
-javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc");
-javadoc.options.links("http://fge.github.io/msg-simple");
-javadoc.options.links("http://fge.github.io/jackson-coreutils");
+javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
+javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc/");
+javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
+javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
+javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
+javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
+javadoc.options.links("http://fge.github.io/msg-simple/");
+javadoc.options.links("http://fge.github.io/jackson-coreutils/");
