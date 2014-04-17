@@ -62,7 +62,7 @@ in order to obtain:
 the implementation will return the following patch:
 
 ```json
-[ { "op": "move", "from": "/a", "to": "/c" } ]
+[ { "op": "move", "from": "/a", "path": "/c" } ]
 ```
 
 It is able to do even more than that. See the test files in the project.
