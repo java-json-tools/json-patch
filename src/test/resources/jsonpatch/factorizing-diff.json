@@ -288,5 +288,13 @@
         "first": [ 1, 2 ],
         "second": [ 2, 1 ],
         "patch": [ { "op": "move", "from": "/1", "path": "/0" } ]
+    },
+    {
+        "first": [ { "name": "a" }, { "name": "b" }, { "name": "c" } ],
+        "second": [ { "name": "b" } ],
+        "patch": [
+            { "op": "remove", "path": "/0" },
+            { "op": "remove", "path": "/1" }
+        ]
     }
 ]
