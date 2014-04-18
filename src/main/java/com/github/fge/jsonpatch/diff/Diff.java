@@ -51,14 +51,12 @@ final class Diff
      * "Stateless" removal of a given node from an array given a base path (the
      * immediate parent of an array) and an array index; as the name suggests,
      * this factory method is called only when a node is removed from the tail
-     * of a target array; in other words, the source node has extra elements,
-     * and the only relevant information for generating the removal operation is
-     * the index in the source array.
+     * of a target array; in other words, the source node has extra elements.
      */
     static Diff tailArrayRemove(final JsonPointer basePath, final int index,
-        final JsonNode victim)
+        final int removeIndex, final JsonNode victim)
     {
-        return new Diff(DiffOperation.REMOVE, basePath, index, index,
+        return new Diff(DiffOperation.REMOVE, basePath, index, removeIndex,
             victim.deepCopy());
     }
 
