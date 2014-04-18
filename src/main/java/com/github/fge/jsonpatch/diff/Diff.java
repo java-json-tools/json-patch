@@ -1,18 +1,20 @@
 /*
- * Copyright (c) 2013, Randy Watler <watler@wispertel.net>
+ * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Lesser GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This software is dual-licensed under:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Lesser GNU General Public License for more details.
+ * - the Lesser General Public License (LGPL) version 3.0 or, at your option, any
+ *   later version;
+ * - the Apache Software License (ASL) version 2.0.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The text of this file and of both licenses is available at the root of this
+ * project or, if you have the jar distribution, in directory META-INF/, under
+ * the names LGPL-3.0.txt and ASL-2.0.txt respectively.
+ *
+ * Direct link to the sources:
+ *
+ * - LGPL 3.0: https://www.gnu.org/licenses/lgpl-3.0.txt
+ * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package com.github.fge.jsonpatch.diff;
@@ -39,7 +41,55 @@ final class Diff
     Diff pairedDiff;
     boolean firstOfPair;
 
-    Diff(final DiffOperation operation, final JsonPointer path,
+    static Diff simpleDiff(final DiffOperation operation,
+        final JsonPointer path, final JsonNode value)
+    {
+        return new Diff(operation, path, value.deepCopy());
+    }
+
+    /*
+     * "Stateless" removal of a given node from an array given a base path (the
+     * immediate parent of an array) and an array index; as the name suggests,
+     * this factory method is called only when a node is removed from the tail
+     * of a target array; in other words, the source node has extra elements,
+     * and the only relevant information for generating the removal operation is
+     * the index in the source array.
+     */
+    static Diff tailArrayRemove(final JsonPointer basePath, final int index,
+        final JsonNode victim)
+    {
+        return new Diff(DiffOperation.REMOVE, basePath, index, index,
+            victim.deepCopy());
+    }
+
+    /*
+     * FIXME: in both usages of this function, array1 is shifted; but we do not
+     * do that here: doing it would hide an essential piece of information to
+     * the caller.
+     *
+     * In other words, there is some embarrassing entanglement here which needs
+     * to be understood and "decorrelated".
+     */
+    static Diff arrayRemove(final JsonPointer basePath,
+        final IndexedJsonArray array1, final IndexedJsonArray array2)
+    {
+        return new Diff(DiffOperation.REMOVE, basePath, array1.getIndex(),
+            array2.getIndex(), array1.getElement().deepCopy());
+    }
+
+    static Diff arrayAdd(final JsonPointer basePath, final JsonNode node)
+    {
+        return new Diff(DiffOperation.ADD, basePath, -1, -1, node.deepCopy());
+    }
+
+    static Diff arrayInsert(final JsonPointer basePath,
+        final IndexedJsonArray array1, final IndexedJsonArray array2)
+    {
+        return new Diff(DiffOperation.ADD, basePath, array1.getIndex(),
+            array2.getIndex(), array2.getElement().deepCopy());
+    }
+
+    private Diff(final DiffOperation operation, final JsonPointer path,
         final JsonNode value)
     {
         this.operation = operation;
@@ -47,7 +97,7 @@ final class Diff
         this.value = value;
     }
 
-    Diff(final DiffOperation operation, final JsonPointer arrayPath,
+    private Diff(final DiffOperation operation, final JsonPointer arrayPath,
         final int firstArrayIndex, final int secondArrayIndex,
         final JsonNode value)
     {

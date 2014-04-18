@@ -1,18 +1,20 @@
 /*
- * Copyright (c) 2013, Randy Watler <watler@wispertel.net>
+ * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Lesser GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This software is dual-licensed under:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Lesser GNU General Public License for more details.
+ * - the Lesser General Public License (LGPL) version 3.0 or, at your option, any
+ *   later version;
+ * - the Apache Software License (ASL) version 2.0.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The text of this file and of both licenses is available at the root of this
+ * project or, if you have the jar distribution, in directory META-INF/, under
+ * the names LGPL-3.0.txt and ASL-2.0.txt respectively.
+ *
+ * Direct link to the sources:
+ *
+ * - LGPL 3.0: https://www.gnu.org/licenses/lgpl-3.0.txt
+ * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package com.github.fge.jsonpatch.diff;
@@ -20,6 +22,7 @@ package com.github.fge.jsonpatch.diff;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.fge.jackson.JsonNumEquals;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Equivalence;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -60,6 +63,7 @@ final class LCS
      * @param first first array node to compare
      * @param second second array node to compare
      */
+    @VisibleForTesting
     static List<JsonNode> getLCS(final JsonNode first, final JsonNode second)
     {
         Preconditions.checkArgument(first.isArray(),
@@ -87,6 +91,11 @@ final class LCS
             ret.addAll(doLCS(l1, l2));
         ret.addAll(tail);
         return ret;
+    }
+
+    static IndexedJsonArray doLCS(final JsonNode first, final JsonNode second)
+    {
+        return new IndexedJsonArray(getLCS(first, second));
     }
 
     /**
