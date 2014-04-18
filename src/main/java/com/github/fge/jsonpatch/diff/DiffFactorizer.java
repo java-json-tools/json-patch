@@ -180,9 +180,12 @@ final class DiffFactorizer
                          * Turn paired additions into move operations
                          */
                         transformAddition(seenBefore, seenAfter, diff);
+                        break;
                     /*
                      * Note: a paired diff cannot be of any other type
                      */
+                    default:
+                        throw new IllegalStateException();
                 }
             }
 
