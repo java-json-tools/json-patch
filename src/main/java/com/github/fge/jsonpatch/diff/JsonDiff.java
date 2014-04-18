@@ -397,7 +397,7 @@ public final class JsonDiff
             target.shift();
         }
         addRemaining(diffs, path, target);
-        removeRemaining(diffs, path, source);
+        removeRemaining(diffs, path, source, target.size());
     }
 
     private static void addRemaining(final List<Diff> diffs,
@@ -415,16 +415,16 @@ public final class JsonDiff
     }
 
     private static void removeRemaining(final List<Diff> diffs,
-        final JsonPointer path, final IndexedJsonArray array)
+        final JsonPointer path, final IndexedJsonArray array,
+        final int removeIndex)
     {
-        final int startingIndex = array.getIndex();
-
         Diff diff;
         JsonNode node;
 
         while (!array.isEmpty()) {
             node = array.getElement();
-            diff = Diff.tailArrayRemove(path, startingIndex, node);
+            diff = Diff.tailArrayRemove(path, array.getIndex(),
+                                        removeIndex, node);
             diffs.add(diff);
             array.shift();
         }

@@ -68,4 +68,9 @@ final class IndexedJsonArray
     {
         return index >= size;
     }
+
+    int size()
+    {
+        return size;
+    }
 }
