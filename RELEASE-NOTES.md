@@ -1,6 +1,6 @@
 ## 1.7
 
-* Fix bug with multiple array renames; detected by @royclarkson, fixed by
+* Fix bug with diffs and multiple array removals; detected by @royclarkson, fixed by
   @rwatler. See [issue 11](https://github.com/fge/json-patch/issues/11).
 
 ## 1.6
