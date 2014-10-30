@@ -6,13 +6,14 @@ only.
 
 ## What this is
 
-This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [JSON
-Merge Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-merge-patch-02) written in Java,
+This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [RFC
+7386 (JSON
+Merge Patch)](http://tools.ietf.org/html/rfc7386) written in Java,
 which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.2.x) at its core.
 
 Its features are:
 
-* {de,}serialization of JSON Patch and JSON merge patch instances with Jackson;
+* {de,}serialization of JSON Patch and JSON Merge Patch instances with Jackson;
 * full support for RFC 6902 operations, including `test`;
 * JSON "diff" (RFC 6902 only) with operation factorization.
 
