@@ -169,9 +169,9 @@ uploadArchives {
     uploadArchives.repositories.mavenDeployer
 ]*.pom*.whenConfigured { pom ->
     pom.project {
-        name "${name}";
+        name "${project.name}";
         packaging "jar";
-        description "${description}";
+        description "${project.description}";
         url "${projectURL}";
 
         scm {

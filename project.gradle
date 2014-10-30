@@ -22,12 +22,9 @@
  */
 group = "com.github.fge";
 version = "1.8-SNAPSHOT";
+description = "JSON Patch (RFC 6902) and JSON merge-patch implementation in Java";
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6"; // defaults to sourceCompatibility
-
-project.ext {
-    description = "JSON Patch (RFC 6902) and JSON merge-patch implementation in Java";
-};
 
 /*
  * List of dependencies
