@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
@@ -32,6 +33,34 @@ import com.github.fge.msgsimple.load.MessageBundles;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
+/**
+ * Implementation of JSON Merge Patch (RFC 7386)
+ *
+ * <p><a href="http://tools.ietf.org/html/rfc7386">JSON Merge Patch</a> is a
+ * "toned down" version of JSON Patch. However, it covers a very large number of
+ * use cases for JSON value modifications; its focus is mostly on patching
+ * JSON Objects, which are by far the most common type of JSON texts exchanged
+ * on the Internet.</p>
+ *
+ * <p>Applying a JSON Merge Patch is defined by a single, pseudo code function
+ * as follows (quoted from the RFC; indentation fixed):</p>
+ *
+ * <pre>
+ *     define MergePatch(Target, Patch):
+ *         if Patch is an Object:
+ *             if Target is not an Object:
+ *                 Target = {} # Ignore the contents and set it to an empty Object
+ *             for each Name/Value pair in Patch:
+ *                 if Value is null:
+ *                     if Name exists in Target:
+ *                         remove the Name/Value pair from Target
+ *                 else:
+ *                     Target[Name] = MergePatch(Target[Name], Value)
+ *             return Target
+ *         else:
+ *             return Patch
+ * </pre>
+ */
 @ParametersAreNonnullByDefault
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
@@ -41,6 +70,14 @@ public abstract class JsonMergePatch
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
+    /**
+     * Build an instance from a JSON input
+     *
+     * @param node the input
+     * @return a JSON Merge Patch instance
+     * @throws JsonPatchException failed to deserialize
+     * @throws NullPointerException node is null
+     */
     public static JsonMergePatch fromJson(final JsonNode node)
         throws JsonPatchException
     {
@@ -53,6 +90,15 @@ public abstract class JsonMergePatch
         }
     }
 
+    /**
+     * Apply the patch to a given JSON value
+     *
+     * @param input the value to patch
+     * @return the patched value
+     * @throws JsonPatchException never thrown; only for consistency with
+     * {@link JsonPatch}
+     * @throws NullPointerException value is null
+     */
     public abstract JsonNode apply(final JsonNode input)
         throws JsonPatchException;
 }
