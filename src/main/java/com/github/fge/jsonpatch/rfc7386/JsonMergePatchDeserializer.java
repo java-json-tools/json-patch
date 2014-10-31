@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import java.io.IOException;
 
@@ -60,5 +61,15 @@ final class JsonMergePatchDeserializer
     {
         final JsonNode node = jp.readValueAs(JsonNode.class);
         return new NonObjectMergePatch(node);
+    }
+
+    /*
+     * This method MUST be overriden... The default is to return null, which is
+     * not what we want.
+     */
+    @Override
+    public JsonMergePatch getNullValue()
+    {
+        return new NonObjectMergePatch(NullNode.getInstance());
     }
 }
