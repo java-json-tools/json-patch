@@ -28,10 +28,12 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+@ParametersAreNonnullByDefault
 final class ObjectMergePatch
     extends JsonMergePatch
 {
@@ -49,6 +51,7 @@ final class ObjectMergePatch
     public JsonNode apply(final JsonNode input)
         throws JsonPatchException
     {
+        BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
         return null;
     }
 

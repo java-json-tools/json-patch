@@ -29,8 +29,10 @@ import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
+@ParametersAreNonnullByDefault
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
     implements JsonSerializable
@@ -42,6 +44,7 @@ public abstract class JsonMergePatch
     public static JsonMergePatch fromJson(final JsonNode node)
         throws JsonPatchException
     {
+        BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         try {
             return MAPPER.readValue(node.traverse(), JsonMergePatch.class);
         } catch (IOException e) {

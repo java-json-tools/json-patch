@@ -27,15 +27,16 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
+@ParametersAreNonnullByDefault
 final class NonObjectMergePatch
     extends JsonMergePatch
 {
     private final JsonNode node;
 
-    NonObjectMergePatch(@Nonnull final JsonNode node)
+    NonObjectMergePatch(final JsonNode node)
     {
         this.node = Preconditions.checkNotNull(node);
     }
@@ -44,6 +45,7 @@ final class NonObjectMergePatch
     public JsonNode apply(final JsonNode input)
         throws JsonPatchException
     {
+        BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
         return null;
     }
 
