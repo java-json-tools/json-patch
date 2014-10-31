@@ -19,86 +19,109 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.collect.Sets;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Merge patch for a JSON Object
- *
- * <p>This only takes care of the top level, and delegates to other {@link
- * JsonMergePatch} instances for deeper levels.</p>
- */
+@ParametersAreNonnullByDefault
 final class ObjectMergePatch
     extends JsonMergePatch
 {
-    private final Map<String, JsonNode> fields;
-    private final Set<String> removals;
+    private final Set<String> removedMembers;
+    private final Map<String, JsonMergePatch> modifiedMembers;
 
-    ObjectMergePatch(final JsonNode content)
+    ObjectMergePatch(final Set<String> removedMembers,
+        final Map<String, JsonMergePatch> modifiedMembers)
     {
-        super(content);
-        fields = JacksonUtils.asMap(content);
-        removals = Sets.newHashSet();
-
-        for (final Map.Entry<String, JsonNode> entry: fields.entrySet())
-            if (entry.getValue().isNull())
-                removals.add(entry.getKey());
-
-        fields.keySet().removeAll(removals);
+        this.removedMembers = ImmutableSet.copyOf(removedMembers);
+        this.modifiedMembers = ImmutableMap.copyOf(modifiedMembers);
     }
 
     @Override
     public JsonNode apply(final JsonNode input)
         throws JsonPatchException
     {
-        if (!input.isObject())
-            return mapToNode(fields);
+        BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
+        /*
+         * If the input is an object, we make a deep copy of it
+         */
+        final ObjectNode ret = input.isObject() ? (ObjectNode) input.deepCopy()
+            : JacksonUtils.nodeFactory().objectNode();
 
-        final Map<String, JsonNode> map = JacksonUtils.asMap(input);
-
-        // Remove all entries which must be removed
-        map.keySet().removeAll(removals);
-
-        // Now cycle through what is left
-        String memberName;
-        JsonNode patchNode;
-
-        for (final Map.Entry<String, JsonNode> entry: map.entrySet()) {
-            memberName = entry.getKey();
-            patchNode = fields.get(memberName);
-
-            // Leave untouched if no mention in the patch
-            if (patchNode == null)
-                continue;
-
-            // If the patch node is a primitive type, replace in the result.
-            // Reminder: there cannot be a JSON null anymore
-            if (!patchNode.isContainerNode()) {
-                entry.setValue(patchNode); // no need for .deepCopy()
-                continue;
-            }
-
-            final JsonMergePatch patch = JsonMergePatch.fromJson(patchNode);
-            entry.setValue(patch.apply(entry.getValue()));
+        /*
+         * Our result is now a JSON Object; first, add (or modify) existing
+         * members in the result
+         */
+        String key;
+        JsonNode value;
+        for (final Map.Entry<String, JsonMergePatch> entry:
+            modifiedMembers.entrySet()) {
+            key = entry.getKey();
+            /*
+             * FIXME: ugly...
+             *
+             * We treat missing keys as null nodes; this "works" because in
+             * the modifiedMembers map, values are JsonMergePatch instances:
+             *
+             * * if it is a NonObjectMergePatch, the value is replaced
+             *   unconditionally;
+             * * if it is an ObjectMergePatch, we get back here; the value will
+             *   be replaced with a JSON Object anyway before being processed.
+             */
+            value = Optional.fromNullable(ret.get(key))
+                .or(NullNode.getInstance());
+            ret.put(key, entry.getValue().apply(value));
         }
 
-        // Finally, if there are members in the patch not present in the input,
-        // fill in members
-        for (final String key: Sets.difference(fields.keySet(), map.keySet()))
-            map.put(key, clearNulls(fields.get(key)));
+        ret.remove(removedMembers);
 
-        return mapToNode(map);
+        return ret;
     }
 
-    private static JsonNode mapToNode(final Map<String, JsonNode> map)
+    @Override
+    public void serialize(final JsonGenerator jgen,
+        final SerializerProvider provider)
+        throws IOException, JsonProcessingException
     {
-        final ObjectNode ret = FACTORY.objectNode();
-        return ret.putAll(map);
+        jgen.writeStartObject();
+
+        /*
+         * Write removed members as JSON nulls
+         */
+        for (final String member: removedMembers)
+            jgen.writeNullField(member);
+
+        /*
+         * Write modified members; delegate to serialization for writing values
+         */
+        for (final Map.Entry<String, JsonMergePatch> entry:
+            modifiedMembers.entrySet()) {
+            jgen.writeFieldName(entry.getKey());
+            entry.getValue().serialize(jgen, provider);
+        }
+
+        jgen.writeEndObject();
+    }
+
+    @Override
+    public void serializeWithType(final JsonGenerator jgen,
+        final SerializerProvider provider, final TypeSerializer typeSer)
+        throws IOException, JsonProcessingException
+    {
+        serialize(jgen, provider);
     }
 }

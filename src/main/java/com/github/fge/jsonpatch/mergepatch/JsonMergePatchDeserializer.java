@@ -20,37 +20,84 @@
 package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.github.fge.jackson.JacksonUtils;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * Custom {@link JsonDeserializer} for {@link JsonMergePatch} instances
- *
- * <p>Unlike "real" JSON Patches (ie, as defined by RFC 6902), JSON merge patch
- * instances are "free form", they can be either JSON arrays or JSON objects
- * without any restriction on the contents; only the content itself may guide
- * the patching process (null elements in arrays, null values in objects).</p>
- *
- * <p>Jackson does not provide a deserializer for such a case; we therefore
- * write our own here.</p>
- */
-public final class JsonMergePatchDeserializer
+final class JsonMergePatchDeserializer
     extends JsonDeserializer<JsonMergePatch>
 {
+    /*
+     * FIXME! UGLY! HACK!
+     *
+     * We MUST have an ObjectCodec ready so that the parser in .deserialize()
+     * can actually do something useful -- for instance, deserializing even a
+     * JsonNode.
+     *
+     * Jackson does not do this automatically; I don't know why...
+     */
+    private static final ObjectCodec CODEC = JacksonUtils.newMapper();
+
     @Override
     public JsonMergePatch deserialize(final JsonParser jp,
         final DeserializationContext ctxt)
-        throws IOException
+        throws IOException, JsonProcessingException
     {
-        final JsonNode node = jp.readValueAs(JsonNode.class);
-        if (!node.isContainerNode())
-            throw new JsonMappingException("expected either an array or an " +
-                "object");
-        return node.isArray() ? new ArrayMergePatch(node)
-            : new ObjectMergePatch(node);
+        // FIXME: see comment above
+        jp.setCodec(CODEC);
+        final JsonNode node = jp.readValueAsTree();
+
+        /*
+         * Not an object: the simple case
+         */
+        if (!node.isObject())
+            return new NonObjectMergePatch(node);
+
+        /*
+         * The complicated case...
+         *
+         * We have to build a set of removed members, plus a map of modified
+         * members.
+         */
+
+        final Set<String> removedMembers = Sets.newHashSet();
+        final Map<String, JsonMergePatch> modifiedMembers = Maps.newHashMap();
+        final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+
+        Map.Entry<String, JsonNode> entry;
+
+        while (iterator.hasNext()) {
+            entry = iterator.next();
+            if (entry.getValue().isNull())
+                removedMembers.add(entry.getKey());
+            else {
+                final JsonMergePatch value
+                    = deserialize(entry.getValue().traverse(), ctxt);
+                modifiedMembers.put(entry.getKey(), value);
+            }
+        }
+
+        return new ObjectMergePatch(removedMembers, modifiedMembers);
+    }
+
+    /*
+     * This method MUST be overriden... The default is to return null, which is
+     * not what we want.
+     */
+    @Override
+    public JsonMergePatch getNullValue()
+    {
+        return new NonObjectMergePatch(NullNode.getInstance());
     }
 }

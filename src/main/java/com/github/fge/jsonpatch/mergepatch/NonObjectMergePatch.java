@@ -17,7 +17,7 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch.rfc7386;
+package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

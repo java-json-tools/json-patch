@@ -17,7 +17,7 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch.rfc7386;
+package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -40,7 +40,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public final class NonObjectMergePatchTest
+public final class ObjectMergePatchTest
 {
     private static final Equivalence<JsonNode> EQUIVALENCE
         = JsonNumEquals.getInstance();
@@ -49,10 +49,10 @@ public final class NonObjectMergePatchTest
 
     private final JsonNode testData;
 
-    public NonObjectMergePatchTest()
+    public ObjectMergePatchTest()
         throws IOException
     {
-        final String resource = "/jsonpatch/rfc7386/patch-nonobject.json";
+        final String resource = "/jsonpatch/mergepatch/patch-object.json";
         testData = JsonLoader.fromResource(resource);
     }
 
@@ -76,19 +76,21 @@ public final class NonObjectMergePatchTest
         final List<Object[]> list = Lists.newArrayList();
 
         for (final JsonNode node: testData)
-            list.add(new Object[] { node.get("patch"), node.get("victim")});
+            list.add(new Object[] {
+                node.get("patch"), node.get("victim"), node.get("result")
+            });
 
         return list.iterator();
     }
 
     @Test(dataProvider = "getData")
     public void patchingWorksAsExpected(final JsonNode input,
-        final JsonNode victim)
+        final JsonNode victim, final JsonNode result)
         throws JsonPatchException
     {
         final JsonMergePatch patch = JsonMergePatch.fromJson(input);
         final JsonNode patched = patch.apply(victim);
 
-        assertTrue(EQUIVALENCE.equivalent(input, patched));
+        assertTrue(EQUIVALENCE.equivalent(result, patched));
     }
 }

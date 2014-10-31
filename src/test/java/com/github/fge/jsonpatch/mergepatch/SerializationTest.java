@@ -17,7 +17,7 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch.rfc7386;
+package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,8 +49,8 @@ public final class SerializationTest
     public SerializationTest()
         throws IOException
     {
-        final String resource1 = "/jsonpatch/rfc7386/serdeser-nonobject.json";
-        final String resource2 = "/jsonpatch/rfc7386/serdeser-object.json";
+        final String resource1 = "/jsonpatch/mergepatch/serdeser-nonobject.json";
+        final String resource2 = "/jsonpatch/mergepatch/serdeser-object.json";
         nonObjectTestData = JsonLoader.fromResource(resource1);
         objectTestData = JsonLoader.fromResource(resource2);
     }
