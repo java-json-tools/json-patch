@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
-public final class JsonMergePatchDeserializer
+final class JsonMergePatchDeserializer
     extends JsonDeserializer<JsonMergePatch>
 {
     /**
