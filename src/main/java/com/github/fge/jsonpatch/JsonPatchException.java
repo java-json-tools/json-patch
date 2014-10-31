@@ -26,4 +26,9 @@ public final class JsonPatchException
     {
         super(message);
     }
+
+    public JsonPatchException(final String message, final Throwable cause)
+    {
+        super(message, cause);
+    }
 }

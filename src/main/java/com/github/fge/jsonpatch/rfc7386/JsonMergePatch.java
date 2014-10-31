@@ -21,13 +21,35 @@ package com.github.fge.jsonpatch.rfc7386;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.JsonPatchMessages;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
+
+import java.io.IOException;
 
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
     implements JsonSerializable
 {
+    private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
+    protected static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
+
+    public static JsonMergePatch fromJson(final JsonNode node)
+        throws JsonPatchException
+    {
+        try {
+            return MAPPER.readValue(node.traverse(), JsonMergePatch.class);
+        } catch (IOException e) {
+            throw new JsonPatchException(
+                BUNDLE.getMessage("jsonPatch.deserFailed"), e);
+        }
+    }
+
     public abstract JsonNode apply(final JsonNode input)
         throws JsonPatchException;
 }
