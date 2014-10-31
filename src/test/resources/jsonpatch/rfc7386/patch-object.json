@@ -46,5 +46,38 @@
         "patch": { "a": "b", "c": null },
         "victim": "Hello world!",
         "result": { "a": "b" }
+    },
+    {
+        "patch": { "foo": "bar " },
+        "victim": true,
+        "result": { "foo": "bar " }
+    },
+    {
+        "patch": {
+            "title": "Hello!",
+            "phoneNumber": "+01-123-456-7890",
+            "author": {
+                "familyName": null
+            },
+            "tags": [ "example" ]
+        },
+        "victim": {
+            "title": "Goodbye!",
+            "author": {
+                "givenName": "John",
+                "familyName": "Doe"
+            },
+            "tags": [ "example", "sample" ],
+            "content": "This will be unchanged"
+        },
+        "result": {
+            "title": "Hello!",
+            "author": {
+                "givenName": "John"
+            },
+            "tags": [ "example" ],
+            "content": "This will be unchanged",
+            "phoneNumber": "+01-123-456-7890"
+        }
     }
 ]
