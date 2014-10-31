@@ -21,46 +21,74 @@ package com.github.fge.jsonpatch.rfc7386;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.github.fge.jackson.JacksonUtils;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 final class JsonMergePatchDeserializer
     extends JsonDeserializer<JsonMergePatch>
 {
-    /**
-     * Method that can be called to ask implementation to deserialize
-     * JSON content into the value type this serializer handles.
-     * Returned instance is to be constructed by method itself.
-     * <p>
-     * Pre-condition for this method is that the parser points to the
-     * first event that is part of value to deserializer (and which
-     * is never JSON 'null' literal, more on this below): for simple
-     * types it may be the only value; and for structured types the
-     * Object start marker.
-     * Post-condition is that the parser will point to the last
-     * event that is part of deserialized value (or in case deserialization
-     * fails, event that was not recognized or usable, which may be
-     * the same event as the one it pointed to upon call).
-     * <p>
-     * Note that this method is never called for JSON null literal,
-     * and thus deserializers need (and should) not check for it.
+    /*
+     * FIXME! UGLY! HACK!
      *
-     * @param jp Parsed used for reading JSON content
-     * @param ctxt Context that can be used to access information about
-     * this deserialization activity.
-     * @return Deserializer value
+     * We MUST have an ObjectCodec ready so that the parser in .deserialize()
+     * can actually do something useful -- for instance, deserializing even a
+     * JsonNode.
+     *
+     * Jackson does not do this automatically; I don't know why...
      */
+    private static final ObjectCodec CODEC = JacksonUtils.newMapper();
+
     @Override
     public JsonMergePatch deserialize(final JsonParser jp,
         final DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
-        final JsonNode node = jp.readValueAs(JsonNode.class);
-        return new NonObjectMergePatch(node);
+        // FIXME: see comment above
+        jp.setCodec(CODEC);
+        final JsonNode node = jp.readValueAsTree();
+
+        /*
+         * Not an object: the simple case
+         */
+        if (!node.isObject())
+            return new NonObjectMergePatch(node);
+
+        /*
+         * The complicated case...
+         *
+         * We have to build a set of removed members, plus a map of modified
+         * members.
+         */
+
+        final Set<String> removedMembers = Sets.newHashSet();
+        final Map<String, JsonMergePatch> modifiedMembers = Maps.newHashMap();
+        final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+
+        Map.Entry<String, JsonNode> entry;
+
+        while (iterator.hasNext()) {
+            entry = iterator.next();
+            if (entry.getValue().isNull())
+                removedMembers.add(entry.getKey());
+            else {
+                final JsonMergePatch value
+                    = deserialize(entry.getValue().traverse(), ctxt);
+                modifiedMembers.put(entry.getKey(), value);
+            }
+        }
+
+        return new ObjectMergePatch(removedMembers, modifiedMembers);
     }
 
     /*

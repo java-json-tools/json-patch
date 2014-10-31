@@ -43,28 +43,31 @@ public final class SerializationTest
         = JsonNumEquals.getInstance();
 
     private final ObjectMapper mapper = JacksonUtils.newMapper();
-    private final JsonNode testData;
+    private final JsonNode nonObjectTestData;
+    private final JsonNode objectTestData;
 
     public SerializationTest()
         throws IOException
     {
-        final String resource = "/jsonpatch/rfc7386/serdeser-nonobject.json";
-        testData = JsonLoader.fromResource(resource);
+        final String resource1 = "/jsonpatch/rfc7386/serdeser-nonobject.json";
+        final String resource2 = "/jsonpatch/rfc7386/serdeser-object.json";
+        nonObjectTestData = JsonLoader.fromResource(resource1);
+        objectTestData = JsonLoader.fromResource(resource2);
     }
 
     @DataProvider
-    public Iterator<Object[]> getInputs()
+    public Iterator<Object[]> getNonObjectInputs()
     {
         final List<Object[]> list = Lists.newArrayList();
 
-        for (final JsonNode node: testData)
+        for (final JsonNode node: nonObjectTestData)
             list.add(new Object[] { node });
 
         return list.iterator();
     }
 
-    @Test(dataProvider = "getInputs")
-    public void serializationAndBackWorksCorrectly(final JsonNode input)
+    @Test(dataProvider = "getNonObjectInputs")
+    public void nonObjectSerDeserWorksCorrectly(final JsonNode input)
         throws IOException
     {
         final String in = input.toString();
@@ -73,6 +76,34 @@ public final class SerializationTest
 
         assertNotNull(deserialized);
         assertSame(deserialized.getClass(), NonObjectMergePatch.class);
+
+        final String out = mapper.writeValueAsString(deserialized);
+        final JsonNode serialized = JacksonUtils.getReader().readTree(out);
+
+        assertTrue(EQUIVALENCE.equivalent(input, serialized));
+    }
+
+    @DataProvider
+    public Iterator<Object[]> getObjectInputs()
+    {
+        final List<Object[]> list = Lists.newArrayList();
+
+        for (final JsonNode node: objectTestData)
+            list.add(new Object[] { node });
+
+        return list.iterator();
+    }
+
+    @Test(dataProvider = "getObjectInputs")
+    public void objectSerDeserWorksCorrectly(final JsonNode input)
+        throws IOException
+    {
+        final String in = input.toString();
+        final JsonMergePatch deserialized
+            = mapper.readValue(in, JsonMergePatch.class);
+
+        assertNotNull(deserialized);
+        assertSame(deserialized.getClass(), ObjectMergePatch.class);
 
         final String out = mapper.writeValueAsString(deserialized);
         final JsonNode serialized = JacksonUtils.getReader().readTree(out);
