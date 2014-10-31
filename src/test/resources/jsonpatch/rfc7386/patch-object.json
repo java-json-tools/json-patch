@@ -1,0 +1,50 @@
+[
+    {
+        "patch": { "a": "b" },
+        "victim": { "c": "d" },
+        "result": { "a": "b", "c": "d" }
+    },
+    {
+        "patch": { "a": { "d": 1 } },
+        "victim": { "a": { "d": 2 } },
+        "result": { "a": { "d": 1 } }
+    },
+    {
+        "patch": { "c": null },
+        "victim": { "a": "b", "c": "d" },
+        "result": { "a": "b" }
+    },
+    {
+        "patch": { "a": { "d": null} },
+        "victim": { "a": { "b": "c", "d": null} },
+        "result": { "a": { "b": "c" } }
+    },
+    {
+        "patch": {
+            "a": 1000010002020389.8787987983
+        },
+        "victim": {
+            "a": { "b": "c" },
+            "d": "e"
+        },
+        "result": {
+            "a": 1000010002020389.8787987983,
+            "d": "e"
+        }
+    },
+    {
+        "patch": { "c": [ null ] },
+        "victim": { "a": "b" },
+        "result": { "a": "b", "c": [ null ] }
+    },
+    {
+        "patch": { "a": { "b": "c", "d": null } },
+        "victim": { "a": { "b": null, "d": 3}, "e": -1 },
+        "result": { "a": { "b": "c" }, "e": -1 }
+    },
+    {
+        "patch": { "a": "b", "c": null },
+        "victim": "Hello world!",
+        "result": { "a": "b" }
+    }
+]

@@ -24,7 +24,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -52,7 +56,40 @@ final class ObjectMergePatch
         throws JsonPatchException
     {
         BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
-        return null;
+        /*
+         * If the input is an object, we make a deep copy of it
+         */
+        final ObjectNode ret = input.isObject() ? (ObjectNode) input.deepCopy()
+            : JacksonUtils.nodeFactory().objectNode();
+
+        /*
+         * Our result is now a JSON Object; first, add (or modify) existing
+         * members in the result
+         */
+        String key;
+        JsonNode value;
+        for (final Map.Entry<String, JsonMergePatch> entry:
+            modifiedMembers.entrySet()) {
+            key = entry.getKey();
+            /*
+             * FIXME: ugly...
+             *
+             * We treat missing keys as null nodes; this "works" because in
+             * the modifiedMembers map, values are JsonMergePatch instances:
+             *
+             * * if it is a NonObjectMergePatch, the value is replaced
+             *   unconditionally;
+             * * if it is an ObjectMergePatch, we get back here; the value will
+             *   be replaced with a JSON Object anyway before being processed.
+             */
+            value = Optional.fromNullable(ret.get(key))
+                .or(NullNode.getInstance());
+            ret.put(key, entry.getValue().apply(value));
+        }
+
+        ret.remove(removedMembers);
+
+        return ret;
     }
 
     @Override
