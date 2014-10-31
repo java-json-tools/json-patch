@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 public final class SerializationTest
@@ -47,7 +48,7 @@ public final class SerializationTest
     public SerializationTest()
         throws IOException
     {
-        final String resource = "/jsonpatch/rfc7386/serialization.json";
+        final String resource = "/jsonpatch/rfc7386/serdeser-nonobject.json";
         testData = JsonLoader.fromResource(resource);
     }
 
@@ -71,6 +72,7 @@ public final class SerializationTest
             = mapper.readValue(in, JsonMergePatch.class);
 
         assertNotNull(deserialized);
+        assertSame(deserialized.getClass(), NonObjectMergePatch.class);
 
         final String out = mapper.writeValueAsString(deserialized);
         final JsonNode serialized = JacksonUtils.getReader().readTree(out);
