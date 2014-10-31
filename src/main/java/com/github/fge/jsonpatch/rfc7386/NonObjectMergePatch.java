@@ -46,7 +46,7 @@ final class NonObjectMergePatch
         throws JsonPatchException
     {
         BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
-        return null;
+        return node;
     }
 
     @Override
