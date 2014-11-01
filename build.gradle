@@ -17,35 +17,24 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-/*
- * This has to be here... It will not be taken into account in common.gradle!
- *
- * Looks like a serious bug... See also:
- *
- * http://forums.gradle.org/gradle/topics/buildscript_in_subprojects_ignored
- *
- * We also use Spring's propdeps plugin to have a _real_ provided scope. See:
- *
- * https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
- */
-//buildscript {
-//    repositories {
-//        maven {
-//            url "http://repo.springsource.org/plugins-release";
-//        }
-//    }
-//    dependencies {
-//        classpath(group: "org.springframework.build.gradle",
-//            name: "propdeps-plugin", version: "0.0.5");
-//    }
-//};
-//
-//configure(allprojects) {
-//    apply(plugin: "propdeps");
-//    apply(plugin: "propdeps-maven");
-//    apply(plugin: "propdeps-idea");
-//    apply(plugin: "propdeps-eclipse");
-//}
+buildscript {
+    repositories {
+        maven {
+            url "http://repo.springsource.org/plugins-release";
+        }
+    }
+    dependencies {
+        classpath(group: "org.springframework.build.gradle",
+            name: "propdeps-plugin", version: "0.0.7");
+    }
+};
+
+configure(allprojects) {
+    apply(plugin: "propdeps");
+    apply(plugin: "propdeps-maven");
+    apply(plugin: "propdeps-idea");
+    apply(plugin: "propdeps-eclipse");
+}
 
 apply(plugin: "java");
 apply(plugin: "maven");
@@ -64,7 +53,7 @@ targetCompatibility = "1.6"; // defaults to sourceCompatibility
  * List of dependencies
  */
 dependencies {
-    compile(group: "com.google.code.findbugs", name: "jsr305",
+    provided(group: "com.google.code.findbugs", name: "jsr305",
         version: "2.0.1");
     compile(group: "com.github.fge", name: "jackson-coreutils",
         version: "1.6");
