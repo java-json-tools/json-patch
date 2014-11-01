@@ -54,7 +54,36 @@ apply(plugin: "osgi");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
 
-apply(from: "project.gradle");
+group = "com.github.fge";
+version = "1.8-SNAPSHOT";
+description = "JSON Patch (RFC 6902) and JSON merge-patch implementation in Java";
+sourceCompatibility = "1.6";
+targetCompatibility = "1.6"; // defaults to sourceCompatibility
+
+/*
+ * List of dependencies
+ */
+dependencies {
+    compile(group: "com.google.code.findbugs", name: "jsr305",
+        version: "2.0.1");
+    compile(group: "com.github.fge", name: "jackson-coreutils",
+        version: "1.6");
+    testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
+        exclude(group: "junit", module: "junit");
+        exclude(group: "org.beanshell", module: "bsh");
+        exclude(group: "org.yaml", module: "snakeyaml");
+    };
+    testCompile(group: "org.mockito", name: "mockito-core", version: "1.9.5");
+}
+
+javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
+javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc/");
+javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
+javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
+javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
+javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
+javadoc.options.links("http://fge.github.io/msg-simple/");
+javadoc.options.links("http://fge.github.io/jackson-coreutils/");
 
 /*
  * Repositories to use
