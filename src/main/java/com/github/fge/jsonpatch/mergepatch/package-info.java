@@ -21,7 +21,8 @@
  * JSON Merge Patch implementation
  *
  * <p>This is a complete implementation of <a
- * href="http://tools.ietf.org/html/rfc7386>RFC 7386 (JSON Merge Patch)</a>.</p>
+ * href="http://tools.ietf.org/html/rfc7386">RFC 7386 (JSON Merge Patch)</a>.
+ * </p>
  *
  * <p>You may want to use this instead of a "pure" (aka RFC 6902) JSON Patch if
  * you want to do simple patching of JSON Objects, where this implementation
