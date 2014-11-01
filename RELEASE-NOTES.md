@@ -1,3 +1,9 @@
+## 1.8
+
+* JSON Merge Patch is now RFC 7386 compliant.
+* Merge gradle files; use Spring's propdeps plugin.
+* Fix issue #12: name and description now appear in generated site pom.
+
 ## 1.7
 
 * Fix bug with diffs and multiple array removals; detected by @royclarkson, fixed by
