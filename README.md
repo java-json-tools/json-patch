@@ -21,7 +21,7 @@ The JSON diff implementation is courtesy of [Randy Watler](https://github.com/rw
 
 ## Versions
 
-The current version is **1.7**. See file `RELEASE-NOTES.md` for details.
+The current version is **1.8**. See file `RELEASE-NOTES.md` for details.
 
 ## Using it in your project
 

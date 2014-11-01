@@ -44,7 +44,7 @@ apply(plugin: "idea");
 apply(plugin: "eclipse");
 
 group = "com.github.fge";
-version = "1.8";
+version = "1.9-SNAPSHOT";
 description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java";
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6"; // defaults to sourceCompatibility
