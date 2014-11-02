@@ -1,0 +1,43 @@
+[
+    {
+        "first": 1,
+        "second": null,
+        "unchanged": {}
+    },
+    {
+        "first": "hello",
+        "second": "hello",
+        "unchanged": { "": "hello" }
+    },
+    {
+        "first": { "a": "b", "c": "d" },
+        "second": { "a": "x", "c": "d" },
+        "unchanged": { "/c": "d" }
+    },
+    {
+        "first": [ "hello", "world", 31 ],
+        "second": [ "goodbye", "world", 31 ],
+        "unchanged": {
+            "/1": "world",
+            "/2": 31
+        }
+    },
+    {
+        "first": { "a": { "b": "c", "d": [ 1, 2 ] } },
+        "second": { "a": { "b": "c", "d": [ 0, 2 ] } },
+        "unchanged": { "/a/b": "c", "/a/d/1": 2 }
+    },
+    {
+        "first": [ 1, 2, { "a": "b", "x": 3 } ],
+        "second": [ 1, "ooo", { "a": 1, "x": 3 } ],
+        "unchanged": {
+            "/0": 1,
+            "/2/x": 3
+        }
+    },
+    {
+        "first": [ "a", "b", "c" ],
+        "second": [ "a", "b", "c" ],
+        "unchanged": { "": [ "a", "b", "c" ] }
+    }
+]
