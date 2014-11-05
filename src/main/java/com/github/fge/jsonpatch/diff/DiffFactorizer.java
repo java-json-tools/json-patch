@@ -25,6 +25,8 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -106,6 +108,7 @@ final class DiffFactorizer
     private static void findPairs(final List<Diff> diffs)
     {
         final int diffsSize = diffs.size();
+        Collection<Diff> alreadyPaired = new HashSet<Diff>();
 
         Diff addition, removal;
 
@@ -119,7 +122,7 @@ final class DiffFactorizer
              */
             for (int removeIndex = 0; removeIndex < diffsSize; removeIndex++) {
                 removal = diffs.get(removeIndex);
-                if (removal.operation != DiffOperation.REMOVE)
+                if (removal.operation != DiffOperation.REMOVE || alreadyPaired.contains(removal))
                     continue;
                 if (!EQUIVALENCE.equivalent(removal.value, addition.value))
                     continue;
@@ -131,6 +134,10 @@ final class DiffFactorizer
                 addition.firstOfPair = addIndex < removeIndex;
                 removal.pairedDiff = addition;
                 removal.firstOfPair = removeIndex < addIndex;
+
+                alreadyPaired.add(removal);
+                alreadyPaired.add(addition);
+
                 break;
             }
         }

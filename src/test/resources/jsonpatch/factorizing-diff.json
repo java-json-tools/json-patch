@@ -296,5 +296,13 @@
             { "op": "remove", "path": "/0" },
             { "op": "remove", "path": "/1" }
         ]
+    },
+    {
+        "first": { "b": [0, 1, 2] },
+        "second": { "b": [1, 2], "c": 0 ,"d":0},
+        "patch": [
+        { "op": "move", "from": "/b/0", "path": "/c"},
+        { "op": "add", "path": "/d", "value": 0}
+        ]
     }
 ]
