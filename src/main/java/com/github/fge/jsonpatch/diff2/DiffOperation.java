@@ -21,6 +21,12 @@ package com.github.fge.jsonpatch.diff2;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.AddOperation;
+import com.github.fge.jsonpatch.CopyOperation;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.MoveOperation;
+import com.github.fge.jsonpatch.RemoveOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 
 final class DiffOperation
 {
@@ -100,11 +106,54 @@ final class DiffOperation
         return newValue;
     }
 
+    JsonPatchOperation asJsonPatchOperation()
+    {
+        return type.toOperation(this);
+    }
+
     enum Type {
-        ADD,
-        COPY,
-        MOVE,
-        REMOVE,
-        REPLACE,
+        ADD
+            {
+                @Override
+                JsonPatchOperation toOperation(final DiffOperation op)
+                {
+                    return new AddOperation(op.newPointer, op.newValue);
+                }
+            },
+        COPY
+        {
+            @Override
+            JsonPatchOperation toOperation(final DiffOperation op)
+            {
+                return new CopyOperation(op.oldPointer, op.newPointer);
+            }
+        },
+        MOVE
+        {
+            @Override
+            JsonPatchOperation toOperation(final DiffOperation op)
+            {
+                return new MoveOperation(op.oldPointer, op.newPointer);
+            }
+        },
+        REMOVE
+        {
+            @Override
+            JsonPatchOperation toOperation(final DiffOperation op)
+            {
+                return new RemoveOperation(op.oldPointer);
+            }
+        },
+        REPLACE
+        {
+            @Override
+            JsonPatchOperation toOperation(final DiffOperation op)
+            {
+                return new ReplaceOperation(op.oldPointer, op.newValue);
+            }
+        },
+        ;
+
+        abstract JsonPatchOperation toOperation(final DiffOperation op);
     }
 }
