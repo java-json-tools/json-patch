@@ -58,10 +58,9 @@ final class DiffOperation
     }
 
     static DiffOperation replace(final JsonPointer oldPointer,
-        final JsonNode oldValue, final JsonPointer newPointer,
-        final JsonNode newValue)
+        final JsonNode oldValue, final JsonNode newValue)
     {
-        return new DiffOperation(Type.REPLACE, oldPointer, oldValue, newPointer,
+        return new DiffOperation(Type.REPLACE, oldPointer, oldValue, null,
             newValue);
     }
 
