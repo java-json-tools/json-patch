@@ -19,21 +19,17 @@
 
 package com.github.fge.jsonpatch.diff2;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.MoveOperation;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Equivalence;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -43,6 +39,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * JSON "diff" implementation
+ *
+ * <p>This class generates a JSON Patch (as in, an RFC 6902 JSON Patch) given
+ * two JSON values as inputs. The patch can be obtained directly as a {@link
+ * JsonPatch} or as a {@link JsonNode}.</p>
+ *
+ * <p>Note: there is <b>no guarantee</b> about the usability of the generated
+ * patch for any other source/target combination than the one used to generate
+ * the patch.</p>
+ *
+ * @since 1.2
+ */
 @ParametersAreNonnullByDefault
 public final class JsonDiff
 {
@@ -55,22 +64,40 @@ public final class JsonDiff
     {
     }
 
-    public static JsonPatch asJsonPatch(final JsonNode first,
-        final JsonNode second)
+    /**
+     * Generate a JSON patch for transforming the source node into the target
+     * node
+     *
+     * @param source the node to be patched
+     * @param target the expected result after applying the patch
+     * @return the patch as a {@link JsonPatch}
+     *
+     * @since 1.9
+     */
+    public static JsonPatch asJsonPatch(final JsonNode source,
+        final JsonNode target)
     {
         final Map<JsonPointer, JsonNode> unchanged
-            = getUnchangedValues(first, second);
+            = getUnchangedValues(source, target);
         final DiffProcessor processor = new DiffProcessor(unchanged);
 
-        generateDiffs(processor, JsonPointer.empty(), first, second);
+        generateDiffs(processor, JsonPointer.empty(), source, target);
         return processor.getPatch();
     }
 
-    public static JsonNode asJson(final JsonNode first, final JsonNode second)
+    /**
+     * Generate a JSON patch for transforming the source node into the target
+     * node
+     *
+     * @param source the node to be patched
+     * @param target the expected result after applying the patch
+     * @return the patch as a {@link JsonNode}
+     */
+    public static JsonNode asJson(final JsonNode source, final JsonNode target)
     {
         final String s;
         try {
-            s = MAPPER.writeValueAsString(asJsonPatch(first, second));
+            s = MAPPER.writeValueAsString(asJsonPatch(source, target));
             return MAPPER.readTree(s);
         } catch (IOException e) {
             throw new RuntimeException("cannot generate JSON diff", e);
@@ -78,19 +105,19 @@ public final class JsonDiff
     }
 
     private static void generateDiffs(final DiffProcessor processor,
-        final JsonPointer pointer, final JsonNode first, final JsonNode second)
+        final JsonPointer pointer, final JsonNode source, final JsonNode target)
     {
-        if (EQUIVALENCE.equivalent(first, second))
+        if (EQUIVALENCE.equivalent(source, target))
             return;
 
-        final NodeType firstType = NodeType.getNodeType(first);
-        final NodeType secondType = NodeType.getNodeType(second);
+        final NodeType firstType = NodeType.getNodeType(source);
+        final NodeType secondType = NodeType.getNodeType(target);
 
         /*
          * Node types differ: generate a replacement operation.
          */
         if (firstType != secondType) {
-            processor.valueReplaced(pointer, first, second);
+            processor.valueReplaced(pointer, source, target);
             return;
         }
 
@@ -100,8 +127,8 @@ public final class JsonDiff
          *
          * If this is not a container, generate a replace operation.
          */
-        if (!first.isContainerNode()) {
-            processor.valueReplaced(pointer, first, second);
+        if (!source.isContainerNode()) {
+            processor.valueReplaced(pointer, source, target);
             return;
         }
 
@@ -110,64 +137,64 @@ public final class JsonDiff
          * delegate.
          */
         if (firstType == NodeType.OBJECT)
-            generateObjectDiffs(processor, pointer, (ObjectNode) first,
-                (ObjectNode) second);
+            generateObjectDiffs(processor, pointer, (ObjectNode) source,
+                (ObjectNode) target);
         else // array
-            generateArrayDiffs(processor, pointer, (ArrayNode) first,
-                (ArrayNode) second);
+            generateArrayDiffs(processor, pointer, (ArrayNode) source,
+                (ArrayNode) target);
     }
 
     private static void generateObjectDiffs(final DiffProcessor processor,
-        final JsonPointer pointer, final ObjectNode first,
-        final ObjectNode second)
+        final JsonPointer pointer, final ObjectNode source,
+        final ObjectNode target)
     {
         final Set<String> firstFields
-            = Sets.newTreeSet(Sets.newHashSet(first.fieldNames()));
+            = Sets.newTreeSet(Sets.newHashSet(source.fieldNames()));
         final Set<String> secondFields
-            = Sets.newTreeSet(Sets.newHashSet(second.fieldNames()));
+            = Sets.newTreeSet(Sets.newHashSet(target.fieldNames()));
 
         for (final String field: Sets.difference(firstFields, secondFields))
-            processor.valueRemoved(pointer.append(field), first.get(field));
+            processor.valueRemoved(pointer.append(field), source.get(field));
 
         for (final String field: Sets.difference(secondFields, firstFields))
-            processor.valueAdded(pointer.append(field), second.get(field));
+            processor.valueAdded(pointer.append(field), target.get(field));
 
         for (final String field: Sets.intersection(firstFields, secondFields))
-            generateDiffs(processor, pointer.append(field), first.get(field),
-                second.get(field));
+            generateDiffs(processor, pointer.append(field), source.get(field),
+                target.get(field));
     }
 
     private static void generateArrayDiffs(final DiffProcessor processor,
-        final JsonPointer pointer, final ArrayNode first,
-        final ArrayNode second)
+        final JsonPointer pointer, final ArrayNode source,
+        final ArrayNode target)
     {
-        final int firstSize = first.size();
-        final int secondSize = second.size();
+        final int firstSize = source.size();
+        final int secondSize = target.size();
         final int size = Math.min(firstSize, secondSize);
 
         for (int index = 0; index < size; index++)
-            generateDiffs(processor, pointer.append(index), first.get(index),
-                second.get(index));
+            generateDiffs(processor, pointer.append(index), source.get(index),
+                target.get(index));
 
         /*
          * Source array is larger; in this case, elements are removed from the
          * target; the index of removal is always the original arrays's length.
          */
         for (int index = size; index < firstSize; index++)
-            processor.valueRemoved(pointer.append(size), first.get(index));
+            processor.valueRemoved(pointer.append(size), source.get(index));
 
         // Deal with the destination array being larger...
         for (int index = size; index < secondSize; index++)
-            processor.valueAdded(pointer.append("-"), second.get(index));
+            processor.valueAdded(pointer.append("-"), target.get(index));
     }
 
 
     @VisibleForTesting
-    static Map<JsonPointer, JsonNode> getUnchangedValues(final JsonNode first,
-        final JsonNode second)
+    static Map<JsonPointer, JsonNode> getUnchangedValues(final JsonNode source,
+        final JsonNode target)
     {
         final Map<JsonPointer, JsonNode> ret = Maps.newHashMap();
-        computeUnchanged(ret, JsonPointer.empty(), first, second);
+        computeUnchanged(ret, JsonPointer.empty(), source, target);
         return ret;
     }
 
@@ -199,57 +226,29 @@ public final class JsonDiff
     }
 
     private static void computeObject(final Map<JsonPointer, JsonNode> ret,
-        final JsonPointer pointer, final JsonNode first, final JsonNode second)
+        final JsonPointer pointer, final JsonNode source,
+        final JsonNode target)
     {
-        final Iterator<String> firstFields = first.fieldNames();
+        final Iterator<String> firstFields = source.fieldNames();
 
         String name;
 
         while (firstFields.hasNext()) {
             name = firstFields.next();
-            if (!second.has(name))
+            if (!target.has(name))
                 continue;
-            computeUnchanged(ret, pointer.append(name), first.get(name),
-                second.get(name));
+            computeUnchanged(ret, pointer.append(name), source.get(name),
+                target.get(name));
         }
     }
 
     private static void computeArray(final Map<JsonPointer, JsonNode> ret,
-        final JsonPointer pointer, final JsonNode first, final JsonNode second)
+        final JsonPointer pointer, final JsonNode source, final JsonNode target)
     {
-        final int size = Math.min(first.size(), second.size());
+        final int size = Math.min(source.size(), target.size());
 
         for (int i = 0; i < size; i++)
-            computeUnchanged(ret, pointer.append(i), first.get(i),
-                second.get(i));
-    }
-
-    public static void main(final String... args)
-        throws IOException
-    {
-        final ImmutableMap.Builder<JsonPointer, JsonNode> builder
-            = ImmutableMap.builder();
-
-        builder.put(JsonPointer.of("a"), JsonNodeFactory.instance.arrayNode());
-
-        final ImmutableMap<JsonPointer, JsonNode> map = builder.build();
-
-        final ObjectMapper mapper = JacksonUtils.newMapper();
-
-        final JsonNode node = mapper.convertValue(map, JsonNode.class);
-        System.out.println(node);
-
-        final TypeReference<Map<JsonPointer, JsonNode>> typeRef
-            = new TypeReference<Map<JsonPointer, JsonNode>>()
-        {
-        };
-
-        final Map<JsonPointer, JsonNode> map2
-            = mapper.readValue(node.traverse(), typeRef);
-
-        System.out.println(map2);
-
-        System.out.println(mapper.writeValueAsString(new MoveOperation
-            (JsonPointer.of("a"), JsonPointer.of("b"))));
+            computeUnchanged(ret, pointer.append(i), source.get(i),
+                target.get(i));
     }
 }
