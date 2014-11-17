@@ -121,8 +121,10 @@ public final class JsonDiff
         final JsonPointer pointer, final ObjectNode first,
         final ObjectNode second)
     {
-        final Set<String> firstFields = Sets.newHashSet(first.fieldNames());
-        final Set<String> secondFields = Sets.newHashSet(second.fieldNames());
+        final Set<String> firstFields
+            = Sets.newTreeSet(Sets.newHashSet(first.fieldNames()));
+        final Set<String> secondFields
+            = Sets.newTreeSet(Sets.newHashSet(second.fieldNames()));
 
         for (final String field: Sets.difference(firstFields, secondFields))
             processor.valueRemoved(pointer.append(field), first.get(field));
