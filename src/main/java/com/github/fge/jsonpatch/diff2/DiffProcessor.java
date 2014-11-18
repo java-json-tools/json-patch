@@ -64,7 +64,7 @@ final class DiffProcessor
         if (removalIndex != -1) {
             final DiffOperation removed = diffs.get(removalIndex);
             diffs.remove(removalIndex);
-            diffs.add(DiffOperation.move(removed.getOldPointer(),
+            diffs.add(DiffOperation.move(removed.getFrom(),
                 value, pointer, value));
             return;
         }
