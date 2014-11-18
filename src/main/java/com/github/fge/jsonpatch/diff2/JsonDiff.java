@@ -28,6 +28,9 @@ import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchMessages;
+import com.github.fge.msgsimple.bundle.MessageBundle;
+import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Equivalence;
 import com.google.common.collect.Maps;
@@ -50,11 +53,21 @@ import java.util.Set;
  * patch for any other source/target combination than the one used to generate
  * the patch.</p>
  *
+ * <p>This class always performs operations in the following order: removals,
+ * additions and replacements. It then factors removal/addition pairs into
+ * move operations, or copy operations if a common element exists, at the same
+ * {@link JsonPointer pointer}, in both the source and destination.</p>
+ *
+ * <p>You can obtain a diff either as a {@link JsonPatch} directly or, for
+ * backwards compatibility, as a {@link JsonNode}.</p>
+ *
  * @since 1.2
  */
 @ParametersAreNonnullByDefault
 public final class JsonDiff
 {
+    private static final MessageBundle BUNDLE
+        = MessageBundles.getBundle(JsonPatchMessages.class);
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
 
     private static final Equivalence<JsonNode> EQUIVALENCE
@@ -77,6 +90,8 @@ public final class JsonDiff
     public static JsonPatch asJsonPatch(final JsonNode source,
         final JsonNode target)
     {
+        BUNDLE.checkNotNull(source, "common.nullArgument");
+        BUNDLE.checkNotNull(target, "common.nullArgument");
         final Map<JsonPointer, JsonNode> unchanged
             = getUnchangedValues(source, target);
         final DiffProcessor processor = new DiffProcessor(unchanged);
@@ -172,16 +187,16 @@ public final class JsonDiff
         final int secondSize = target.size();
         final int size = Math.min(firstSize, secondSize);
 
-        for (int index = 0; index < size; index++)
-            generateDiffs(processor, pointer.append(index), source.get(index),
-                target.get(index));
-
         /*
          * Source array is larger; in this case, elements are removed from the
          * target; the index of removal is always the original arrays's length.
          */
         for (int index = size; index < firstSize; index++)
             processor.valueRemoved(pointer.append(size), source.get(index));
+
+        for (int index = 0; index < size; index++)
+            generateDiffs(processor, pointer.append(index), source.get(index),
+                target.get(index));
 
         // Deal with the destination array being larger...
         for (int index = size; index < secondSize; index++)

@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+// TODO: cleanup
 final class DiffProcessor
 {
     private static final Equivalence<JsonNode> EQUIVALENCE
