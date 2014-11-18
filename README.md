@@ -19,7 +19,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.8**. See file `RELEASE-NOTES.md` for details.
+The current version is **1.9**. See file `RELEASE-NOTES.md` for details.
 
 ## Using it in your project
 
@@ -114,9 +114,14 @@ final JsonNode patched = patch.apply(orig);
 The main class is `JsonDiff`. It returns the patch as a `JsonPatch` or as a `JsonNode`. Sample usage:
 
 ```java
-final JsonPatch patch = JsonDiff.asJsonPatch(firstNode, secondNode);
-final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
+final JsonPatch patch = JsonDiff.asJsonPatch(source, target);
+final JsonNode patchNode = JsonDiff.asJson(source, target);
 ```
+
+**Important note**: the API offers **no guarantee at all** about patch "reuse";
+that is, the generated patch is only guaranteed to safely transform the given
+source to the given target. Do not expect it to give the result you expect on
+another source/target pair!
 
 ### JSON Merge Patch
 
