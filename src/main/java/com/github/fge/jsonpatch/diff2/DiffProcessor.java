@@ -33,8 +33,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-// Non final because we want to be able to Mockito.spy() on it
-class DiffProcessor
+final class DiffProcessor
 {
     private static final Equivalence<JsonNode> EQUIVALENCE
         = JsonNumEquals.getInstance();
