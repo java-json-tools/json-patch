@@ -20,18 +20,25 @@
 package com.github.fge.jsonpatch.diff2;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.google.common.base.Equivalence;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
 // Non final because we want to be able to Mockito.spy() on it
 class DiffProcessor
 {
+    private static final Equivalence<JsonNode> EQUIVALENCE
+        = JsonNumEquals.getInstance();
+
     private final Map<JsonPointer, JsonNode> unchanged;
 
     private final List<DiffOperation> diffs = Lists.newArrayList();
@@ -54,7 +61,12 @@ class DiffProcessor
 
     void valueAdded(final JsonPointer pointer, final JsonNode value)
     {
-        diffs.add(DiffOperation.add(pointer, value));
+        final JsonPointer ptr = findUnchangedValue(value);
+        final DiffOperation op = ptr != null
+            ? DiffOperation.copy(ptr, pointer, value)
+            : DiffOperation.add(pointer, value);
+
+        diffs.add(op);
     }
 
     JsonPatch getPatch()
@@ -65,5 +77,15 @@ class DiffProcessor
             list.add(op.asJsonPatchOperation());
 
         return new JsonPatch(list);
+    }
+
+    @Nullable
+    private JsonPointer findUnchangedValue(final JsonNode value)
+    {
+        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(value);
+        for (final Map.Entry<JsonPointer, JsonNode> entry: unchanged.entrySet())
+            if (predicate.apply(entry.getValue()))
+                return entry.getKey();
+        return null;
     }
 }

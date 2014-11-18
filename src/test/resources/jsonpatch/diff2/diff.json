@@ -113,5 +113,18 @@
             { "op": "replace", "path": "/0", "value": "x" },
             { "op": "add", "path": "/1/-", "value": "y" }
         ]
+    },
+    {
+        "message": "similar element is copied instead of added",
+        "first": {
+            "a": "c"
+        },
+        "second": {
+            "a": "c",
+            "d": "c"
+        },
+        "patch": [
+            { "op": "copy", "path": "/d", "from": "/a" }
+        ]
     }
 ]
