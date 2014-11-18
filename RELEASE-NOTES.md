@@ -1,3 +1,9 @@
+## 1.9
+
+* Completely new JSON diff implementation; less smart than the previous one but
+bug free
+* Depend on AssertJ.
+
 ## 1.8
 
 * JSON Merge Patch is now RFC 7386 compliant.
