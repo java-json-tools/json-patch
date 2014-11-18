@@ -17,8 +17,6 @@ Its features are:
 * full support for RFC 6902 operations, including `test`;
 * JSON "diff" (RFC 6902 only) with operation factorization.
 
-The JSON diff implementation is courtesy of [Randy Watler](https://github.com/rwatler).
-
 ## Versions
 
 The current version is **1.8**. See file `RELEASE-NOTES.md` for details.
@@ -113,13 +111,12 @@ final JsonNode patched = patch.apply(orig);
 
 ### JSON diff
 
-The main class is `JsonDiff`. It returns the patch as a `JsonNode`. Sample usage:
+The main class is `JsonDiff`. It returns the patch as a `JsonPatch` or as a `JsonNode`. Sample usage:
 
 ```java
+final JsonPatch patch = JsonDiff.asJsonPatch(firstNode, secondNode);
 final JsonNode patchNode = JsonDiff.asJson(firstNode, secondNode);
 ```
-
-You can then use the generated `JsonNode` to build a patch using the code sample above.
 
 ### JSON Merge Patch
 
