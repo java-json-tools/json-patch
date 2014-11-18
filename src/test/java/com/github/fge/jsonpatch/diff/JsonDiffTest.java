@@ -25,6 +25,7 @@ import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.base.Equivalence;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -33,46 +34,79 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JsonDiffTest
 {
     private static final Equivalence<JsonNode> EQUIVALENCE
-            = JsonNumEquals.getInstance();
+        = JsonNumEquals.getInstance();
 
-    private final JsonNode data;
+    private final JsonNode testData;
 
     public JsonDiffTest()
-            throws IOException
+        throws IOException
     {
-        data = JsonLoader.fromResource("/jsonpatch/factorizing-diff.json");
+        final String resource = "/jsonpatch/diff/diff.json";
+        testData = JsonLoader.fromResource(resource);
     }
 
     @DataProvider
-    public Iterator<Object[]> getData()
+    public Iterator<Object[]> getPatchesOnly()
     {
         final List<Object[]> list = Lists.newArrayList();
 
-        for (final JsonNode node: data)
-            list.add(new Object[] { node.get("first"), node.get("second"),
-                node.get("patch") });
+        for (final JsonNode node: testData)
+            list.add(new Object[] { node.get("first"), node.get("second") });
 
         return list.iterator();
     }
 
-    @Test(dataProvider = "getData")
-    public void diffsAreCorrectlyComputed(final JsonNode first,
-        final JsonNode second, final JsonNode expected)
-        throws IOException, JsonPatchException
+    @Test(dataProvider = "getPatchesOnly")
+    public void generatedPatchAppliesCleanly(final JsonNode first,
+        final JsonNode second)
+        throws JsonPatchException
     {
-        final JsonNode actual = JsonDiff.asJson(first, second);
-        assertEquals(actual, expected,
-            "generated patch differs from expectations");
+        final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
+        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
+        final JsonNode actual = patch.apply(first);
 
-        final JsonPatch patch = JsonPatch.fromJson(actual);
-        assertTrue(EQUIVALENCE.equivalent(patch.apply(first), second),
-            "reapplying generated patch does not generate the correct result");
+        assertThat(predicate.apply(actual)).overridingErrorMessage(
+            "Generated patch failed to apply\nexpected: %s\nactual: %s",
+            second, actual
+        ).isTrue();
     }
 
+    @DataProvider
+    public Iterator<Object[]> getLiteralPatches()
+    {
+        final List<Object[]> list = Lists.newArrayList();
 
+        for (final JsonNode node: testData) {
+            if (!node.has("patch"))
+                continue;
+            list.add(new Object[] {
+                node.get("message").textValue(), node.get("first"),
+                node.get("second"), node.get("patch")
+            });
+        }
+
+        return list.iterator();
+    }
+
+    @Test(
+        dataProvider = "getLiteralPatches",
+        dependsOnMethods = "generatedPatchAppliesCleanly"
+    )
+    public void generatedPatchesAreWhatIsExpected(final String message,
+        final JsonNode first, final JsonNode second, final JsonNode expected)
+    {
+        final JsonNode actual = JsonDiff.asJson(first, second);
+        final Predicate<JsonNode> predicate
+            = EQUIVALENCE.equivalentTo(expected);
+
+        assertThat(predicate.apply(actual)).overridingErrorMessage(
+            "patch is not what was expected\nscenario: %s\n"
+            + "expected: %s\nactual: %s\n", message, expected, actual
+        ).isTrue();
+    }
 }

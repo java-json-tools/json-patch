@@ -17,7 +17,7 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch.diff2;
+package com.github.fge.jsonpatch.diff;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,7 +49,7 @@ public final class UnchangedTest
     public UnchangedTest()
         throws IOException
     {
-        final String resource = "/jsonpatch/diff2/unchanged.json";
+        final String resource = "/jsonpatch/diff/unchanged.json";
         testData = JsonLoader.fromResource(resource);
     }
 
