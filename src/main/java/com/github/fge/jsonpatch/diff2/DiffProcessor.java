@@ -60,6 +60,14 @@ final class DiffProcessor
 
     void valueAdded(final JsonPointer pointer, final JsonNode value)
     {
+        final int removalIndex = findPreviouslyRemoved(value);
+        if (removalIndex != -1) {
+            final DiffOperation removed = diffs.get(removalIndex);
+            diffs.remove(removalIndex);
+            diffs.add(DiffOperation.move(removed.getOldPointer(),
+                value, pointer, value));
+            return;
+        }
         final JsonPointer ptr = findUnchangedValue(value);
         final DiffOperation op = ptr != null
             ? DiffOperation.copy(ptr, pointer, value)
@@ -86,5 +94,20 @@ final class DiffProcessor
             if (predicate.apply(entry.getValue()))
                 return entry.getKey();
         return null;
+    }
+
+    private int findPreviouslyRemoved(final JsonNode value)
+    {
+        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(value);
+
+        DiffOperation op;
+
+        for (int i = 0; i < diffs.size(); i++) {
+            op = diffs.get(i);
+            if (op.getType() == DiffOperation.Type.REMOVE
+                && predicate.apply(op.getOldValue()))
+                return i;
+        }
+        return -1;
     }
 }
