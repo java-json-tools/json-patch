@@ -19,9 +19,11 @@
 
 package com.github.fge.jsonpatch;
 
+import static com.github.fge.jsonpatch.JacksonUtils.head;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -29,8 +31,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Iterables;
 
 import java.io.IOException;
 
@@ -43,6 +43,8 @@ import java.io.IOException;
 public final class RemoveOperation
     extends JsonPatchOperation
 {
+    private static final JsonPointer EMPTY = JsonPointer.compile("");
+
     @JsonCreator
     public RemoveOperation(@JsonProperty("path") final JsonPointer path)
     {
@@ -53,14 +55,14 @@ public final class RemoveOperation
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        if (path.isEmpty())
+        if (EMPTY.equals(path))
             return MissingNode.getInstance();
-        if (path.path(node).isMissingNode())
+        if (node.at(path).isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
         final JsonNode ret = node.deepCopy();
-        final JsonNode parentNode = path.parent().get(ret);
-        final String raw = Iterables.getLast(path).getToken().getRaw();
+        final JsonNode parentNode = ret.at(head(path));
+        final String raw = JacksonUtils.getLast(path);
         if (parentNode.isObject())
             ((ObjectNode) parentNode).remove(raw);
         else

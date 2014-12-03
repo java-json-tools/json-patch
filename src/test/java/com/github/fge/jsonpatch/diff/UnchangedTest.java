@@ -19,17 +19,20 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.github.fge.jsonpatch.JacksonUtils;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +53,14 @@ public final class UnchangedTest
         throws IOException
     {
         final String resource = "/jsonpatch/diff/unchanged.json";
-        testData = JsonLoader.fromResource(resource);
+        testData = fromResource(resource);
     }
 
     @DataProvider
     public Iterator<Object[]> getTestData()
         throws IOException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: testData)
             list.add(new Object[] { node.get("first"), node.get("second"),
@@ -74,5 +77,33 @@ public final class UnchangedTest
             = JsonDiff.getUnchangedValues(first, second);
 
         assertEquals(actual, expected);
+    }
+
+    public static JsonNode fromResource(final String resource)
+            throws IOException
+    {
+        URL url;
+        url = UnchangedTest.class.getResource(resource);
+
+        if (url == null)
+            throw new IOException("resource " + resource + " not found");
+
+        ObjectMapper mapper = JacksonUtils.newMapper();
+
+        ObjectReader reader = mapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true)
+                .reader(JsonNode.class);
+
+        InputStream is = null;
+        JsonNode node = null;
+        try {
+            is = url.openStream();
+            node = reader.readValue(is);
+        } finally {
+            if(is != null)
+            {
+                is.close();
+            }
+        }
+        return node;
     }
 }

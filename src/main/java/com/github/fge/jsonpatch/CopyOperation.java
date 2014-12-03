@@ -21,8 +21,8 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 /**
  * JSON Patch {@code copy} operation
@@ -54,7 +54,7 @@ public final class CopyOperation
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        final JsonNode dupData = from.path(node).deepCopy();
+        final JsonNode dupData = node.at(from).deepCopy();
         if (dupData.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));

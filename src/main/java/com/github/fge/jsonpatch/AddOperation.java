@@ -19,16 +19,13 @@
 
 package com.github.fge.jsonpatch;
 
+import static com.github.fge.jsonpatch.JacksonUtils.head;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jackson.jsonpointer.ReferenceToken;
-import com.github.fge.jackson.jsonpointer.TokenResolver;
-import com.google.common.collect.Iterables;
-
 
 /**
  * JSON Patch {@code add} operation
@@ -67,8 +64,9 @@ import com.google.common.collect.Iterables;
 public final class AddOperation
     extends PathValueOperation
 {
-    private static final ReferenceToken LAST_ARRAY_ELEMENT
-        = ReferenceToken.fromRaw("-");
+
+    private static final JsonPointer EMPTY = JsonPointer.compile("");
+    private static final String LAST_ARRAY_ELEMENT = "-";
 
     @JsonCreator
     public AddOperation(@JsonProperty("path") final JsonPointer path,
@@ -81,14 +79,15 @@ public final class AddOperation
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        if (path.isEmpty())
+        if (EMPTY.equals(path))
             return value;
 
         /*
          * Check the parent node: it must exist and be a container (ie an array
          * or an object) for the add operation to work.
          */
-        final JsonNode parentNode = path.parent().path(node);
+        final JsonNode parentNode = node.at(head(path));
+
         if (parentNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchParent"));
@@ -104,10 +103,10 @@ public final class AddOperation
         throws JsonPatchException
     {
         final JsonNode ret = node.deepCopy();
-        final ArrayNode target = (ArrayNode) path.parent().get(ret);
-        final TokenResolver<JsonNode> token = Iterables.getLast(path);
+        final ArrayNode target = (ArrayNode)ret.at(head(path));
+        final String token = JacksonUtils.getLast(path);
 
-        if (token.getToken().equals(LAST_ARRAY_ELEMENT)) {
+        if (LAST_ARRAY_ELEMENT.equals(token)) {
             target.add(value);
             return ret;
         }
@@ -132,8 +131,8 @@ public final class AddOperation
     private JsonNode addToObject(final JsonPointer path, final JsonNode node)
     {
         final JsonNode ret = node.deepCopy();
-        final ObjectNode target = (ObjectNode) path.parent().get(ret);
-        target.put(Iterables.getLast(path).getToken().getRaw(), value);
+        final ObjectNode target = (ObjectNode) ret.at(head(path));
+        target.put(JacksonUtils.getLast(path), value);
         return ret;
     }
 }

@@ -21,26 +21,21 @@ package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Lists;
+import com.github.fge.jsonpatch.JacksonUtils;
+import com.github.fge.jsonpatch.JsonNumEquals;
+import com.github.fge.jsonpatch.ResourceUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 public final class SerializationTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
 
     private final ObjectMapper mapper = JacksonUtils.newMapper();
     private final JsonNode nonObjectTestData;
@@ -51,14 +46,14 @@ public final class SerializationTest
     {
         final String resource1 = "/jsonpatch/mergepatch/serdeser-nonobject.json";
         final String resource2 = "/jsonpatch/mergepatch/serdeser-object.json";
-        nonObjectTestData = JsonLoader.fromResource(resource1);
-        objectTestData = JsonLoader.fromResource(resource2);
+        nonObjectTestData = ResourceUtil.fromResource(resource1);
+        objectTestData = ResourceUtil.fromResource(resource2);
     }
 
     @DataProvider
     public Iterator<Object[]> getNonObjectInputs()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: nonObjectTestData)
             list.add(new Object[] { node });
@@ -80,13 +75,13 @@ public final class SerializationTest
         final String out = mapper.writeValueAsString(deserialized);
         final JsonNode serialized = JacksonUtils.getReader().readTree(out);
 
-        assertTrue(EQUIVALENCE.equivalent(input, serialized));
+        assertTrue(JsonNumEquals.equivalent(input, serialized));
     }
 
     @DataProvider
     public Iterator<Object[]> getObjectInputs()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: objectTestData)
             list.add(new Object[] { node });
@@ -108,6 +103,6 @@ public final class SerializationTest
         final String out = mapper.writeValueAsString(deserialized);
         final JsonNode serialized = JacksonUtils.getReader().readTree(out);
 
-        assertTrue(EQUIVALENCE.equivalent(input, serialized));
+        assertTrue(JsonNumEquals.equivalent(input, serialized));
     }
 }

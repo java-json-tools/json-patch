@@ -21,29 +21,24 @@ package com.github.fge.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
+import com.github.fge.jsonpatch.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchMessages;
+import com.github.fge.jsonpatch.ResourceUtil;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 public final class NonObjectMergePatchTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
@@ -53,7 +48,7 @@ public final class NonObjectMergePatchTest
         throws IOException
     {
         final String resource = "/jsonpatch/mergepatch/patch-nonobject.json";
-        testData = JsonLoader.fromResource(resource);
+        testData = ResourceUtil.fromResource(resource);
     }
 
     @Test
@@ -73,7 +68,7 @@ public final class NonObjectMergePatchTest
     @DataProvider
     public Iterator<Object[]> getData()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: testData)
             list.add(new Object[] { node.get("patch"), node.get("victim")});
@@ -89,6 +84,7 @@ public final class NonObjectMergePatchTest
         final JsonMergePatch patch = JsonMergePatch.fromJson(input);
         final JsonNode patched = patch.apply(victim);
 
-        assertTrue(EQUIVALENCE.equivalent(input, patched));
+        assertTrue(JsonNumEquals.equivalent(input, patched));
     }
+
 }

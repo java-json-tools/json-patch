@@ -20,17 +20,12 @@
 package com.github.fge.jsonpatch.diff;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.base.Equivalence;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
+import com.github.fge.jsonpatch.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,8 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JsonDiffTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
 
     private final JsonNode testData;
 
@@ -47,13 +40,13 @@ public final class JsonDiffTest
         throws IOException
     {
         final String resource = "/jsonpatch/diff/diff.json";
-        testData = JsonLoader.fromResource(resource);
+        testData = ResourceUtil.fromResource(resource);
     }
 
     @DataProvider
     public Iterator<Object[]> getPatchesOnly()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: testData)
             list.add(new Object[] { node.get("first"), node.get("second") });
@@ -67,10 +60,9 @@ public final class JsonDiffTest
         throws JsonPatchException
     {
         final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
-        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
         final JsonNode actual = patch.apply(first);
 
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
+        assertThat(JsonNumEquals.equivalent(second, actual)).overridingErrorMessage(
             "Generated patch failed to apply\nexpected: %s\nactual: %s",
             second, actual
         ).isTrue();
@@ -79,7 +71,7 @@ public final class JsonDiffTest
     @DataProvider
     public Iterator<Object[]> getLiteralPatches()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: testData) {
             if (!node.has("patch"))
@@ -101,10 +93,7 @@ public final class JsonDiffTest
         final JsonNode first, final JsonNode second, final JsonNode expected)
     {
         final JsonNode actual = JsonDiff.asJson(first, second);
-        final Predicate<JsonNode> predicate
-            = EQUIVALENCE.equivalentTo(expected);
-
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
+        assertThat(JsonNumEquals.equivalent(expected, actual)).overridingErrorMessage(
             "patch is not what was expected\nscenario: %s\n"
             + "expected: %s\nactual: %s\n", message, expected, actual
         ).isTrue();

@@ -25,12 +25,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -111,7 +110,7 @@ public final class JsonPatch
     @JsonCreator
     public JsonPatch(final List<JsonPatchOperation> operations)
     {
-        this.operations = ImmutableList.copyOf(operations);
+        this.operations = Collections.unmodifiableList(operations);
     }
 
     /**

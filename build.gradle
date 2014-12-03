@@ -55,8 +55,8 @@ targetCompatibility = "1.6"; // defaults to sourceCompatibility
 dependencies {
     provided(group: "com.google.code.findbugs", name: "jsr305",
         version: "2.0.1");
-    compile(group: "com.github.fge", name: "jackson-coreutils",
-        version: "1.6");
+    compile(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.4.4")
+    compile(group: "com.github.fge", name: "msg-simple", version: "1.1")
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");

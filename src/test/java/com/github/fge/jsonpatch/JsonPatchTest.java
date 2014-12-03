@@ -21,15 +21,15 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.ImmutableList;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.*;
@@ -68,7 +68,10 @@ public final class JsonPatchTest
     public void cannotPatchNull()
         throws JsonPatchException
     {
-        final JsonPatch patch = new JsonPatch(ImmutableList.of(op1, op2));
+        List<JsonPatchOperation> jsonPatchOperationList = new ArrayList<JsonPatchOperation>();
+        jsonPatchOperationList.add(op1);
+        jsonPatchOperationList.add(op2);
+        final JsonPatch patch = new JsonPatch(jsonPatchOperationList);
 
         try {
             patch.apply(null);
@@ -88,7 +91,10 @@ public final class JsonPatchTest
 
         when(op1.apply(node1)).thenReturn(node2);
 
-        final JsonPatch patch = new JsonPatch(ImmutableList.of(op1, op2));
+        List<JsonPatchOperation> jsonPatchOperationList = new ArrayList<JsonPatchOperation>();
+        jsonPatchOperationList.add(op1);
+        jsonPatchOperationList.add(op2);
+        final JsonPatch patch = new JsonPatch(jsonPatchOperationList);
 
         final ArgumentCaptor<JsonNode> captor
             = ArgumentCaptor.forClass(JsonNode.class);
@@ -108,7 +114,10 @@ public final class JsonPatchTest
         when(op1.apply(any(JsonNode.class)))
             .thenThrow(new JsonPatchException(message));
 
-        final JsonPatch patch = new JsonPatch(ImmutableList.of(op1, op2));
+        List<JsonPatchOperation> jsonPatchOperationList = new ArrayList<JsonPatchOperation>();
+        jsonPatchOperationList.add(op1);
+        jsonPatchOperationList.add(op2);
+        final JsonPatch patch = new JsonPatch(jsonPatchOperationList);
 
         try {
             patch.apply(FACTORY.nullNode());

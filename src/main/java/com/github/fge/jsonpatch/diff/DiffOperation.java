@@ -19,8 +19,8 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.AddOperation;
 import com.github.fge.jsonpatch.CopyOperation;
 import com.github.fge.jsonpatch.JsonPatchOperation;
