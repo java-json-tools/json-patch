@@ -22,8 +22,13 @@ package com.github.fge.jsonpatch.diff;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Sets
+public final class Sets
 {
+
+    private Sets()
+    {
+    }
+
     public static <E> Set<E> difference(final Set<E> set1, final Set<E> set2)
     {
         Set<E> temp = new TreeSet<E>(set1);
