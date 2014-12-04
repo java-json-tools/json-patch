@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -91,9 +92,7 @@ public final class JsonPatchTest
 
         when(op1.apply(node1)).thenReturn(node2);
 
-        List<JsonPatchOperation> jsonPatchOperationList = new ArrayList<JsonPatchOperation>();
-        jsonPatchOperationList.add(op1);
-        jsonPatchOperationList.add(op2);
+        List<JsonPatchOperation> jsonPatchOperationList = Arrays.asList(op1, op2);
         final JsonPatch patch = new JsonPatch(jsonPatchOperationList);
 
         final ArgumentCaptor<JsonNode> captor
@@ -114,9 +113,7 @@ public final class JsonPatchTest
         when(op1.apply(any(JsonNode.class)))
             .thenThrow(new JsonPatchException(message));
 
-        List<JsonPatchOperation> jsonPatchOperationList = new ArrayList<JsonPatchOperation>();
-        jsonPatchOperationList.add(op1);
-        jsonPatchOperationList.add(op2);
+        List<JsonPatchOperation> jsonPatchOperationList = Arrays.asList(op1, op2);
         final JsonPatch patch = new JsonPatch(jsonPatchOperationList);
 
         try {
