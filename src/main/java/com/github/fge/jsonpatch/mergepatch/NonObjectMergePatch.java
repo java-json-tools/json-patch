@@ -37,10 +37,7 @@ final class NonObjectMergePatch
 
     NonObjectMergePatch(final JsonNode node)
     {
-        if(node == null)
-        {
-            throw new NullPointerException();
-        }
+        if(node == null) throw new NullPointerException();
         this.node = node;
     }
 
