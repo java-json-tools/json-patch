@@ -75,20 +75,19 @@ public final class JacksonUtils {
     {
         String representation = jsonPointer.toString();
 
-        if(representation != null)
+        if(representation == null) return "";
+
+        int slashPosition = -1;
+        if((slashPosition = representation.lastIndexOf('/')) != -1)
         {
-            int slashPosition = -1;
-            if((slashPosition = representation.lastIndexOf('/')) != -1)
-            {
-                return representation.substring(slashPosition+1);
-            }
-            else
-            {
-                return representation;
-            }
+            return representation.substring(slashPosition+1);
+        }
+        else
+        {
+            return representation;
         }
 
-        return "";
+
     }
 
     public final static JsonPointer empty()
