@@ -80,14 +80,7 @@ final class ObjectMergePatch
              * * if it is an ObjectMergePatch, we get back here; the value will
              *   be replaced with a JSON Object anyway before being processed.
              */
-            if(ret.get(key) == null)
-            {
-                value = NullNode.getInstance();
-            }
-            else
-            {
-                value = ret.get(key);
-            }
+            value = ret.get(key) == null ? NullNode.getInstance() : ret.get(key);
 
             ret.put(key, entry.getValue().apply(value));
         }
