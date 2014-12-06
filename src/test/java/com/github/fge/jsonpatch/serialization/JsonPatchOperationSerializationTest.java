@@ -21,16 +21,12 @@ package com.github.fge.jsonpatch.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jsonpatch.JsonPatchOperation;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Lists;
+import com.github.fge.jsonpatch.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,9 +35,6 @@ import static org.testng.Assert.*;
 @Test
 public abstract class JsonPatchOperationSerializationTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
-
     private final Class<? extends JsonPatchOperation> c;
     private final JsonNode node;
     private final ObjectMapper mapper;
@@ -51,7 +44,7 @@ public abstract class JsonPatchOperationSerializationTest
         throws IOException
     {
         final String resource = "/jsonpatch/" + prefix + ".json";
-        node = JsonLoader.fromResource(resource);
+        node = ResourceUtil.fromResource(resource);
         mapper = JacksonUtils.newMapper();
         this.c = c;
     }
@@ -59,7 +52,7 @@ public abstract class JsonPatchOperationSerializationTest
     @DataProvider
     public final Iterator<Object[]> getInputs()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode n: node.get("errors"))
             list.add(new Object[] { n.get("op")});
@@ -99,7 +92,7 @@ public abstract class JsonPatchOperationSerializationTest
          * this event, and we trust its .toString().
          */
         final JsonNode output = JacksonUtils.getReader().readTree(out);
-        assertTrue(EQUIVALENCE.equivalent(input, output));
+        assertTrue(JsonNumEquals.equivalent(input, output));
     }
 }
 

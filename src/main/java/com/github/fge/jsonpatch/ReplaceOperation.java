@@ -19,13 +19,13 @@
 
 package com.github.fge.jsonpatch;
 
+import static com.github.fge.jsonpatch.JacksonUtils.head;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Iterables;
 
 /**
  * JSON Patch {@code replace} operation
@@ -39,6 +39,9 @@ import com.google.common.collect.Iterables;
 public final class ReplaceOperation
     extends PathValueOperation
 {
+
+    private static final JsonPointer EMPTY = JsonPointer.compile("");
+
     @JsonCreator
     public ReplaceOperation(@JsonProperty("path") final JsonPointer path,
         @JsonProperty("value") final JsonNode value)
@@ -63,15 +66,15 @@ public final class ReplaceOperation
          * If remove is done first, the array is empty and add rightly complains
          * that there is no such index in the array.
          */
-        if (path.path(node).isMissingNode())
+        if (node.at(path).isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
         final JsonNode replacement = value.deepCopy();
-        if (path.isEmpty())
+        if (EMPTY.equals(path))
             return replacement;
         final JsonNode ret = node.deepCopy();
-        final JsonNode parent = path.parent().get(ret);
-        final String rawToken = Iterables.getLast(path).getToken().getRaw();
+        final JsonNode parent = ret.at(head(path));
+        final String rawToken = JacksonUtils.getLast(path);
         if (parent.isObject())
             ((ObjectNode) parent).put(rawToken, replacement);
         else

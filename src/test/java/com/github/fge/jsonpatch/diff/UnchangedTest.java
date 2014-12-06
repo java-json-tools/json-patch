@@ -19,17 +19,17 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Lists;
+import com.github.fge.jsonpatch.JacksonUtils;
+import com.github.fge.jsonpatch.ResourceUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +50,14 @@ public final class UnchangedTest
         throws IOException
     {
         final String resource = "/jsonpatch/diff/unchanged.json";
-        testData = JsonLoader.fromResource(resource);
+        testData = ResourceUtil.fromResource(resource);
     }
 
     @DataProvider
     public Iterator<Object[]> getTestData()
         throws IOException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: testData)
             list.add(new Object[] { node.get("first"), node.get("second"),

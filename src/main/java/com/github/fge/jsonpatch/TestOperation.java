@@ -21,10 +21,8 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.base.Equivalence;
 
 /**
  * JSON Patch {@code test} operation
@@ -42,8 +40,6 @@ import com.google.common.base.Equivalence;
 public final class TestOperation
     extends PathValueOperation
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
 
     @JsonCreator
     public TestOperation(@JsonProperty("path") final JsonPointer path,
@@ -56,11 +52,11 @@ public final class TestOperation
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
-        final JsonNode tested = path.path(node);
+        final JsonNode tested = node.at(path);
         if (tested.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
-        if (!EQUIVALENCE.equivalent(tested, value))
+        if (!JsonNumEquals.equivalent(tested, value))
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();

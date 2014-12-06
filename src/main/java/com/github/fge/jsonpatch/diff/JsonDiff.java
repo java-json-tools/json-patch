@@ -19,28 +19,28 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import static com.github.fge.jsonpatch.JacksonUtils.append;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jackson.NodeType;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jsonpatch.JacksonUtils;
+import com.github.fge.jsonpatch.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.TreeSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+
 
 /**
  * JSON "diff" implementation
@@ -70,9 +70,6 @@ public final class JsonDiff
         = MessageBundles.getBundle(JsonPatchMessages.class);
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
 
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
-
     private JsonDiff()
     {
     }
@@ -96,7 +93,7 @@ public final class JsonDiff
             = getUnchangedValues(source, target);
         final DiffProcessor processor = new DiffProcessor(unchanged);
 
-        generateDiffs(processor, JsonPointer.empty(), source, target);
+        generateDiffs(processor, JacksonUtils.empty(), source, target);
         return processor.getPatch();
     }
 
@@ -122,11 +119,11 @@ public final class JsonDiff
     private static void generateDiffs(final DiffProcessor processor,
         final JsonPointer pointer, final JsonNode source, final JsonNode target)
     {
-        if (EQUIVALENCE.equivalent(source, target))
+        if (JsonNumEquals.equivalent(source, target))
             return;
 
-        final NodeType firstType = NodeType.getNodeType(source);
-        final NodeType secondType = NodeType.getNodeType(target);
+        final JsonNodeType firstType = source.getNodeType();
+        final JsonNodeType secondType = target.getNodeType();
 
         /*
          * Node types differ: generate a replacement operation.
@@ -151,7 +148,7 @@ public final class JsonDiff
          * If we reach this point, both nodes are either objects or arrays;
          * delegate.
          */
-        if (firstType == NodeType.OBJECT)
+        if (firstType == JsonNodeType.OBJECT)
             generateObjectDiffs(processor, pointer, (ObjectNode) source,
                 (ObjectNode) target);
         else // array
@@ -164,18 +161,18 @@ public final class JsonDiff
         final ObjectNode target)
     {
         final Set<String> firstFields
-            = Sets.newTreeSet(Sets.newHashSet(source.fieldNames()));
+            = asTreeSet(source.fieldNames());
         final Set<String> secondFields
-            = Sets.newTreeSet(Sets.newHashSet(target.fieldNames()));
+            = asTreeSet(target.fieldNames());
 
         for (final String field: Sets.difference(firstFields, secondFields))
-            processor.valueRemoved(pointer.append(field), source.get(field));
+            processor.valueRemoved(append(pointer, field), source.get(field));
 
         for (final String field: Sets.difference(secondFields, firstFields))
-            processor.valueAdded(pointer.append(field), target.get(field));
+            processor.valueAdded(append(pointer, field), target.get(field));
 
         for (final String field: Sets.intersection(firstFields, secondFields))
-            generateDiffs(processor, pointer.append(field), source.get(field),
+            generateDiffs(processor, append(pointer, field), source.get(field),
                 target.get(field));
     }
 
@@ -192,37 +189,36 @@ public final class JsonDiff
          * target; the index of removal is always the original arrays's length.
          */
         for (int index = size; index < firstSize; index++)
-            processor.valueRemoved(pointer.append(size), source.get(index));
+            processor.valueRemoved(JacksonUtils.append(pointer, size), source.get(index));
 
         for (int index = 0; index < size; index++)
-            generateDiffs(processor, pointer.append(index), source.get(index),
+            generateDiffs(processor, append(pointer, index), source.get(index),
                 target.get(index));
 
         // Deal with the destination array being larger...
         for (int index = size; index < secondSize; index++)
-            processor.valueAdded(pointer.append("-"), target.get(index));
+            processor.valueAdded(append(pointer, "-"), target.get(index));
     }
 
 
-    @VisibleForTesting
     static Map<JsonPointer, JsonNode> getUnchangedValues(final JsonNode source,
         final JsonNode target)
     {
-        final Map<JsonPointer, JsonNode> ret = Maps.newHashMap();
-        computeUnchanged(ret, JsonPointer.empty(), source, target);
+        final Map<JsonPointer, JsonNode> ret = new HashMap<JsonPointer, JsonNode>();
+        computeUnchanged(ret, JacksonUtils.empty(), source, target);
         return ret;
     }
 
     private static void computeUnchanged(final Map<JsonPointer, JsonNode> ret,
         final JsonPointer pointer, final JsonNode first, final JsonNode second)
     {
-        if (EQUIVALENCE.equivalent(first, second)) {
+        if (JsonNumEquals.equivalent(first, second)) {
             ret.put(pointer, second);
             return;
         }
 
-        final NodeType firstType = NodeType.getNodeType(first);
-        final NodeType secondType = NodeType.getNodeType(second);
+        final JsonNodeType firstType = first.getNodeType();
+        final JsonNodeType secondType = second.getNodeType();
 
         if (firstType != secondType)
             return; // nothing in common
@@ -252,7 +248,7 @@ public final class JsonDiff
             name = firstFields.next();
             if (!target.has(name))
                 continue;
-            computeUnchanged(ret, pointer.append(name), source.get(name),
+            computeUnchanged(ret, append(pointer, name), source.get(name),
                 target.get(name));
         }
     }
@@ -263,7 +259,20 @@ public final class JsonDiff
         final int size = Math.min(source.size(), target.size());
 
         for (int i = 0; i < size; i++)
-            computeUnchanged(ret, pointer.append(i), source.get(i),
+            computeUnchanged(ret, append(pointer, i), source.get(i),
                 target.get(i));
     }
+
+    private static TreeSet<String> asTreeSet(Iterator<String> elements)
+    {
+        TreeSet<String> set = new TreeSet<String>();
+
+        while(elements.hasNext())
+        {
+            set.add(elements.next());
+        }
+
+        return set;
+    }
+
 }

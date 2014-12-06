@@ -22,14 +22,15 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
-import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+import static com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 

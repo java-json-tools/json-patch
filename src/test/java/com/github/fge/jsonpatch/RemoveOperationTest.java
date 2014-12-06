@@ -19,9 +19,8 @@
 
 package com.github.fge.jsonpatch;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ public final class RemoveOperationTest
         throws JsonPatchException
     {
         final JsonNode node = JacksonUtils.nodeFactory().nullNode();
-        final JsonPatchOperation op = new RemoveOperation(JsonPointer.empty());
+        final JsonPatchOperation op = new RemoveOperation(JsonPointer.compile(""));
         final JsonNode ret = op.apply(node);
         assertTrue(ret.isMissingNode());
     }

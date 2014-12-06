@@ -19,19 +19,19 @@
 
 package com.github.fge.jsonpatch;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,9 +43,6 @@ public abstract class JsonPatchOperationTest
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
-
     private final JsonNode errors;
     private final JsonNode ops;
     private final ObjectReader reader;
@@ -54,7 +51,7 @@ public abstract class JsonPatchOperationTest
         throws IOException
     {
         final String resource = "/jsonpatch/" + prefix + ".json";
-        final JsonNode node = JsonLoader.fromResource(resource);
+        final JsonNode node = ResourceUtil.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
         reader = JacksonUtils.getReader().withType(JsonPatchOperation.class);
@@ -64,7 +61,7 @@ public abstract class JsonPatchOperationTest
     public final Iterator<Object[]> getErrors()
         throws NoSuchFieldException, IllegalAccessException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: errors)
             list.add(new Object[]{
@@ -94,7 +91,7 @@ public abstract class JsonPatchOperationTest
     @DataProvider
     public final Iterator<Object[]> getOps()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<Object[]>();
 
         for (final JsonNode node: ops)
             list.add(new Object[]{
@@ -114,12 +111,13 @@ public abstract class JsonPatchOperationTest
         final JsonPatchOperation op = reader.readValue(patch);
         final JsonNode actual = op.apply(node);
 
-        assertTrue(EQUIVALENCE.equivalent(actual, expected),
+        assertTrue(JsonNumEquals.equivalent(actual, expected),
             "patched node differs from expectations: expected " + expected
             + " but found " + actual);
-        if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
+        if (JsonNumEquals.equivalent(node, actual) && node.isContainerNode())
             assertNotSame(node, actual,
                 "operation didn't make a copy of the input node");
     }
+
 }
 
