@@ -22,16 +22,16 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public final class JacksonUtils {
-
-    private final static JsonNodeFactory FACTORY = JsonNodeFactory.instance;
-    private final static int NO_SLASH = -1;
-    private final static ObjectReader READER;
+public final class JacksonUtils
+{
+    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
+    private static final ObjectReader READER;
 
     static {
         final ObjectMapper mapper = newMapper();
@@ -40,19 +40,21 @@ public final class JacksonUtils {
 
     private JacksonUtils()
     {
+        throw new Error("nice try!");
     }
 
-    public final static ObjectMapper newMapper() {
+    public static ObjectMapper newMapper()
+    {
         return new ObjectMapper().setNodeFactory(FACTORY)
-                .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
-                .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN)
-                .enable(SerializationFeature.INDENT_OUTPUT);
+            .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+            .enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
     }
 
     /**
      * Return a preconfigured {@link ObjectReader} to read JSON inputs
      *
      * @return the reader
+     *
      * @see #newMapper()
      */
     public static ObjectReader getReader()
@@ -62,65 +64,53 @@ public final class JacksonUtils {
 
     /**
      * Return a preconfigured {@link JsonNodeFactory} to generate JSON data as
-     * {@link com.fasterxml.jackson.databind.JsonNode}s
+     * {@link JsonNode}s
      *
      * @return the factory
      */
-    public final static JsonNodeFactory nodeFactory()
+    public static JsonNodeFactory nodeFactory()
     {
         return FACTORY;
     }
 
-    public final static String getLast(JsonPointer jsonPointer)
+    public static String getLast(final JsonPointer jsonPointer)
     {
-        String representation = jsonPointer.toString();
+        final String representation = jsonPointer.toString();
 
-        if(representation == null) return "";
+        // TODO: in theory a .toString() never returns null, so what the...
+        if (representation == null)
+            return "";
 
-        int slashPosition = -1;
-        if((slashPosition = representation.lastIndexOf('/')) != -1)
-        {
-            return representation.substring(slashPosition+1);
-        }
-        else
-        {
-            return representation;
-        }
-
-
+        final int slashPosition = representation.lastIndexOf('/');
+        return slashPosition == -1 ? representation
+            : representation.substring(slashPosition + 1);
     }
 
-    public final static JsonPointer empty()
+    public static JsonPointer empty()
     {
         return JsonPointer.compile("");
     }
 
-    public final static JsonPointer head(JsonPointer jsonPointer)
+    public static JsonPointer head(final JsonPointer jsonPointer)
     {
-        String pointer = jsonPointer.toString();
+        final String pointer = jsonPointer.toString();
+        final int lastSlash = pointer.lastIndexOf('/');
 
-        int lastSlash = pointer.lastIndexOf('/');
-
-        if(lastSlash == NO_SLASH)
-        {
-            return empty();
-        }
-        else
-        {
-            return JsonPointer.compile(pointer.substring(0, lastSlash));
-        }
+        return lastSlash == -1 ? empty()
+            : JsonPointer.compile(pointer.substring(0, lastSlash));
     }
 
-    public final static JsonPointer append(JsonPointer pointer, String raw)
+    public static JsonPointer append(final JsonPointer pointer, final String
+        raw)
     {
-        String p = pointer.toString();
-        return JsonPointer.compile(p + "/" + raw);
+        final String p = pointer.toString();
+        return JsonPointer.compile(p + '/' + raw);
     }
 
-    public final static JsonPointer append(JsonPointer pointer, int raw)
+    public static JsonPointer append(final JsonPointer pointer, final int raw)
     {
-        String p = pointer.toString();
-        return JsonPointer.compile(p + "/" + Integer.toString(raw));
+        final String p = pointer.toString();
+        return JsonPointer.compile(p + '/' + Integer.toString(raw));
     }
 }
 
