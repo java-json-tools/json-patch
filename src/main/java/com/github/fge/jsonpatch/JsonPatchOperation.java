@@ -25,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.github.fge.jsonpatch.misc.JsonPointerDeserializer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
@@ -71,6 +75,8 @@ public abstract class JsonPatchOperation
      *
      * However, we need to serialize using .toString().
      */
+    @JsonDeserialize(using = JsonPointerDeserializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     protected final JsonPointer path;
 
     /**
