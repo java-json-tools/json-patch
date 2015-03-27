@@ -129,6 +129,15 @@ task pom << {
     pom {}.writeTo("${projectDir}/pom.xml");
 }
 
+jar {
+    manifest {
+        instruction 'Import-Package', 'com.google.common.base;version="[16.0,19)",'+
+            'com.google.common.collect;version="[16.0,19)",'+
+            'com.google.common.io;version="[16.0,19)",'+
+             '*';
+    }
+}
+
 /*
  * SIGNING
  */
