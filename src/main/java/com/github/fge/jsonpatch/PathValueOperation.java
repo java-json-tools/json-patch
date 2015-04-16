@@ -20,10 +20,8 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
@@ -35,8 +33,18 @@ import java.io.IOException;
 public abstract class PathValueOperation
     extends JsonPatchOperation
 {
-    @JsonSerialize
-    protected final JsonNode value;
+    protected JsonNode value;
+
+    /**
+     * Constructor for deserialization. Other parameters are set through the private setters. This allows fields to
+     * be represented as null if missing and a default if present and set to null.
+     *
+     * @param op operation name
+     */
+    protected PathValueOperation(final String op)
+    {
+        super(op);
+    }
 
     /**
      * Protected constructor
@@ -49,13 +57,21 @@ public abstract class PathValueOperation
         final JsonNode value)
     {
         super(op, path);
+        setValue(value);
+    }
+
+    private void setValue(JsonNode value) {
         this.value = value.deepCopy();
+    }
+
+    public JsonNode getValue() {
+        return value.deepCopy();
     }
 
     @Override
     public final void serialize(final JsonGenerator jgen,
         final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         jgen.writeStartObject();
         jgen.writeStringField("op", op);
@@ -68,7 +84,7 @@ public abstract class PathValueOperation
     @Override
     public final void serializeWithType(final JsonGenerator jgen,
         final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         serialize(jgen, provider);
     }

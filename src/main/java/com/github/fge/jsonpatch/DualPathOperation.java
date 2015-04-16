@@ -20,11 +20,8 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 import java.io.IOException;
@@ -35,8 +32,18 @@ import java.io.IOException;
 public abstract class DualPathOperation
     extends JsonPatchOperation
 {
-    @JsonSerialize(using = ToStringSerializer.class)
-    protected final JsonPointer from;
+    protected JsonPointer from;
+
+    /**
+     * Constructor for deserialization. Other parameters are set through the private setters. This allows fields to
+     * be represented as null if missing and a default if present and set to null.
+     *
+     * @param op operation name
+     */
+    protected DualPathOperation(final String op)
+    {
+        super(op);
+    }
 
     /**
      * Protected constructor
@@ -49,13 +56,21 @@ public abstract class DualPathOperation
         final JsonPointer path)
     {
         super(op, path);
+        setFrom(from);
+    }
+
+    private void setFrom(JsonPointer from) {
         this.from = from;
+    }
+
+    public JsonPointer getFrom() {
+        return from;
     }
 
     @Override
     public final void serialize(final JsonGenerator jgen,
         final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         jgen.writeStartObject();
         jgen.writeStringField("op", op);
@@ -67,7 +82,7 @@ public abstract class DualPathOperation
     @Override
     public final void serializeWithType(final JsonGenerator jgen,
         final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         serialize(jgen, provider);
     }

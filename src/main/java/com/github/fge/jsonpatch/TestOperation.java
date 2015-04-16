@@ -20,7 +20,6 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
@@ -46,8 +45,12 @@ public final class TestOperation
         = JsonNumEquals.getInstance();
 
     @JsonCreator
-    public TestOperation(@JsonProperty("path") final JsonPointer path,
-        @JsonProperty("value") final JsonNode value)
+    public TestOperation()
+    {
+        super("test");
+    }
+
+    public TestOperation(final JsonPointer path, final JsonNode value)
     {
         super("test", path, value);
     }

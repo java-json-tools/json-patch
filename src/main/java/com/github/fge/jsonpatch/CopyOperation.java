@@ -20,7 +20,6 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
@@ -44,8 +43,12 @@ public final class CopyOperation
     extends DualPathOperation
 {
     @JsonCreator
-    public CopyOperation(@JsonProperty("from") final JsonPointer from,
-        @JsonProperty("path") final JsonPointer path)
+    public CopyOperation()
+    {
+        super("copy");
+    }
+
+    public CopyOperation(final JsonPointer from, final JsonPointer path)
     {
         super("copy", from, path);
     }
