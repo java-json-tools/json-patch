@@ -49,6 +49,11 @@ public final class ReplaceOperation
         super("replace", path, value);
     }
 
+    public ReplaceOperation(final JsonPointer path, final JsonNode value, final JsonNode pathValue)
+    {
+        super("replace", path, value, pathValue);
+    }
+
     @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException

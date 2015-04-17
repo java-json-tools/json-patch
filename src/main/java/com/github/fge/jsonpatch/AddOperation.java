@@ -80,6 +80,11 @@ public final class AddOperation
         super("add", path, value);
     }
 
+    public AddOperation(final JsonPointer path, final JsonNode value, final JsonNode pathValue)
+    {
+        super("add", path, value, pathValue);
+    }
+
     @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException

@@ -53,6 +53,12 @@ public final class CopyOperation
         super("copy", from, path);
     }
 
+    public CopyOperation(final JsonPointer from, final JsonPointer path, final JsonNode fromValue, final JsonNode
+            pathValue)
+    {
+        super("copy", from, path, fromValue, pathValue);
+    }
+
     @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException

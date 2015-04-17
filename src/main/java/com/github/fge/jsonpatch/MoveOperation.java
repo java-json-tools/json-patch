@@ -75,6 +75,12 @@ public final class MoveOperation
         super("move", from, path);
     }
 
+    public MoveOperation(final JsonPointer from, final JsonPointer path, final JsonNode fromValue, final JsonNode
+            pathValue)
+    {
+        super("move", from, path, fromValue, pathValue);
+    }
+
     @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException

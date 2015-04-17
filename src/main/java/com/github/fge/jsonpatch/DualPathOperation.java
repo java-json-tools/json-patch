@@ -20,6 +20,7 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
@@ -33,6 +34,18 @@ public abstract class DualPathOperation
     extends JsonPatchOperation
 {
     protected JsonPointer from;
+
+    /**
+     * The value present at the path location when the patch operation was created. This history is necessary for
+     * using json patch with conflict resolution when optimistic locking is involved.
+     */
+    protected JsonNode pathValue;
+
+    /**
+     * The value present at the from path location when the patch operation was created. This history is necessary for
+     * using json patch with conflict resolution when optimistic locking is involved.
+     */
+    protected JsonNode fromValue;
 
     /**
      * Constructor for deserialization. Other parameters are set through the private setters. This allows fields to
@@ -55,8 +68,24 @@ public abstract class DualPathOperation
     protected DualPathOperation(final String op, final JsonPointer from,
         final JsonPointer path)
     {
+        this(op, from, path, null, null);
+    }
+
+    /**
+     * Protected constructor with history.
+     *
+     * @param op operation name
+     * @param path affected path
+     * @param fromValue JSON value at from path prior to operation
+     * @param pathValue JSON value at path prior to operation
+     */
+    protected DualPathOperation(final String op, final JsonPointer from,
+            final JsonPointer path, final JsonNode fromValue, final JsonNode pathValue)
+    {
         super(op, path);
         setFrom(from);
+        setPathValue(pathValue);
+        setFromValue(fromValue);
     }
 
     private void setFrom(JsonPointer from) {
@@ -65,6 +94,22 @@ public abstract class DualPathOperation
 
     public JsonPointer getFrom() {
         return from;
+    }
+
+    private void setPathValue(JsonNode pathValue) {
+        this.pathValue = pathValue == null ? null : pathValue.deepCopy();
+    }
+
+    public JsonNode getPathValue() {
+        return pathValue == null ? null : pathValue.deepCopy();
+    }
+
+    private void setFromValue(JsonNode fromValue) {
+        this.fromValue = fromValue == null ? null : fromValue.deepCopy();
+    }
+
+    public JsonNode getFromValue() {
+        return fromValue == null ? null : fromValue.deepCopy();
     }
 
     @Override
@@ -76,6 +121,14 @@ public abstract class DualPathOperation
         jgen.writeStringField("op", op);
         jgen.writeStringField("path", path.toString());
         jgen.writeStringField("from", from.toString());
+        if (null != pathValue) {
+            jgen.writeFieldName("pathValue");
+            jgen.writeTree(pathValue);
+        }
+        if (null != fromValue) {
+            jgen.writeFieldName("fromValue");
+            jgen.writeTree(fromValue);
+        }
         jgen.writeEndObject();
     }
 
