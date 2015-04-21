@@ -66,7 +66,7 @@ public final class JsonDiffTest
         final JsonNode second)
         throws JsonPatchException
     {
-        final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
+        final JsonPatch patch = JsonDiff.asJsonPatch(first, second, false);
         final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
         final JsonNode actual = patch.apply(first);
 
@@ -100,7 +100,7 @@ public final class JsonDiffTest
     public void generatedPatchesAreWhatIsExpected(final String message,
         final JsonNode first, final JsonNode second, final JsonNode expected)
     {
-        final JsonNode actual = JsonDiff.asJson(first, second);
+        final JsonNode actual = JsonDiff.asJson(first, second, false);
         final Predicate<JsonNode> predicate
             = EQUIVALENCE.equivalentTo(expected);
 
