@@ -37,5 +37,13 @@
             "node": { "a": "helo", "b": [ 1, 2, 3, 4 ] },
             "expected": { "b": [ 1, 2, "helo", 3, 4 ] }
         }
+    ],
+    "history": [
+        { "op": { "op": "move", "from": "/a", "path": "/b" } },
+        { "op": { "op": "move", "from": "/a", "path": "/b", "fromValue": null } },
+        { "op": { "op": "move", "from": "/a", "path": "/b", "pathValue": null } },
+        { "op": { "op": "move", "from": "/a", "path": "/b", "fromValue": 1 } },
+        { "op": { "op": "move", "from": "/a", "path": "/b", "pathValue": 2 } },
+        { "op": { "op": "move", "from": "/a", "path": "/b", "fromValue": 1, "pathValue": 2 } }
     ]
 }

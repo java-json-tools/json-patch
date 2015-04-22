@@ -67,6 +67,9 @@ public abstract class JsonPatchOperationSerializationTest
         for (final JsonNode n: node.get("ops"))
             list.add(new Object[] { n.get("op")});
 
+        for (final JsonNode n: node.get("history"))
+            list.add(new Object[] {n.get("op")});
+
         return list.iterator();
     }
 

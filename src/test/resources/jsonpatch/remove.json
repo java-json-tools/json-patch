@@ -22,5 +22,10 @@
             "node": { "x": [ "y", "z" ], "foo": "bar" },
             "expected": { "x": [ "z" ], "foo": "bar" }
         }
+    ],
+    "history": [
+        { "op": { "op": "remove", "path": "/a" } },
+        { "op": { "op": "remove", "path": "/a", "pathValue": null } },
+        { "op": { "op": "remove", "path": "/a", "pathValue": 2 } }
     ]
 }
