@@ -1,3 +1,9 @@
+## Travis builds now enabled
+
+Builds are now verified by Travis (see [issue #20](https://github.com/daveclayton/json-patch/issues/20) for details)
+
+https://travis-ci.org/daveclayton/json-patch
+
 ## Read me first
 
 This project, as of version 1.4, is licensed under both LGPLv3 and ASL 2.0. See
