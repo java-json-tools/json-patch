@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,9 +21,12 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
+import com.amazonaws.services.dynamodbv2.xspec.NULLComparable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.google.common.base.Equivalence;
@@ -65,4 +70,37 @@ public final class TestOperation
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();
     }
+    
+	@Override
+	public void applyToBuilder(ExpressionSpecBuilder builder) {
+		String attributePath = pathGenerator.apply(path);
+		JsonNodeType type = value.getNodeType();
+		switch (type) {
+			case NUMBER:
+				builder.withCondition(ExpressionSpecBuilder.N(attributePath).eq(value.numberValue()));
+				break;
+
+			case STRING:
+				builder.withCondition(ExpressionSpecBuilder.S(attributePath).eq(value.textValue()));
+				break;
+
+			case BOOLEAN:
+				builder.withCondition(ExpressionSpecBuilder.BOOL(attributePath).eq(value.booleanValue()));
+				break;
+
+			case NULL:
+				builder.withCondition(new NULLComparable(attributePath).eq(NULLComparable.generateNull()));
+				break;
+
+			case ARRAY:
+				throw new UnsupportedOperationException("DynamoDB only supports conditions on scalars, not lists");
+
+			case OBJECT:
+				throw new UnsupportedOperationException("DynamoDB only supports conditions on scalars, not maps");
+
+			default:
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Not implemented yet: " + type);
+		}
+	}
 }

@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -73,7 +75,7 @@ public final class ReplaceOperation
         final JsonNode parent = path.parent().get(ret);
         final String rawToken = Iterables.getLast(path).getToken().getRaw();
         if (parent.isObject())
-            ((ObjectNode) parent).put(rawToken, replacement);
+            ((ObjectNode) parent).replace(rawToken, replacement);
         else
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;

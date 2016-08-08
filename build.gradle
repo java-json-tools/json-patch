@@ -57,6 +57,7 @@ dependencies {
         version: "2.0.1");
     compile(group: "com.github.fge", name: "jackson-coreutils",
         version: "1.6");
+    compile(group: "com.amazonaws", name:"aws-java-sdk-dynamodb", version:"1.11.27");
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
@@ -64,6 +65,8 @@ dependencies {
     };
     testCompile(group: "org.mockito", name: "mockito-core", version: "1.9.5");
     testCompile(group: "org.assertj", name: "assertj-core", version: "1.7.0");
+    testCompile(group:"com.jayway.jsonpath", name:"json-path-assert", version:"2.2.0");
+    testCompile(group: "com.amazonaws", name:"DynamoDBLocal", version:"1.11.0.1");
 }
 
 javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
@@ -80,6 +83,26 @@ javadoc.options.links("http://fge.github.io/jackson-coreutils/");
  */
 repositories {
     mavenCentral();
+    maven {
+        url 'http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release'
+    }
+    
+}
+
+task copyNativeDeps(type: Copy) {
+    from (configurations.testCompile) {
+        include "*.dylib"
+        include "*.so"
+        include "*.dll"
+    }
+    into 'build/libs'
+}
+
+test.dependsOn copyNativeDeps
+test.doFirst {
+    systemProperty "java.library.path", 'build/libs'
+    environment "DYLD_LIBRARY_PATH", './build/libs'
+    environment "LD_LIBRARY_PATH", './build/libs'
 }
 
 /*

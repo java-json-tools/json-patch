@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +20,7 @@
 
 package com.github.fge.jsonpatch;
 
+@SuppressWarnings("serial")
 public final class JsonPatchException
     extends Exception
 {

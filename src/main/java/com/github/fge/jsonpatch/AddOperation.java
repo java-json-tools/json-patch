@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +21,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +31,7 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.ReferenceToken;
 import com.github.fge.jackson.jsonpointer.TokenResolver;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 
 
 /**
@@ -99,6 +103,17 @@ public final class AddOperation
             ? addToArray(path, node)
             : addToObject(path, node);
     }
+    
+	@Override
+	public void applyToBuilder(ExpressionSpecBuilder builder) {
+		final TokenResolver<JsonNode> node = Iterators.getLast(path.iterator(), null /*default*/);
+		if(null == node || "-".equals(node.getToken().getRaw())) {
+			//list_append
+			throw new UnsupportedOperationException("list_append not supported yet");
+		} else {
+			super.applyToBuilder(builder);
+		}
+	}
 
     private JsonNode addToArray(final JsonPointer path, final JsonNode node)
         throws JsonPatchException
@@ -133,7 +148,7 @@ public final class AddOperation
     {
         final JsonNode ret = node.deepCopy();
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
-        target.put(Iterables.getLast(path).getToken().getRaw(), value);
+        target.set(Iterables.getLast(path).getToken().getRaw(), value);
         return ret;
     }
 }

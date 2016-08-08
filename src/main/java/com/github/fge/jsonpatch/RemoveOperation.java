@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +21,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -67,6 +70,12 @@ public final class RemoveOperation
             ((ArrayNode) parentNode).remove(Integer.parseInt(raw));
         return ret;
     }
+    
+	@Override
+	public void applyToBuilder(ExpressionSpecBuilder builder) {
+		String attributePath = pathGenerator.apply(path);
+		builder.addUpdate(ExpressionSpecBuilder.remove(attributePath));
+	}
 
     @Override
     public void serialize(final JsonGenerator jgen,

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
  *
  * This software is dual-licensed under:
  *
@@ -57,7 +58,7 @@ public abstract class JsonPatchOperationTest
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
-        reader = JacksonUtils.getReader().withType(JsonPatchOperation.class);
+        reader = JacksonUtils.getReader().forType(JsonPatchOperation.class);
     }
 
     @DataProvider
