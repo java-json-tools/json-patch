@@ -30,12 +30,18 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
+import com.amazonaws.services.dynamodbv2.document.internal.InternalUtils;
+import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.local.embedded.DynamoDBEmbedded;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.amazonaws.services.dynamodbv2.xspec.UpdateItemExpressionSpec;
@@ -44,7 +50,7 @@ import com.github.fge.jackson.JsonLoader;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public class JsonPatchToExpressionSpecBuilderReplaceIT {
+public class JsonPatchToXSpecReplace {
 	
 	private static final String KEY_ATTRIBUTE_NAME = "key";
 	
@@ -60,6 +66,11 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 	@BeforeTest
 	public void setUp() throws Exception {
 		AmazonDynamoDB amazonDynamoDB = DynamoDBEmbedded.create().amazonDynamoDB();
+		try {
+			amazonDynamoDB.deleteTable(TABLE_NAME);
+		} catch(ResourceNotFoundException e) {
+			//do nothing because the first run will not have the table.
+		}
 		amazonDynamoDB.createTable(new CreateTableRequest()
 				.withTableName(TABLE_NAME)
 				.withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
@@ -72,12 +83,12 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 		table = new Table(amazonDynamoDB, TABLE_NAME);
 	}
 	
-	/**
-	 * try to update an item that doesnt exist. will create new item
-	 */
-	@Test
-	public void test_replace_singlePath_number() throws Exception {
+	@Test(expectedExceptions = ConditionalCheckFailedException.class)
+	public void testReplaceSinglePathNumberNonextant() throws Exception {
 		// setup
+		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+				.put(KEY_ATTRIBUTE_NAME, VALUE)
+				.build()));
 		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a\", \"value\": 1 } ]";
 		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
 		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
@@ -86,6 +97,31 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 		UpdateItemExpressionSpec spec = builder.buildForUpdate();
 		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, spec);
 		// verify
+		table.getItem(PK); //throw
+	}
+	
+	@Test
+	public void testReplaceSinglePathNumberExtant() throws Exception {
+		// setup
+		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+				.put(KEY_ATTRIBUTE_NAME, VALUE)
+				.put("a", "peekaboo")
+				.build()));
+		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a\", \"value\": 1 } ]";
+		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
+		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
+		// exercise
+		ExpressionSpecBuilder builder = jsonPatch.get();
+		UpdateItemExpressionSpec spec = builder.buildForUpdate();
+		UpdateItemOutcome out = table.updateItem(new UpdateItemSpec()
+				.withPrimaryKey(KEY_ATTRIBUTE_NAME, VALUE)
+				.withExpressionSpec(spec)
+				.withReturnValues(ReturnValue.ALL_OLD));
+		
+		Item oldItem = Item.fromMap(InternalUtils.toSimpleMapValue(out.getUpdateItemResult().getAttributes()));
+		Assert.assertTrue(oldItem.hasAttribute("a"));
+		Assert.assertEquals(oldItem.getString("a"), "peekaboo");
+		// verify
 		Item item = table.getItem(PK);
 		Assert.assertTrue(item.hasAttribute("key"));
 		Assert.assertEquals(item.getString("key"), "keyValue");
@@ -93,8 +129,8 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 		Assert.assertEquals(item.getNumber("a").longValue(), 1L);
 	}
 	
-	@Test
-	public void test_replace_nestedPath_string() throws Exception {
+	@Test(expectedExceptions = ConditionalCheckFailedException.class)
+	public void testReplaceNestedPathString() throws Exception {
 		// setup
 		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
 			.put(KEY_ATTRIBUTE_NAME, VALUE)
@@ -108,15 +144,6 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 		ExpressionSpecBuilder builder = jsonPatch.get();
 		UpdateItemExpressionSpec spec = builder.buildForUpdate();
 		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, spec);
-		// verify
-		Item item = table.getItem(PK);
-		Assert.assertTrue(item.hasAttribute("key"));
-		Assert.assertEquals(item.getString("key"), "keyValue");
-		Assert.assertTrue(item.hasAttribute("a"));
-		Assert.assertTrue(item.getRawMap("a").containsKey("a"));
-		Assert.assertEquals(((BigDecimal) item.getMap("a").get("a")).longValue(), 1L);
-		Assert.assertTrue(item.getMap("a").containsKey("b"));
-		Assert.assertEquals(item.getMap("a").get("b"), "foo");
 	}
 	
 	@Test
@@ -163,28 +190,12 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 	}
 	
 	@Test
-	public void test_replace_singlePath_numberSet() throws Exception {
-		// setup
-		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a\", \"value\": [1,2] } ]";
-		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
-		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
-		// exercise
-		ExpressionSpecBuilder builder = jsonPatch.get();
-		UpdateItemExpressionSpec spec = builder.buildForUpdate();
-		table.updateItem(KEY_ATTRIBUTE_NAME, VALUE, spec);
-		// verify
-		Item item = table.getItem(PK);
-		Assert.assertTrue(item.hasAttribute("key"));
-		Assert.assertEquals(item.getString("key"), "keyValue");
-		Assert.assertTrue(item.hasAttribute("a"));
-		//number comparisons are failing so comment this out for now
-		Assert.assertTrue(item.getList("a").contains(BigDecimal.valueOf(1L)));
-		Assert.assertTrue(item.getList("a").contains(BigDecimal.valueOf(2L)));
-	}
-	
-	@Test
 	public void test_replace_singlePath_stringSet() throws Exception {
 		// setup
+		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+				.put(KEY_ATTRIBUTE_NAME, VALUE)
+				.put("a", 1L)
+				.build()));
 		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a\", \"value\": [\"foo\",\"bar\"] } ]";
 		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
 		JsonPatch jsonPatch = JsonPatch.fromJson(jsonNode);
@@ -228,6 +239,10 @@ public class JsonPatchToExpressionSpecBuilderReplaceIT {
 	
 	@Test
 	public void test_replace_singlePath_object() throws Exception {
+		table.putItem(Item.fromMap(ImmutableMap.<String, Object> builder()
+				.put(KEY_ATTRIBUTE_NAME, VALUE)
+				.put("a", 1L)
+				.build()));
 		// setup
 		String patchExpression = "[ { \"op\": \"replace\", \"path\": \"/a\", \"value\": {\"b\": \"c\", \"d\": 1} } ]";
 		JsonNode jsonNode = JsonLoader.fromString(patchExpression);

@@ -34,6 +34,7 @@ import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.amazonaws.services.dynamodbv2.xspec.UpdateItemExpressionSpec;
@@ -41,7 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.google.common.collect.ImmutableMap;
 
-public class JsonPatchToExpressionSpecBuilderRemoveIT {
+public class JsonPatchToXSpecRemove {
 	private static final String TABLE_NAME = "json_patch_test";
 
 	private static final String KEY_ATTRIBUTE_NAME = "key";
@@ -56,6 +57,11 @@ public class JsonPatchToExpressionSpecBuilderRemoveIT {
 	@BeforeTest
 	public void setUp() throws Exception {
 		AmazonDynamoDB amazonDynamoDB = DynamoDBEmbedded.create().amazonDynamoDB();
+		try {
+			amazonDynamoDB.deleteTable(TABLE_NAME);
+		} catch(ResourceNotFoundException e) {
+			//do nothing because the first run will not have the table.
+		}
 		amazonDynamoDB.createTable(new CreateTableRequest()
 				.withTableName(TABLE_NAME)
 				.withProvisionedThroughput(new ProvisionedThroughput(1L, 1L))
