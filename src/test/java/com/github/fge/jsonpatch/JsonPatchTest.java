@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -22,6 +24,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.collect.ImmutableList;
@@ -119,4 +123,19 @@ public final class JsonPatchTest
 
         verifyZeroInteractions(op2);
     }
+    
+	@Test
+	public void testSingleAdd() throws Exception {
+		// setup
+		String patchExpression = "[ { \"op\": \"add\", \"path\": \"/a\", \"value\": 1 } ]";
+		JsonNode jsonNode = JsonLoader.fromString(patchExpression);
+		// exercise
+		JsonPatch actual = JsonPatch.fromJson(jsonNode);
+		// verify
+		assertEquals(actual.operations.size(), 1);
+		AddOperation operation = (AddOperation) actual.operations.get(0);
+		assertEquals(operation.op, "add");
+		assertEquals(operation.path, new JsonPointer("/a"));
+		assertEquals(operation.value, JsonLoader.fromString("1"));
+	}
 }

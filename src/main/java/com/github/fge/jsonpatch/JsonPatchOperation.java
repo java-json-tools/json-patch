@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -27,9 +29,12 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
+import com.google.common.base.Function;
 
 import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 
@@ -61,6 +66,8 @@ public abstract class JsonPatchOperation
 {
     protected static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
+    
+	Function<JsonPointer, String> pathGenerator = new JsonPathToAttributePath();
 
     protected final String op;
 
@@ -93,6 +100,12 @@ public abstract class JsonPatchOperation
      */
     public abstract JsonNode apply(final JsonNode node)
         throws JsonPatchException;
+
+    /**
+     * Apply the current patch operation to an update expression builder
+     * @param builder the builder to apply this expression to
+     */
+    public abstract void applyToBuilder(ExpressionSpecBuilder builder);
 
     @Override
     public abstract String toString();

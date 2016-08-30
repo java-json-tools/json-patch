@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
  *
  * This software is dual-licensed under:
  *
@@ -84,7 +85,7 @@ final class ObjectMergePatch
              */
             value = Optional.fromNullable(ret.get(key))
                 .or(NullNode.getInstance());
-            ret.put(key, entry.getValue().apply(value));
+            ret.set(key, entry.getValue().apply(value));
         }
 
         ret.remove(removedMembers);

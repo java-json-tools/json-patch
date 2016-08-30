@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +21,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,6 +48,15 @@ public final class ReplaceOperation
     {
         super("replace", path, value);
     }
+    
+	@Override
+	public void applyToBuilder(ExpressionSpecBuilder builder) {
+		//add the set operation
+		super.applyToBuilder(builder);
+		//because it is an error to replace a path that does not exist
+		//add an attribute_exists() condition
+		builder.withCondition(ExpressionSpecBuilder.attribute_exists(pathGenerator.apply(path)));
+	}
 
     @Override
     public JsonNode apply(final JsonNode node)
@@ -73,7 +85,7 @@ public final class ReplaceOperation
         final JsonNode parent = path.parent().get(ret);
         final String rawToken = Iterables.getLast(path).getToken().getRaw();
         if (parent.isObject())
-            ((ObjectNode) parent).put(rawToken, replacement);
+            ((ObjectNode) parent).replace(rawToken, replacement);
         else
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;

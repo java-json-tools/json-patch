@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +21,8 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
+import com.amazonaws.services.dynamodbv2.xspec.PathSetAction;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,4 +64,13 @@ public final class CopyOperation
                 "jsonPatch.noSuchPath"));
         return new AddOperation(path, dupData).apply(node);
     }
+    
+	@Override
+	public void applyToBuilder(ExpressionSpecBuilder builder) {
+		String copyPath = pathGenerator.apply(from);
+		String setPath = pathGenerator.apply(path);
+		//set the attribute in the path location
+		builder.addUpdate(new PathSetAction(ExpressionSpecBuilder.attribute(setPath),
+				ExpressionSpecBuilder.attribute(copyPath)));
+	}
 }

@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+ * Copyright (c) 2016, Alexander Patrikalakis (amcp@me.com)
+ * Copyright (c) 2015, Daisuke Miyamoto (dai.0304@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -19,6 +21,7 @@
 
 package com.github.fge.jsonpatch;
 
+import com.amazonaws.services.dynamodbv2.xspec.ExpressionSpecBuilder;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +31,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
@@ -89,8 +93,8 @@ import java.util.List;
  * <p><b>IMPORTANT NOTE:</b> the JSON Patch is supposed to be VALID when the
  * constructor for this class ({@link JsonPatch#fromJson(JsonNode)} is used.</p>
  */
-public final class JsonPatch
-    implements JsonSerializable
+public class JsonPatch
+    implements JsonSerializable, Supplier<ExpressionSpecBuilder>
 {
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
@@ -98,7 +102,7 @@ public final class JsonPatch
     /**
      * List of operations
      */
-    private final List<JsonPatchOperation> operations;
+    protected final List<JsonPatchOperation> operations;
 
     /**
      * Constructor
@@ -126,7 +130,7 @@ public final class JsonPatch
         throws IOException
     {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
-        return JacksonUtils.getReader().withType(JsonPatch.class)
+        return JacksonUtils.getReader().forType(JsonPatch.class)
             .readValue(node);
     }
 
@@ -148,6 +152,19 @@ public final class JsonPatch
 
         return ret;
     }
+    
+    /**
+     * Converts this JsonPatch into an ExpressionSpecBuilder
+     * @return an expression spec builder that contains the updates contained in this
+     * patch
+     */
+	public ExpressionSpecBuilder get() {
+		ExpressionSpecBuilder builder = new ExpressionSpecBuilder();
+		for(JsonPatchOperation operation : operations) {
+			operation.applyToBuilder(builder);
+		}
+		return builder;
+	}
 
     @Override
     public String toString()

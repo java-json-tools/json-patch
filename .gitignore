@@ -2,7 +2,12 @@
 target
 .idea
 META-INF
-out
-build
+/out
+/classes
+/build
 .gradle
-
+.classpath
+.project
+.settings
+/bin/
+/test-output
