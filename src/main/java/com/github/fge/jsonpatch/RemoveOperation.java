@@ -75,6 +75,9 @@ public final class RemoveOperation
 	public void applyToBuilder(ExpressionSpecBuilder builder) {
 		String attributePath = pathGenerator.apply(path);
 		builder.addUpdate(ExpressionSpecBuilder.remove(attributePath));
+		//because it is an error to remove a path that does not exist
+		//add an attribute_exists() condition
+		builder.withCondition(ExpressionSpecBuilder.attribute_exists(pathGenerator.apply(path)));
 	}
 
     @Override
