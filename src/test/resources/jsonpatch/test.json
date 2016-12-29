@@ -27,5 +27,6 @@
             "node": { "a": [ null, "hello", "world" ] },
             "expected": { "a": [ null, "hello", "world" ] }
         }
-    ]
+    ],
+    "history": []
 }

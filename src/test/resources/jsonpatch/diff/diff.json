@@ -3,19 +3,25 @@
         "message": "empty patch if no changes",
         "first": "hello",
         "second": "hello",
-        "patch": []
+        "patch": [],
+        "patchWithHistory": []
     },
     {
         "message": "numeric values are treated as mathematically equal",
         "first": 1,
         "second": 1.0,
-        "patch": []
+        "patch": [],
+        "patchWithHistory": []
     },
     {
         "message": "array members appended use special end-of-array pointer",
         "first": [ 1, 2, 3 ],
         "second": [ 1, 2, 3, 4, 5 ],
         "patch": [
+            { "op": "add", "path": "/-", "value": 4 },
+            { "op": "add", "path": "/-", "value": 5 }
+        ],
+        "patchWithHistory": [
             { "op": "add", "path": "/-", "value": 4 },
             { "op": "add", "path": "/-", "value": 5 }
         ]
@@ -27,6 +33,10 @@
         "patch": [
             { "op": "remove", "path": "/1" },
             { "op": "remove", "path": "/1" }
+        ],
+        "patchWithHistory": [
+            { "op": "remove", "path": "/1", "pathValue": 2 },
+            { "op": "remove", "path": "/1", "pathValue": 3 }
         ]
     },
     {
@@ -35,6 +45,9 @@
         "second": { "a": "b" },
         "patch": [
             { "op": "remove", "path": "/c" }
+        ],
+        "patchWithHistory": [
+            { "op": "remove", "path": "/c", "pathValue": "d" }
         ]
     },
     {
@@ -42,6 +55,11 @@
         "first": { "a": 1 },
         "second": { "a": 1, "c": 2, "b": 3, "d": 4 },
         "patch": [
+            { "op": "add", "path": "/b", "value": 3 },
+            { "op": "add", "path": "/c", "value": 2 },
+            { "op": "add", "path": "/d", "value": 4 }
+        ],
+        "patchWithHistory": [
             { "op": "add", "path": "/b", "value": 3 },
             { "op": "add", "path": "/c", "value": 2 },
             { "op": "add", "path": "/d", "value": 4 }
@@ -53,6 +71,9 @@
         "second": { "a": 6 },
         "patch": [
             { "op": "replace", "path": "/a", "value": 6 }
+        ],
+        "patchWithHistory": [
+            { "op": "replace", "path": "/a", "value": 6, "pathValue": null }
         ]
     },
     {
@@ -61,6 +82,9 @@
         "second": { "hello": "world" },
         "patch": [
             { "op": "replace", "path": "", "value": { "hello": "world" } }
+        ],
+        "patchWithHistory": [
+            { "op": "replace", "path": "", "value": { "hello": "world" }, "pathValue": [1, 2, 3] }
         ]
     },
     {
@@ -81,6 +105,10 @@
         "patch": [
             { "op": "add", "path": "/c/e", "value": "f" },
             { "op": "replace", "path": "/c/d", "value": 1 }
+        ],
+        "patchWithHistory": [
+            { "op": "add", "path": "/c/e", "value": "f" },
+            { "op": "replace", "path": "/c/d", "value": 1, "pathValue": "e" }
         ]
     },
     {
@@ -94,6 +122,10 @@
         "patch": [
             { "op": "replace", "path": "/a/0", "value": "b" },
             { "op": "add", "path": "/a/-", "value": 4 }
+        ],
+        "patchWithHistory": [
+            { "op": "replace", "path": "/a/0", "value": "b", "pathValue": 1 },
+            { "op": "add", "path": "/a/-", "value": 4 }
         ]
     },
     {
@@ -103,6 +135,10 @@
         "patch": [
             { "op": "add", "path": "/0/c", "value": "d" },
             { "op": "replace", "path": "/2/bar", "value": "baz" }
+        ],
+        "patchWithHistory": [
+            { "op": "add", "path": "/0/c", "value": "d" },
+            { "op": "replace", "path": "/2/bar", "value": "baz", "pathValue": null }
         ]
     },
     {
@@ -111,6 +147,10 @@
         "second": [ "x", [ 2, 3, "y" ], 4 ],
         "patch": [
             { "op": "replace", "path": "/0", "value": "x" },
+            { "op": "add", "path": "/1/-", "value": "y" }
+        ],
+        "patchWithHistory": [
+            { "op": "replace", "path": "/0", "value": "x", "pathValue": 1 },
             { "op": "add", "path": "/1/-", "value": "y" }
         ]
     },
@@ -125,6 +165,9 @@
         },
         "patch": [
             { "op": "copy", "path": "/d", "from": "/a" }
+        ],
+        "patchWithHistory": [
+            { "op": "copy", "path": "/d", "from": "/a", "fromValue": "c" }
         ]
     },
     {
@@ -133,6 +176,9 @@
         "second": { "c": "b" },
         "patch": [
             { "op": "move", "path": "/c", "from": "/a" }
+        ],
+        "patchWithHistory": [
+            { "op": "move", "path": "/c", "from": "/a", "fromValue": "b" }
         ]
     }
 ]

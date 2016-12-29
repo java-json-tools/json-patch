@@ -61,23 +61,40 @@ public final class JsonDiffTest
         return list.iterator();
     }
 
+    public void generatedPatchAppliesCleanly(final JsonNode first, final JsonNode second, boolean includeHistory)
+        throws JsonPatchException
+    {
+        final JsonPatch patch = JsonDiff.asJsonPatch(first, second, includeHistory);
+        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
+        final JsonNode actual = patch.apply(first);
+
+        assertThat(predicate.apply(actual)).overridingErrorMessage(
+                "Generated patch failed to apply\nexpected: %s\nactual: %s",
+                second, actual
+        ).isTrue();
+    }
+
+
     @Test(dataProvider = "getPatchesOnly")
     public void generatedPatchAppliesCleanly(final JsonNode first,
         final JsonNode second)
         throws JsonPatchException
     {
-        final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
-        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
-        final JsonNode actual = patch.apply(first);
-
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
-            "Generated patch failed to apply\nexpected: %s\nactual: %s",
-            second, actual
-        ).isTrue();
+        generatedPatchAppliesCleanly(first, second, false);
     }
 
+    @Test(dataProvider = "getPatchesOnly")
+    public void generatedPatchWithHistoryAppliesCleanly(final JsonNode first,
+            final JsonNode second)
+            throws JsonPatchException
+    {
+        generatedPatchAppliesCleanly(first, second, true);
+    }
+
+
+
     @DataProvider
-    public Iterator<Object[]> getLiteralPatches()
+    public Iterator<Object[]> getLiteralPatchesWithoutHistory()
     {
         final List<Object[]> list = Lists.newArrayList();
 
@@ -93,20 +110,53 @@ public final class JsonDiffTest
         return list.iterator();
     }
 
+    @DataProvider
+    public Iterator<Object[]> getLiteralPatchesWithHistory()
+    {
+        final List<Object[]> list = Lists.newArrayList();
+
+        for (final JsonNode node: testData) {
+            if (!node.has("patch"))
+                continue;
+            list.add(new Object[] {
+                    node.get("message").textValue(), node.get("first"),
+                    node.get("second"), node.get("patchWithHistory")
+            });
+        }
+
+        return list.iterator();
+    }
+
+    public void generatedPatchesAreWhatIsExpected(final String message,
+            final JsonNode first, final JsonNode second, final boolean includeHistory, final JsonNode expected)
+    {
+        final JsonNode actual = JsonDiff.asJson(first, second, includeHistory);
+        final Predicate<JsonNode> predicate
+                = EQUIVALENCE.equivalentTo(expected);
+
+        assertThat(predicate.apply(actual)).overridingErrorMessage(
+                "patch is not what was expected\nscenario: %s\n"
+                        + "expected: %s\nactual: %s\n", message, expected, actual
+        ).isTrue();
+    }
+
     @Test(
-        dataProvider = "getLiteralPatches",
+        dataProvider = "getLiteralPatchesWithoutHistory",
         dependsOnMethods = "generatedPatchAppliesCleanly"
     )
     public void generatedPatchesAreWhatIsExpected(final String message,
         final JsonNode first, final JsonNode second, final JsonNode expected)
     {
-        final JsonNode actual = JsonDiff.asJson(first, second);
-        final Predicate<JsonNode> predicate
-            = EQUIVALENCE.equivalentTo(expected);
+        generatedPatchesAreWhatIsExpected(message, first, second, false, expected);
+    }
 
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
-            "patch is not what was expected\nscenario: %s\n"
-            + "expected: %s\nactual: %s\n", message, expected, actual
-        ).isTrue();
+    @Test(
+            dataProvider = "getLiteralPatchesWithHistory",
+            dependsOnMethods = "generatedPatchWithHistoryAppliesCleanly"
+    )
+    public void generatedPatchesWithHistoryAreWhatIsExpected(final String message,
+            final JsonNode first, final JsonNode second, final JsonNode expected)
+    {
+        generatedPatchesAreWhatIsExpected(message, first, second, true, expected);
     }
 }

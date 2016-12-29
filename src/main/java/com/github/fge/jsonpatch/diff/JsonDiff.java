@@ -83,12 +83,12 @@ public final class JsonDiff
      *
      * @param source the node to be patched
      * @param target the expected result after applying the patch
+     * @param includeHistory flag to determine if original values are included with operation
      * @return the patch as a {@link JsonPatch}
      *
      * @since 1.9
      */
-    public static JsonPatch asJsonPatch(final JsonNode source,
-        final JsonNode target)
+    public static JsonPatch asJsonPatch(final JsonNode source, final JsonNode target, final boolean includeHistory)
     {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
@@ -97,7 +97,7 @@ public final class JsonDiff
         final DiffProcessor processor = new DiffProcessor(unchanged);
 
         generateDiffs(processor, JsonPointer.empty(), source, target);
-        return processor.getPatch();
+        return processor.getPatch(includeHistory);
     }
 
     /**
@@ -106,13 +106,14 @@ public final class JsonDiff
      *
      * @param source the node to be patched
      * @param target the expected result after applying the patch
+     * @param includeHistory flag to determine if original values are included with operation
      * @return the patch as a {@link JsonNode}
      */
-    public static JsonNode asJson(final JsonNode source, final JsonNode target)
+    public static JsonNode asJson(final JsonNode source, final JsonNode target, final boolean includeHistory)
     {
         final String s;
         try {
-            s = MAPPER.writeValueAsString(asJsonPatch(source, target));
+            s = MAPPER.writeValueAsString(asJsonPatch(source, target, includeHistory));
             return MAPPER.readTree(s);
         } catch (IOException e) {
             throw new RuntimeException("cannot generate JSON diff", e);

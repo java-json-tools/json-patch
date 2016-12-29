@@ -32,5 +32,13 @@
             "node": [ true ],
             "expected": [ true, true ]
         }
+    ],
+    "history": [
+        { "op": { "op": "copy", "from": "/a", "path": "/b" } },
+        { "op": { "op": "copy", "from": "/a", "path": "/b", "fromValue": null } },
+        { "op": { "op": "copy", "from": "/a", "path": "/b", "pathValue": null } },
+        { "op": { "op": "copy", "from": "/a", "path": "/b", "fromValue": 1 } },
+        { "op": { "op": "copy", "from": "/a", "path": "/b", "pathValue": 2 } },
+        { "op": { "op": "copy", "from": "/a", "path": "/b", "fromValue": 1, "pathValue": 2 } }
     ]
 }

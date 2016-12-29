@@ -18,12 +18,8 @@
  */
 
 buildscript {
-    repositories {
-        maven {
-            url "http://repo.springsource.org/plugins-release";
-        }
-    }
     dependencies {
+        classpath 'com.cvent.gradle:cvent-publish-plugin:0.9'
         classpath(group: "org.springframework.build.gradle",
             name: "propdeps-plugin", version: "0.0.7");
     }
@@ -36,6 +32,7 @@ configure(allprojects) {
     apply(plugin: "propdeps-eclipse");
 }
 
+apply plugin: 'com.cvent.publish'
 apply(plugin: "java");
 apply(plugin: "maven");
 apply(plugin: "signing");
@@ -43,20 +40,18 @@ apply(plugin: "osgi");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
 
-group = "com.github.fge";
-version = "1.10-SNAPSHOT";
+group = "com.cvent";
+version = "2.1-SNAPSHOT";
 description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java";
-sourceCompatibility = "1.6";
-targetCompatibility = "1.6"; // defaults to sourceCompatibility
 
 /*
  * List of dependencies
  */
 dependencies {
     provided(group: "com.google.code.findbugs", name: "jsr305",
-        version: "2.0.1");
+        version: "2.0.3");
     compile(group: "com.github.fge", name: "jackson-coreutils",
-        version: "1.6");
+        version: "1.8");
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
@@ -74,13 +69,6 @@ javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2
 javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
 javadoc.options.links("http://fge.github.io/msg-simple/");
 javadoc.options.links("http://fge.github.io/jackson-coreutils/");
-
-/*
- * Repositories to use
- */
-repositories {
-    mavenCentral();
-}
 
 /*
  * Necessary! Otherwise TestNG will not be used...
@@ -129,102 +117,11 @@ task pom << {
     pom {}.writeTo("${projectDir}/pom.xml");
 }
 
-/*
- * SIGNING
- */
-
-project.ext {
-    gitrwscm = sprintf("git@github.com:fge/%s", name);
-    gitroscm = sprintf("https://github.com/fge/%s.git", name);
-    projectURL = sprintf("https://github.com/fge/%s", name);
-    sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/";
-    sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/";
-};
-
-task checkSigningRequirements << {
-    def requiredProperties = [ "sonatypeUsername", "sonatypePassword" ];
-    def noDice = false;
-    requiredProperties.each {
-        if (project.properties[it] == null) {
-            noDice = true;
-            System.err.printf("property \"%s\" is not defined!")
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
         }
     }
-    if (noDice)
-        throw new IllegalStateException("missing required properties for " +
-            "upload");
-}
-
-uploadArchives {
-    dependsOn(checkSigningRequirements);
-    repositories {
-        mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment);
-            }
-
-            repository(url: "${sonatypeStaging}") {
-                authentication(
-                    userName: project.properties["sonatypeUsername"],
-                    password: project.properties["sonatypePassword"]
-                );
-            }
-
-            snapshotRepository(url: "${sonatypeSnapshots}") {
-                authentication(
-                    userName: project.properties["sonatypeUsername"],
-                    password: project.properties["sonatypePassword"]
-                );
-            }
-        }
-    }
-}
-
-/*
- * Configure pom.xml on install, uploadArchives
- */
-[
-    install.repositories.mavenInstaller,
-    uploadArchives.repositories.mavenDeployer
-]*.pom*.whenConfigured { pom ->
-    pom.project {
-        name "${project.name}";
-        packaging "jar";
-        description "${project.description}";
-        url "${projectURL}";
-
-        scm {
-            url "${gitrwscm}";
-            connection "${gitrwscm}";
-            developerConnection "${gitroscm}";
-        }
-
-        licenses {
-            license {
-                name "Lesser General Public License, version 3 or greater";
-                url "http://www.gnu.org/licenses/lgpl.html";
-                distribution "repo";
-            };
-            license {
-                name "Apache Software License, version 2.0";
-                url "http://www.apache.org/licenses/LICENSE-2.0";
-                distribution "repo";
-            }
-        }
-
-        developers {
-            developer {
-                id "fge";
-                name "Francis Galiegue";
-                email "fgaliegue@gmail.com";
-            }
-        }
-    }
-}
-
-ext.forRelease = !version.endsWith("-SNAPSHOT");
-signing {
-    required { forRelease && gradle.taskGraph.hasTask("uploadArchives") };
-    sign configurations.archives;
 }
 

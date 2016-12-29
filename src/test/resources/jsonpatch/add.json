@@ -89,5 +89,10 @@
                 }
             }
         }
+    ],
+    "history": [
+        { "op": { "op": "add", "path": "/a", "value": 1 } },
+        { "op": { "op": "add", "path": "/a", "value": 1, "pathValue": null } },
+        { "op": { "op": "add", "path": "/a", "value": 1, "pathValue": 2 } }
     ]
 }

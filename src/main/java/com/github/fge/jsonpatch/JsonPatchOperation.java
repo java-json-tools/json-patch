@@ -28,8 +28,9 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
-import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+import static com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 
@@ -70,7 +71,18 @@ public abstract class JsonPatchOperation
      *
      * However, we need to serialize using .toString().
      */
-    protected final JsonPointer path;
+    protected JsonPointer path;
+
+    /**
+     * Constructor for deserialization. Other parameters are set through the private setters. This allows fields to
+     * be represented as null if missing and a default if present and set to null.
+     *
+     * @param op the operation name
+     */
+    protected JsonPatchOperation(final String op)
+    {
+        this.op = op;
+    }
 
     /**
      * Constructor
@@ -81,8 +93,14 @@ public abstract class JsonPatchOperation
     protected JsonPatchOperation(final String op, final JsonPointer path)
     {
         this.op = op;
+        setPath(path);
+    }
+
+    protected void setPath(JsonPointer path) {
         this.path = path;
     }
+
+    public JsonPointer getPath() { return path; }
 
     /**
      * Apply this operation to a JSON value

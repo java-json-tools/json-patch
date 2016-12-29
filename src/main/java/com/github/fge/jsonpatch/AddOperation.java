@@ -20,7 +20,6 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -71,10 +70,19 @@ public final class AddOperation
         = ReferenceToken.fromRaw("-");
 
     @JsonCreator
-    public AddOperation(@JsonProperty("path") final JsonPointer path,
-        @JsonProperty("value") final JsonNode value)
+    private AddOperation()
+    {
+        super("add");
+    }
+
+    public AddOperation(final JsonPointer path, final JsonNode value)
     {
         super("add", path, value);
+    }
+
+    public AddOperation(final JsonPointer path, final JsonNode value, final JsonNode pathValue)
+    {
+        super("add", path, value, pathValue);
     }
 
     @Override

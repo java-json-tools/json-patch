@@ -48,41 +48,41 @@ final class DiffProcessor
         this.unchanged = ImmutableMap.copyOf(unchanged);
     }
 
-    void valueReplaced(final JsonPointer pointer, final JsonNode oldValue,
-        final JsonNode newValue)
+    void valueReplaced(final JsonPointer path, final JsonNode pathValue, final JsonNode newValue)
     {
-        diffs.add(DiffOperation.replace(pointer, oldValue, newValue));
+        diffs.add(DiffOperation.replace(path, pathValue, newValue));
     }
 
-    void valueRemoved(final JsonPointer pointer, final JsonNode value)
+    void valueRemoved(final JsonPointer path, final JsonNode pathValue)
     {
-        diffs.add(DiffOperation.remove(pointer, value));
+        diffs.add(DiffOperation.remove(path, pathValue));
     }
 
-    void valueAdded(final JsonPointer pointer, final JsonNode value)
+    void valueAdded(final JsonPointer path, final JsonNode newValue)
     {
-        final int removalIndex = findPreviouslyRemoved(value);
+        JsonNode pathValue = unchanged.get(path);
+
+        final int removalIndex = findPreviouslyRemoved(newValue);
         if (removalIndex != -1) {
             final DiffOperation removed = diffs.get(removalIndex);
             diffs.remove(removalIndex);
-            diffs.add(DiffOperation.move(removed.getFrom(),
-                value, pointer, value));
+            diffs.add(DiffOperation.move(removed.getPath(), removed.getPathValue(), path, pathValue));
             return;
         }
-        final JsonPointer ptr = findUnchangedValue(value);
+        final JsonPointer ptr = findUnchangedValue(newValue);
         final DiffOperation op = ptr != null
-            ? DiffOperation.copy(ptr, pointer, value)
-            : DiffOperation.add(pointer, value);
+            ? DiffOperation.copy(ptr, unchanged.get(ptr), path, pathValue)
+            : DiffOperation.add(path, pathValue, newValue);
 
         diffs.add(op);
     }
 
-    JsonPatch getPatch()
+    JsonPatch getPatch(final boolean includeHistory)
     {
         final List<JsonPatchOperation> list = Lists.newArrayList();
 
         for (final DiffOperation op: diffs)
-            list.add(op.asJsonPatchOperation());
+            list.add(op.asJsonPatchOperation(includeHistory));
 
         return new JsonPatch(list);
     }
@@ -105,8 +105,7 @@ final class DiffProcessor
 
         for (int i = 0; i < diffs.size(); i++) {
             op = diffs.get(i);
-            if (op.getType() == DiffOperation.Type.REMOVE
-                && predicate.apply(op.getOldValue()))
+            if (op.getType() == DiffOperation.Type.REMOVE && predicate.apply(op.getPathValue()))
                 return i;
         }
         return -1;

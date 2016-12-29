@@ -20,9 +20,7 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -43,10 +41,35 @@ import java.io.IOException;
 public final class RemoveOperation
     extends JsonPatchOperation
 {
+    /**
+     * The value present at the path location when the patch operation was created. This history is necessary for
+     * using json patch with conflict resolution when optimistic locking is involved.
+     */
+    protected JsonNode pathValue;
+
     @JsonCreator
-    public RemoveOperation(@JsonProperty("path") final JsonPointer path)
+    private RemoveOperation()
+    {
+        super("remove");
+    }
+
+    public RemoveOperation(final JsonPointer path)
+    {
+        this(path, null);
+    }
+
+    public RemoveOperation(final JsonPointer path, final JsonNode pathValue)
     {
         super("remove", path);
+        setPathValue(pathValue);
+    }
+
+    private void setPathValue(JsonNode pathValue) {
+        this.pathValue = pathValue == null ? null : pathValue.deepCopy();
+    }
+
+    public JsonNode getPathValue() {
+        return pathValue == null ? null : pathValue.deepCopy();
     }
 
     @Override
@@ -71,18 +94,22 @@ public final class RemoveOperation
     @Override
     public void serialize(final JsonGenerator jgen,
         final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         jgen.writeStartObject();
         jgen.writeStringField("op", "remove");
         jgen.writeStringField("path", path.toString());
+        if (null != pathValue) {
+            jgen.writeFieldName("pathValue");
+            jgen.writeTree(pathValue);
+        }
         jgen.writeEndObject();
     }
 
     @Override
     public void serializeWithType(final JsonGenerator jgen,
         final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         serialize(jgen, provider);
     }

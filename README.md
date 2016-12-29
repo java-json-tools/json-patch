@@ -129,6 +129,25 @@ that is, the generated patch is only guaranteed to safely transform the given
 source to the given target. Do not expect it to give the result you expect on
 another source/target pair!
 
+### JSON patch history
+
+All patch operations allow you to store the history of elements for future reference. This allows systems to verify 
+that the patches applied are not altering values which may have changed since the generation of the patch. The 
+history elements are tied directly to paths in the operation and are simply the <pathName>Value. These elements have 
+no bearing when applying the patch. 
+
+```json
+{ "op": { "op": "add", "path": "/a", "value": 1, "pathValue": 2 } }
+{ "op": { "op": "move", "from": "/a", "path": "/b", "fromValue": 1, "pathValue": 2 } }
+```
+
+The history has the ability to distinguish between a missing value and being explicitly set to null. If there was no 
+value the history element will not be present. If the value was explicitly set to null the history element will be 
+present and set to null. The java implementation also distinguishes between these two by using null when missing
+from the json and NullNode when set explicitly to null in the json.
+
+Json Diff has the ability to generate patches with or without the history elements present.
+
 ### JSON Merge Patch
 
 As for `JsonPatch`, you may use either Jackson or "direct" initialization:
