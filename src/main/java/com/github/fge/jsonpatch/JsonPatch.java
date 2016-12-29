@@ -164,6 +164,7 @@ public final class JsonPatch
         for (final JsonPatchOperation op: operations)
             op.serialize(jgen, provider);
         jgen.writeEndArray();
+        jgen.close();
     }
 
     @Override
