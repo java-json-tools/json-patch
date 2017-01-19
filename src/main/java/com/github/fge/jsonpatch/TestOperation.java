@@ -33,7 +33,7 @@ import com.google.common.base.Equivalence;
  * to test ({@code path}) and the value to test equality against ({@code
  * value}).</p>
  *
- * <p>It is an error if no value exists at the given path.</p>
+ * <p>It is an error if no value exists at the given path and there is an expected value to test equality against.</p>
  *
  * <p>Also note that equality as defined by JSON Patch is exactly the same as it
  * is defined by JSON Schema itself. As such, this operation reuses {@link
@@ -57,10 +57,11 @@ public final class TestOperation
         throws JsonPatchException
     {
         final JsonNode tested = path.path(node);
-        if (tested.isMissingNode())
+
+        if (tested.isMissingNode() && !value.isNull())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
-        if (!EQUIVALENCE.equivalent(tested, value))
+        if (!(tested.isMissingNode() && value.isNull()) && !EQUIVALENCE.equivalent(tested, value))
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();

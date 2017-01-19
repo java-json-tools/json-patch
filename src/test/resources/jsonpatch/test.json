@@ -14,6 +14,11 @@
             "op": { "op": "test", "path": "/x", "value": -30.000 },
             "node": { "x": -29.020 },
             "message": "jsonPatch.valueTestFailure"
+        },
+        {
+            "op": { "op": "test", "path": "/a/1", "value": null },
+            "node": { "a": [ null, "hello", "world" ] },
+            "message": "jsonPatch.valueTestFailure"
         }
     ],
     "ops": [
@@ -26,6 +31,11 @@
             "op": { "op": "test", "path": "/a/1", "value": "hello" },
             "node": { "a": [ null, "hello", "world" ] },
             "expected": { "a": [ null, "hello", "world" ] }
+        },
+        {
+            "op": { "op": "test", "path": "/x", "value": null },
+            "node": 1.00,
+            "expected": 1.00
         }
     ]
 }
