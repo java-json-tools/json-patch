@@ -31,6 +31,7 @@ import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -148,6 +149,15 @@ public final class JsonPatch
 
         return ret;
     }
+    
+    /**
+     * Return the operations that are part of this patch
+     * 
+     * @return the operations of the patch
+     */
+    public List<JsonPatchOperation> getOperations() {
+		return new ArrayList<JsonPatchOperation>(operations);
+	}
 
     @Override
     public String toString()
