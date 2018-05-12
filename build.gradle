@@ -1,5 +1,4 @@
-/*
- * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+/* * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -24,8 +23,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath(group: "org.springframework.build.gradle",
-            name: "propdeps-plugin", version: "0.0.7");
+        classpath(group: "org.springframework.build.gradle", name: "propdeps-plugin", version: "0.0.7");
     }
 };
 
@@ -44,7 +42,7 @@ apply(plugin: "idea");
 apply(plugin: "eclipse");
 
 group = "com.github.java-json-tools";
-version = "1.10-SNAPSHOT";
+version = "1.11-SNAPSHOT";
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6"; // defaults to sourceCompatibility
 
