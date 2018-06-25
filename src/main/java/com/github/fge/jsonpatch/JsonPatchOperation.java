@@ -36,6 +36,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 @JsonSubTypes({
     @Type(name = "add", value = AddOperation.class),
     @Type(name = "copy", value = CopyOperation.class),
+    @Type(name = "create", value = CreateOperation.class),
     @Type(name = "move", value = MoveOperation.class),
     @Type(name = "remove", value = RemoveOperation.class),
     @Type(name = "replace", value = ReplaceOperation.class),
