@@ -24,8 +24,6 @@ import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.base.Equivalence;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -38,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JsonDiffTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
+    private static final JsonNumEquals EQUIVALENCE = JsonNumEquals.getInstance();
 
     private final JsonNode testData;
 
@@ -67,10 +64,9 @@ public final class JsonDiffTest
         throws JsonPatchException
     {
         final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
-        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(second);
         final JsonNode actual = patch.apply(first);
 
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
+        assertThat(EQUIVALENCE.equivalent(second, actual)).overridingErrorMessage(
             "Generated patch failed to apply\nexpected: %s\nactual: %s",
             second, actual
         ).isTrue();
@@ -101,10 +97,8 @@ public final class JsonDiffTest
         final JsonNode first, final JsonNode second, final JsonNode expected)
     {
         final JsonNode actual = JsonDiff.asJson(first, second);
-        final Predicate<JsonNode> predicate
-            = EQUIVALENCE.equivalentTo(expected);
 
-        assertThat(predicate.apply(actual)).overridingErrorMessage(
+        assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
             "patch is not what was expected\nscenario: %s\n"
             + "expected: %s\nactual: %s\n", message, expected, actual
         ).isTrue();

@@ -31,11 +31,10 @@ project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386)
  */
 dependencies {
     provided(group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2");
-    compile(group: "com.google.guava", name: "guava", version: "28.1-android");
     compile(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.9.9");
     compile(group: "com.github.java-json-tools", name: "msg-simple", version: "1.2");
     
-    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "1.11");
+    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0-SNAPSHOT");
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
@@ -44,6 +43,7 @@ dependencies {
     testCompile(group: "org.mockito", name: "mockito-core", version: "2.28.2");
     // FIXME: update to 3.x once we're off of Java 7
     testCompile(group: "org.assertj", name: "assertj-core", version: "2.9.1");
+    testCompile(group: "com.google.guava", name: "guava", version: "28.1-android");
 }
 
 javadoc.options {

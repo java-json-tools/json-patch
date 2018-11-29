@@ -24,28 +24,23 @@ import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
-import com.google.common.base.Equivalence;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO: cleanup
 final class DiffProcessor
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
+    private static final JsonNumEquals EQUIVALENCE
         = JsonNumEquals.getInstance();
 
     private final Map<JsonPointer, JsonNode> unchanged;
 
-    private final List<DiffOperation> diffs = Lists.newArrayList();
+    private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
     DiffProcessor(final Map<JsonPointer, JsonNode> unchanged)
     {
-        this.unchanged = ImmutableMap.copyOf(unchanged);
+        this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
     }
 
     void valueReplaced(final JsonPointer pointer, final JsonNode oldValue,
@@ -79,7 +74,7 @@ final class DiffProcessor
 
     JsonPatch getPatch()
     {
-        final List<JsonPatchOperation> list = Lists.newArrayList();
+        final List<JsonPatchOperation> list = new ArrayList<JsonPatchOperation>();
 
         for (final DiffOperation op: diffs)
             list.add(op.asJsonPatchOperation());
@@ -90,23 +85,20 @@ final class DiffProcessor
     @Nullable
     private JsonPointer findUnchangedValue(final JsonNode value)
     {
-        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(value);
         for (final Map.Entry<JsonPointer, JsonNode> entry: unchanged.entrySet())
-            if (predicate.apply(entry.getValue()))
+            if (EQUIVALENCE.equivalent(value, entry.getValue()))
                 return entry.getKey();
         return null;
     }
 
     private int findPreviouslyRemoved(final JsonNode value)
     {
-        final Predicate<JsonNode> predicate = EQUIVALENCE.equivalentTo(value);
-
         DiffOperation op;
 
         for (int i = 0; i < diffs.size(); i++) {
             op = diffs.get(i);
             if (op.getType() == DiffOperation.Type.REMOVE
-                && predicate.apply(op.getOldValue()))
+                && EQUIVALENCE.equivalent(value, op.getOldValue()))
                 return i;
         }
         return -1;
