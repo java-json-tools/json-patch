@@ -26,12 +26,9 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.google.common.base.Equivalence;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO: cleanup
 final class DiffProcessor
@@ -41,11 +38,11 @@ final class DiffProcessor
 
     private final Map<JsonPointer, JsonNode> unchanged;
 
-    private final List<DiffOperation> diffs = Lists.newArrayList();
+    private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
     DiffProcessor(final Map<JsonPointer, JsonNode> unchanged)
     {
-        this.unchanged = ImmutableMap.copyOf(unchanged);
+        this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
     }
 
     void valueReplaced(final JsonPointer pointer, final JsonNode oldValue,
@@ -79,7 +76,7 @@ final class DiffProcessor
 
     JsonPatch getPatch()
     {
-        final List<JsonPatchOperation> list = Lists.newArrayList();
+        final List<JsonPatchOperation> list = new ArrayList<JsonPatchOperation>();
 
         for (final DiffOperation op: diffs)
             list.add(op.asJsonPatchOperation());

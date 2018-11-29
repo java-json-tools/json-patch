@@ -43,30 +43,29 @@ apply(plugin: "eclipse");
 
 group = "com.github.java-json-tools";
 version = "1.11-SNAPSHOT";
-sourceCompatibility = "1.6";
-targetCompatibility = "1.6"; // defaults to sourceCompatibility
+sourceCompatibility = JavaVersion.VERSION_1_6;
+targetCompatibility = JavaVersion.VERSION_1_6; // defaults to sourceCompatibility
 
 /*
  * List of dependencies
  */
 dependencies {
-    provided(group: "com.google.code.findbugs", name: "jsr305", version: "2.0.1");
-    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "1.9");
-    testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
+    provided(group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2");
+    implementation(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "1.10-SNAPSHOT");
+    testImplementation(group: "com.google.guava", name: "guava", version: "16.0.1");
+    testImplementation(group: "org.testng", name: "testng", version: "7.0.0-beta1") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
         exclude(group: "org.yaml", module: "snakeyaml");
     };
-    testCompile(group: "org.mockito", name: "mockito-core", version: "1.9.5");
-    testCompile(group: "org.assertj", name: "assertj-core", version: "1.7.0");
+    testImplementation(group: "org.mockito", name: "mockito-core", version: "2.23.4");
+    testImplementation(group: "org.assertj", name: "assertj-core", version: "3.11.1");
 }
 
 javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
-javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc/");
 javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
 javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
 javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
-javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
 javadoc.options.links("http://fge.github.io/msg-simple/");
 javadoc.options.links("http://fge.github.io/jackson-coreutils/");
 
@@ -75,6 +74,7 @@ javadoc.options.links("http://fge.github.io/jackson-coreutils/");
  */
 repositories {
     mavenCentral();
+    mavenLocal()
 }
 
 /*
@@ -115,13 +115,15 @@ artifacts {
     archives javadocJar;
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "3.5";
-    distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
+wrapper {
+    gradleVersion = "5.0";
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
 }
 
-task pom << {
-    pom {}.writeTo("${projectDir}/pom.xml");
+task pom {
+    doLast {
+        pom {}.writeTo("${projectDir}/pom.xml");
+    }
 }
 
 /*
@@ -136,18 +138,20 @@ project.ext {
     sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/";
 };
 
-task checkSigningRequirements << {
-    def requiredProperties = [ "sonatypeUsername", "sonatypePassword" ];
-    def noDice = false;
-    requiredProperties.each {
-        if (project.properties[it] == null) {
-            noDice = true;
-            System.err.printf("property \"%s\" is not defined!")
+task checkSigningRequirements {
+    doLast {
+        def requiredProperties = [ "sonatypeUsername", "sonatypePassword" ];
+        def noDice = false;
+        requiredProperties.each {
+            if (project.properties[it] == null) {
+                noDice = true;
+                System.err.printf("property \"%s\" is not defined!")
+            }
         }
+        if (noDice)
+            throw new IllegalStateException("missing required properties for " +
+                    "upload");
     }
-    if (noDice)
-        throw new IllegalStateException("missing required properties for " +
-            "upload");
 }
 
 uploadArchives {

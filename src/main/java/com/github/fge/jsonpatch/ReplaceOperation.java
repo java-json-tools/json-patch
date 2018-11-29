@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Iterables;
 
 /**
  * JSON Patch {@code replace} operation
@@ -73,7 +72,7 @@ public final class ReplaceOperation
         final JsonNode parent = path.parent().get(ret);
         final String rawToken = Iterables.getLast(path).getToken().getRaw();
         if (parent.isObject())
-            ((ObjectNode) parent).put(rawToken, replacement);
+            ((ObjectNode) parent).set(rawToken, replacement);
         else
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;

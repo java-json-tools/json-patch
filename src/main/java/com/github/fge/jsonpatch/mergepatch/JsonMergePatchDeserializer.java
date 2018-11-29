@@ -27,13 +27,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.fge.jackson.JacksonUtils;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 final class JsonMergePatchDeserializer
     extends JsonDeserializer<JsonMergePatch>
@@ -71,8 +67,8 @@ final class JsonMergePatchDeserializer
          * members.
          */
 
-        final Set<String> removedMembers = Sets.newHashSet();
-        final Map<String, JsonMergePatch> modifiedMembers = Maps.newHashMap();
+        final Set<String> removedMembers = new HashSet<String>();
+        final Map<String, JsonMergePatch> modifiedMembers = new HashMap<String, JsonMergePatch>();
         final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
 
         Map.Entry<String, JsonNode> entry;
