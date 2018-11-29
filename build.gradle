@@ -74,7 +74,6 @@ javadoc.options.links("http://fge.github.io/jackson-coreutils/");
  */
 repositories {
     mavenCentral();
-    mavenLocal()
 }
 
 /*
