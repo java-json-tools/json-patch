@@ -25,7 +25,6 @@ import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatchOperation;
-import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -39,8 +38,7 @@ import static org.testng.Assert.*;
 @Test
 public abstract class JsonPatchOperationSerializationTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
+    private static final JsonNumEquals EQUIVALENCE = JsonNumEquals.getInstance();
 
     private final Class<? extends JsonPatchOperation> c;
     private final JsonNode node;
