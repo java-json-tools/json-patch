@@ -102,7 +102,7 @@ This implementation obeys the RFC; for this, it uses the numeric equivalence of
 You have two choices to build a `JsonPatch` instance: use Jackson deserialization, or initialize one
 directly from a `JsonNode`. Examples:
 
-```
+```java
 // Using Jackson
 final ObjectMapper mapper = new ObjectMapper();
 final InputStream in = ...;
