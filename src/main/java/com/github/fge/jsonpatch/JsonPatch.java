@@ -36,8 +36,8 @@ import java.util.List;
 /**
  * Implementation of JSON Patch
  *
- * <p><a href="http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10">JSON
- * Patch</a>, as its name implies, is an IETF draft describing a mechanism to
+ * <p><a href="https://tools.ietf.org/html/rfc6902">JSON
+ * Patch</a>, as its name implies, is an IETF RFC describing a mechanism to
  * apply a patch to any JSON value. This implementation covers all operations
  * according to the specification; however, there are some subtle differences
  * with regards to some operations which are covered in these operations'
