@@ -50,7 +50,7 @@ targetCompatibility = "1.6"; // defaults to sourceCompatibility
  * List of dependencies
  */
 dependencies {
-    provided(group: "com.google.code.findbugs", name: "jsr305", version: "2.0.1");
+    provided(group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2");
     compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "1.9");
     testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
         exclude(group: "junit", module: "junit");
