@@ -2,7 +2,7 @@
 
 Builds are now verified by Travis (see [issue #20](https://github.com/daveclayton/json-patch/issues/20) for details)
 
-https://travis-ci.org/daveclayton/json-patch
+https://travis-ci.org/java-json-tools/json-patch
 
 ## Read me first
 
