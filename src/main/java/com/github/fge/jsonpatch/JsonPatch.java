@@ -90,7 +90,7 @@ import java.util.List;
  * constructor for this class ({@link JsonPatch#fromJson(JsonNode)} is used.</p>
  */
 public final class JsonPatch
-    implements JsonSerializable
+    implements JsonSerializable, Patch
 {
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
