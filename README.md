@@ -99,7 +99,7 @@ This implementation obeys the RFC; for this, it uses the numeric equivalence of
 
 ### JSON Patch
 
-You have to choices to build a `JsonPatch` instance: use Jackson deserialization, or initialize one
+You have two choices to build a `JsonPatch` instance: use Jackson deserialization, or initialize one
 directly from a `JsonNode`. Examples:
 
 ```
