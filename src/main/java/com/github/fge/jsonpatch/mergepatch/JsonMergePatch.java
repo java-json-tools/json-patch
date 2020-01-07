@@ -100,6 +100,7 @@ public abstract class JsonMergePatch
      * {@link JsonPatch}
      * @throws NullPointerException value is null
      */
+    @Override
     public abstract JsonNode apply(final JsonNode input)
         throws JsonPatchException;
 }
