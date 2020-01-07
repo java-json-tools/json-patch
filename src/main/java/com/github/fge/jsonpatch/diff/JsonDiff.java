@@ -235,6 +235,7 @@ public final class JsonDiff
                 break;
             case ARRAY:
                 computeArray(ret, pointer, first, second);
+                break;
             default:
                 /* nothing */
         }
