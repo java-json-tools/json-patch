@@ -61,14 +61,21 @@ dependencies {
     testCompile(group: "org.assertj", name: "assertj-core", version: "1.7.0");
 }
 
-javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
-javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc/");
-javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
-javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
-javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
-javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
-javadoc.options.links("http://fge.github.io/msg-simple/");
-javadoc.options.links("http://fge.github.io/jackson-coreutils/");
+javadoc.options {
+    def currentJavaVersion = org.gradle.api.JavaVersion.current()
+    // FIXME: https://github.com/gradle/gradle/issues/11182
+    if (currentJavaVersion.compareTo(org.gradle.api.JavaVersion.VERSION_1_9) >= 0) {
+        addStringOption("-release", "6");
+    }
+    links("https://docs.oracle.com/javase/6/docs/api/");
+    links("https://www.javadoc.io/doc/com.google.code.findbugs/jsr305/3.0.1/");
+    links("https://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
+    links("https://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
+    links("https://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
+    links("https://www.javadoc.io/doc/com.google.guava/guava/16.0.1/");
+    links("https://fge.github.io/msg-simple/");
+    links("https://fge.github.io/jackson-coreutils/");
+}
 
 /*
  * Repositories to use
