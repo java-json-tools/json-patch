@@ -126,7 +126,7 @@ public final class JsonPatch
         throws IOException
     {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
-        return JacksonUtils.getReader().withType(JsonPatch.class)
+        return JacksonUtils.getReader().forType(JsonPatch.class)
             .readValue(node);
     }
 
