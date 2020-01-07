@@ -84,7 +84,7 @@ final class ObjectMergePatch
              */
             value = Optional.fromNullable(ret.get(key))
                 .or(NullNode.getInstance());
-            ret.put(key, entry.getValue().apply(value));
+            ret.replace(key, entry.getValue().apply(value));
         }
 
         ret.remove(removedMembers);

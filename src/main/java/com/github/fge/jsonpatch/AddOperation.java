@@ -133,7 +133,7 @@ public final class AddOperation
     {
         final JsonNode ret = node.deepCopy();
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
-        target.put(Iterables.getLast(path).getToken().getRaw(), value);
+        target.set(Iterables.getLast(path).getToken().getRaw(), value);
         return ret;
     }
 }

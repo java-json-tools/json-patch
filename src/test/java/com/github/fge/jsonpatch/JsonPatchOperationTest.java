@@ -57,7 +57,7 @@ public abstract class JsonPatchOperationTest
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
-        reader = JacksonUtils.getReader().withType(JsonPatchOperation.class);
+        reader = JacksonUtils.getReader().forType(JsonPatchOperation.class);
     }
 
     @DataProvider

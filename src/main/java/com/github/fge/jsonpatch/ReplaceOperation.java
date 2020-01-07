@@ -73,7 +73,7 @@ public final class ReplaceOperation
         final JsonNode parent = path.parent().get(ret);
         final String rawToken = Iterables.getLast(path).getToken().getRaw();
         if (parent.isObject())
-            ((ObjectNode) parent).put(rawToken, replacement);
+            ((ObjectNode) parent).replace(rawToken, replacement);
         else
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;

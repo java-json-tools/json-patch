@@ -96,6 +96,7 @@ final class JsonMergePatchDeserializer
      * not what we want.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public JsonMergePatch getNullValue()
     {
         return new NonObjectMergePatch(NullNode.getInstance());
