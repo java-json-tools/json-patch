@@ -138,6 +138,7 @@ public final class JsonPatch
      * @throws JsonPatchException failed to apply patch
      * @throws NullPointerException input is null
      */
+    @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {
