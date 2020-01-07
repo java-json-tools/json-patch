@@ -1,3 +1,8 @@
+## 1.10
+
+* First release at java-json-tools.
+* Update Gradle to 3.5.
+
 ## 1.9
 
 * Completely new JSON diff implementation; less smart than the previous one but
