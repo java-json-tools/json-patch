@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.TokenResolver;
 import com.google.common.collect.Iterables;
 
 import java.io.IOException;
@@ -49,23 +50,27 @@ public final class RemoveOperation
         super("remove", path);
     }
 
-    @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        if (path.isEmpty())
+    public JsonNode apply(JsonNode node) throws JsonPatchException {
+        if (this.path.isEmpty()) {
             return MissingNode.getInstance();
-        if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
-        final JsonNode ret = node.deepCopy();
-        final JsonNode parentNode = path.parent().get(ret);
-        final String raw = Iterables.getLast(path).getToken().getRaw();
-        if (parentNode.isObject())
-            ((ObjectNode) parentNode).remove(raw);
-        else
-            ((ArrayNode) parentNode).remove(Integer.parseInt(raw));
-        return ret;
+        } else if (this.path.parent() != null && !((JsonNode)this.path.parent().get(node)).isArray() && ((JsonNode)this.path.path(node)).isMissingNode()) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        } else {
+            JsonNode ret = node.deepCopy();
+            JsonNode parentNode = (JsonNode)this.path.parent().get(ret);
+            String raw = ((TokenResolver)Iterables.getLast(this.path)).getToken().getRaw();
+            if (parentNode.isObject()) {
+                ((ObjectNode)parentNode).remove(raw);
+            } else {
+                for(int i = 0; i < parentNode.size(); ++i) {
+                    if (parentNode.get(i).asLong() == Long.valueOf(raw)) {
+                        ((ArrayNode)parentNode).remove(i);
+                    }
+                }
+            }
+
+            return ret;
+        }
     }
 
     @Override
