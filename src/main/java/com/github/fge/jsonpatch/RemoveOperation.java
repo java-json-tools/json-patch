@@ -53,6 +53,11 @@ public final class RemoveOperation
     public JsonNode apply(JsonNode node) throws JsonPatchException {
         if (this.path.isEmpty()) {
             return MissingNode.getInstance();
+            /**
+             * since we are overriding the Remove Operation for allowing remove by array element,
+             * we need to skip this check if the parent is an array, as otherwise the library will try to get node by index but the value is supplied
+             */
+
         } else if (this.path.parent() != null && !((JsonNode)this.path.parent().get(node)).isArray() && ((JsonNode)this.path.path(node)).isMissingNode()) {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
         } else {
@@ -62,6 +67,7 @@ public final class RemoveOperation
             if (parentNode.isObject()) {
                 ((ObjectNode)parentNode).remove(raw);
             } else {
+                //loop through array to remove only specified element
                 for(int i = 0; i < parentNode.size(); ++i) {
                     if (parentNode.get(i).asLong() == Long.valueOf(raw)) {
                         ((ArrayNode)parentNode).remove(i);
