@@ -27,6 +27,7 @@ import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchMessages;
+import com.github.fge.jsonpatch.Patch;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
@@ -64,7 +65,7 @@ import java.io.IOException;
 @ParametersAreNonnullByDefault
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
-    implements JsonSerializable
+    implements JsonSerializable, Patch
 {
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
     protected static final MessageBundle BUNDLE
@@ -99,6 +100,7 @@ public abstract class JsonMergePatch
      * {@link JsonPatch}
      * @throws NullPointerException value is null
      */
+    @Override
     public abstract JsonNode apply(final JsonNode input)
         throws JsonPatchException;
 }

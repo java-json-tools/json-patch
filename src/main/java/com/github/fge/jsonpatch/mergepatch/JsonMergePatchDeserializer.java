@@ -27,10 +27,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.fge.jackson.JacksonUtils;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -71,8 +72,8 @@ final class JsonMergePatchDeserializer
          * members.
          */
 
-        final Set<String> removedMembers = Sets.newHashSet();
-        final Map<String, JsonMergePatch> modifiedMembers = Maps.newHashMap();
+        final Set<String> removedMembers = new HashSet<String>();
+        final Map<String, JsonMergePatch> modifiedMembers = new HashMap<String, JsonMergePatch>();
         final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
 
         Map.Entry<String, JsonNode> entry;
@@ -96,6 +97,7 @@ final class JsonMergePatchDeserializer
      * not what we want.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public JsonMergePatch getNullValue()
     {
         return new NonObjectMergePatch(NullNode.getInstance());

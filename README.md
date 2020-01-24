@@ -1,14 +1,15 @@
-## Travis builds now enabled
-
-Builds are now verified by Travis (see [issue #20](https://github.com/daveclayton/json-patch/issues/20) for details)
-
-https://travis-ci.org/daveclayton/json-patch
+[![License LGPLv3][LGPLv3 badge]][LGPLv3]
+[![License ASL 2.0][ASL 2.0 badge]][ASL 2.0]
+[![Build Status][Travis badge]][Travis]
+[![Maven Central][Maven Central badge]][Maven]
 
 ## Read me first
 
 This project, as of version 1.4, is licensed under both LGPLv3 and ASL 2.0. See
 file LICENSE for more details. Versions 1.3 and lower are licensed under LGPLv3
 only.
+
+**Note the "L" in "LGPL". LGPL AND GPL ARE QUITE DIFFERENT!**
 
 ## What this is
 
@@ -25,7 +26,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.9**. See file `RELEASE-NOTES.md` for details.
+The current version is **1.11**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 
@@ -33,7 +34,7 @@ With Gradle:
 
 ```groovy
 dependencies {
-    compile(group: "com.github.fge", name: "json-patch", version: "yourVersionHere");
+    compile(group: "com.github.java-json-tools", name: "json-patch", version: "yourVersionHere");
 }
 ```
 
@@ -41,11 +42,13 @@ With Maven:
 
 ```xml
 <dependency>
-    <groupId>com.github.fge</groupId>
+    <groupId>com.github.java-json-tools</groupId>
     <artifactId>json-patch</artifactId>
     <version>yourVersionHere</version>
 </dependency>
 ```
+
+Versions before 1.10 are available at `groupId` `com.github.fge`.
 
 ## JSON "diff" factorization
 
@@ -96,10 +99,10 @@ This implementation obeys the RFC; for this, it uses the numeric equivalence of
 
 ### JSON Patch
 
-You have to choices to build a `JsonPatch` instance: use Jackson deserialization, or initialize one
+You have two choices to build a `JsonPatch` instance: use Jackson deserialization, or initialize one
 directly from a `JsonNode`. Examples:
 
-```
+```java
 // Using Jackson
 final ObjectMapper mapper = new ObjectMapper();
 final InputStream in = ...;
@@ -147,3 +150,11 @@ Applying a patch also uses an `.apply()` method:
 final JsonNode patched = patch.apply(orig);
 ```
 
+[LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
+[LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
+[ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
+[ASL 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
+[Travis Badge]: https://api.travis-ci.org/java-json-tools/json-patch.svg?branch=master
+[Travis]: https://travis-ci.org/java-json-tools/json-patch
+[Maven Central badge]: https://img.shields.io/maven-central/v/com.github.java-json-tools/json-patch.svg
+[Maven]: https://search.maven.org/artifact/com.github.java-json-tools/json-patch

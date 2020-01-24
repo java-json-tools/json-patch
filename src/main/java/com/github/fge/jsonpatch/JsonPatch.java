@@ -28,16 +28,17 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Implementation of JSON Patch
  *
- * <p><a href="http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-10">JSON
- * Patch</a>, as its name implies, is an IETF draft describing a mechanism to
+ * <p><a href="https://tools.ietf.org/html/rfc6902">JSON
+ * Patch</a>, as its name implies, is an IETF RFC describing a mechanism to
  * apply a patch to any JSON value. This implementation covers all operations
  * according to the specification; however, there are some subtle differences
  * with regards to some operations which are covered in these operations'
@@ -90,7 +91,7 @@ import java.util.List;
  * constructor for this class ({@link JsonPatch#fromJson(JsonNode)} is used.</p>
  */
 public final class JsonPatch
-    implements JsonSerializable
+    implements JsonSerializable, Patch
 {
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
@@ -111,7 +112,7 @@ public final class JsonPatch
     @JsonCreator
     public JsonPatch(final List<JsonPatchOperation> operations)
     {
-        this.operations = ImmutableList.copyOf(operations);
+        this.operations = Collections.unmodifiableList(new ArrayList<JsonPatchOperation>(operations));
     }
 
     /**
@@ -126,7 +127,7 @@ public final class JsonPatch
         throws IOException
     {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
-        return JacksonUtils.getReader().withType(JsonPatch.class)
+        return JacksonUtils.getReader().forType(JsonPatch.class)
             .readValue(node);
     }
 
@@ -138,6 +139,7 @@ public final class JsonPatch
      * @throws JsonPatchException failed to apply patch
      * @throws NullPointerException input is null
      */
+    @Override
     public JsonNode apply(final JsonNode node)
         throws JsonPatchException
     {

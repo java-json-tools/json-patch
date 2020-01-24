@@ -31,16 +31,10 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchMessages;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Equivalence;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JSON "diff" implementation
@@ -70,7 +64,7 @@ public final class JsonDiff
         = MessageBundles.getBundle(JsonPatchMessages.class);
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
 
-    private static final Equivalence<JsonNode> EQUIVALENCE
+    private static final JsonNumEquals EQUIVALENCE
         = JsonNumEquals.getInstance();
 
     private JsonDiff()
@@ -164,20 +158,45 @@ public final class JsonDiff
         final ObjectNode target)
     {
         final Set<String> firstFields
-            = Sets.newTreeSet(Sets.newHashSet(source.fieldNames()));
+                = collect(source.fieldNames(), new TreeSet<String>());
         final Set<String> secondFields
-            = Sets.newTreeSet(Sets.newHashSet(target.fieldNames()));
+                = collect(target.fieldNames(), new TreeSet<String>());
 
-        for (final String field: Sets.difference(firstFields, secondFields))
+        final Set<String> copy1 = new HashSet<String>(firstFields);
+        copy1.removeAll(secondFields);
+
+        for (final String field: Collections.unmodifiableSet(copy1))
             processor.valueRemoved(pointer.append(field), source.get(field));
 
-        for (final String field: Sets.difference(secondFields, firstFields))
+        final Set<String> copy2 = new HashSet<String>(secondFields);
+        copy2.removeAll(firstFields);
+
+
+        for (final String field: Collections.unmodifiableSet(copy2))
             processor.valueAdded(pointer.append(field), target.get(field));
 
-        for (final String field: Sets.intersection(firstFields, secondFields))
+        final Set<String> intersection = new HashSet<String>(firstFields);
+        intersection.retainAll(secondFields);
+
+        for (final String field: intersection)
             generateDiffs(processor, pointer.append(field), source.get(field),
                 target.get(field));
     }
+
+    private static <T> Set<T> collect(Iterator<T> from, Set<T> to) {
+        if (from == null) {
+            throw new NullPointerException();
+        }
+        if (to == null) {
+            throw new NullPointerException();
+        }
+        while (from.hasNext()) {
+            to.add(from.next());
+        }
+        return Collections.unmodifiableSet(to);
+    }
+
+
 
     private static void generateArrayDiffs(final DiffProcessor processor,
         final JsonPointer pointer, final ArrayNode source,
@@ -204,11 +223,10 @@ public final class JsonDiff
     }
 
 
-    @VisibleForTesting
     static Map<JsonPointer, JsonNode> getUnchangedValues(final JsonNode source,
         final JsonNode target)
     {
-        final Map<JsonPointer, JsonNode> ret = Maps.newHashMap();
+        final Map<JsonPointer, JsonNode> ret = new HashMap<JsonPointer, JsonNode>();
         computeUnchanged(ret, JsonPointer.empty(), source, target);
         return ret;
     }
@@ -235,6 +253,7 @@ public final class JsonDiff
                 break;
             case ARRAY:
                 computeArray(ret, pointer, first, second);
+                break;
             default:
                 /* nothing */
         }

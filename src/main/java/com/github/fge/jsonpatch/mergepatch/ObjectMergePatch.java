@@ -28,12 +28,12 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,8 +47,8 @@ final class ObjectMergePatch
     ObjectMergePatch(final Set<String> removedMembers,
         final Map<String, JsonMergePatch> modifiedMembers)
     {
-        this.removedMembers = ImmutableSet.copyOf(removedMembers);
-        this.modifiedMembers = ImmutableMap.copyOf(modifiedMembers);
+        this.removedMembers = Collections.unmodifiableSet(new HashSet<String>(removedMembers));
+        this.modifiedMembers = Collections.unmodifiableMap(new HashMap<String, JsonMergePatch>(modifiedMembers));
     }
 
     @Override
@@ -82,9 +82,9 @@ final class ObjectMergePatch
              * * if it is an ObjectMergePatch, we get back here; the value will
              *   be replaced with a JSON Object anyway before being processed.
              */
-            value = Optional.fromNullable(ret.get(key))
-                .or(NullNode.getInstance());
-            ret.put(key, entry.getValue().apply(value));
+            final JsonNode jsonNode = ret.get(key);
+            value = jsonNode != null ? jsonNode : NullNode.getInstance();
+            ret.replace(key, entry.getValue().apply(value));
         }
 
         ret.remove(removedMembers);

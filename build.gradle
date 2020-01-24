@@ -1,4 +1,5 @@
-/* * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
+/*
+ * Copyright (c) 2014, Francis Galiegue (fgaliegue@gmail.com)
  *
  * This software is dual-licensed under:
  *
@@ -18,14 +19,20 @@
 
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             url "http://repo.springsource.org/plugins-release";
         }
     }
     dependencies {
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
         classpath(group: "org.springframework.build.gradle", name: "propdeps-plugin", version: "0.0.7");
     }
 };
+
+plugins {
+    id("net.ltgt.errorprone") version "0.8.1" apply false
+}
 
 configure(allprojects) {
     apply(plugin: "propdeps");
@@ -37,44 +44,45 @@ configure(allprojects) {
 apply(plugin: "java");
 apply(plugin: "maven");
 apply(plugin: "signing");
-apply(plugin: "osgi");
+apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
+apply(plugin: "net.ltgt.errorprone");
+
+apply(from: "project.gradle");
 
 group = "com.github.java-json-tools";
-version = "1.11-SNAPSHOT";
-sourceCompatibility = "1.6";
-targetCompatibility = "1.6"; // defaults to sourceCompatibility
 
-/*
- * List of dependencies
- */
-dependencies {
-    provided(group: "com.google.code.findbugs", name: "jsr305", version: "2.0.1");
-    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "1.9");
-    testCompile(group: "org.testng", name: "testng", version: "6.8.7") {
-        exclude(group: "junit", module: "junit");
-        exclude(group: "org.beanshell", module: "bsh");
-        exclude(group: "org.yaml", module: "snakeyaml");
-    };
-    testCompile(group: "org.mockito", name: "mockito-core", version: "1.9.5");
-    testCompile(group: "org.assertj", name: "assertj-core", version: "1.7.0");
-}
-
-javadoc.options.links("http://docs.oracle.com/javase/6/docs/api/");
-javadoc.options.links("http://jsr-305.googlecode.com/svn/trunk/javadoc/");
-javadoc.options.links("http://fasterxml.github.com/jackson-databind/javadoc/2.2.0/");
-javadoc.options.links("http://fasterxml.github.com/jackson-core/javadoc/2.2.0/");
-javadoc.options.links("http://fasterxml.github.com/jackson-annotations/javadoc/2.2.0/");
-javadoc.options.links("http://docs.guava-libraries.googlecode.com/git-history/v16.0.1/javadoc/");
-javadoc.options.links("http://fge.github.io/msg-simple/");
-javadoc.options.links("http://fge.github.io/jackson-coreutils/");
+ext.forRelease = !version.endsWith("-SNAPSHOT");
 
 /*
  * Repositories to use
  */
 repositories {
     mavenCentral();
+    if (!forRelease) {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+    /* Allow staging references for last pre-release testing. */
+    if (project.properties.containsKey("sonatypeUsername")) {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username = project.properties["sonatypeUsername"]
+                password = project.properties["sonatypePassword"]
+            }
+        }
+    }
+}
+
+/*
+ * Add errorprone checking.
+ */
+dependencies {
+    errorprone("com.google.errorprone:error_prone_core:2.3.3")
+    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
 /*
@@ -93,6 +101,20 @@ test {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources";
     from sourceSets.main.allSource;
+}
+
+/*
+ * Lint all the things!
+ */
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:all" << "-Xlint:-serial" << "-Werror"
+        }
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xwerror', '-quiet')
+        }
+    }
 }
 
 /*
@@ -115,13 +137,15 @@ artifacts {
     archives javadocJar;
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "3.5";
-    distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
+wrapper {
+    gradleVersion = "5.6.3";
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
 }
 
-task pom << {
-    pom {}.writeTo("${projectDir}/pom.xml");
+task pom {
+    doLast {
+        pom {}.writeTo("${projectDir}/pom.xml");
+    }
 }
 
 /*
@@ -129,25 +153,26 @@ task pom << {
  */
 
 project.ext {
-    description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java";
-    scmUrl = sprintf("git@github.com:java-json-tools/%s.git", name)
+    scmUrl = sprintf("git@github.com:java-json-tools/%s.git", name);
     projectURL = sprintf("https://github.com/java-json-tools/%s", name);
     sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/";
     sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/";
 };
 
-task checkSigningRequirements << {
-    def requiredProperties = [ "sonatypeUsername", "sonatypePassword" ];
-    def noDice = false;
-    requiredProperties.each {
-        if (project.properties[it] == null) {
-            noDice = true;
-            System.err.printf("property \"%s\" is not defined!")
+task checkSigningRequirements {
+    doLast {
+        def requiredProperties = [ "sonatypeUsername", "sonatypePassword" ];
+        def noDice = false;
+        requiredProperties.each {
+            if (project.properties[it] == null) {
+                noDice = true;
+                System.err.printf("property \"%s\" is not defined!\n", it);
+            }
         }
+        if (noDice)
+            throw new IllegalStateException("missing required properties for " +
+                "upload");
     }
-    if (noDice)
-        throw new IllegalStateException("missing required properties for " +
-            "upload");
 }
 
 uploadArchives {
@@ -217,7 +242,6 @@ uploadArchives {
     }
 }
 
-ext.forRelease = !version.endsWith("-SNAPSHOT");
 signing {
     required { forRelease && gradle.taskGraph.hasTask("uploadArchives") };
     sign configurations.archives;

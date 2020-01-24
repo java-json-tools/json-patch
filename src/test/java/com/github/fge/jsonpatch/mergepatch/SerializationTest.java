@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
-import com.google.common.base.Equivalence;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -39,8 +38,7 @@ import static org.testng.Assert.assertTrue;
 
 public final class SerializationTest
 {
-    private static final Equivalence<JsonNode> EQUIVALENCE
-        = JsonNumEquals.getInstance();
+    private static final JsonNumEquals EQUIVALENCE = JsonNumEquals.getInstance();
 
     private final ObjectMapper mapper = JacksonUtils.newMapper();
     private final JsonNode nonObjectTestData;
