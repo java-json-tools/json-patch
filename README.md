@@ -26,7 +26,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.11**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
+The current version is **1.12**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 
@@ -154,7 +154,7 @@ final JsonNode patched = patch.apply(orig);
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
 [ASL 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
-[Travis Badge]: https://api.travis-ci.org/java-json-tools/json-patch.svg?branch=master
-[Travis]: https://travis-ci.org/java-json-tools/json-patch
+[Travis Badge]: https://travis-ci.com/java-json-tools/json-patch.svg?branch=master
+[Travis]: https://travis-ci.com/java-json-tools/json-patch
 [Maven Central badge]: https://img.shields.io/maven-central/v/com.github.java-json-tools/json-patch.svg
 [Maven]: https://search.maven.org/artifact/com.github.java-json-tools/json-patch
