@@ -21,7 +21,7 @@
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
 group = "com.github.java-json-tools";
-version = "1.13-SNAPSHOT";
+version = "1.13";
 sourceCompatibility = JavaVersion.VERSION_1_7;
 targetCompatibility = JavaVersion.VERSION_1_7; // defaults to sourceCompatibility
 project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java";
@@ -34,7 +34,7 @@ dependencies {
     compile(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.11.0");
     compile(group: "com.github.java-json-tools", name: "msg-simple", version: "1.2");
     
-    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0-SNAPSHOT");
+    compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0");
     testCompile(group: "org.testng", name: "testng", version: "7.1.0") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
