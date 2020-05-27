@@ -26,7 +26,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.12**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
+The current version is **1.13**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 
