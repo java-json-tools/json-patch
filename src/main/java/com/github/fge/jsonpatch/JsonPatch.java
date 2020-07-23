@@ -151,6 +151,10 @@ public final class JsonPatch
         return ret;
     }
 
+    public List<JsonPatchOperation> getOperations() {
+        return operations;
+    }
+
     @Override
     public String toString()
     {

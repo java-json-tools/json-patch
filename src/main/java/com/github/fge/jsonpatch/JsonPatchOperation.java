@@ -94,6 +94,14 @@ public abstract class JsonPatchOperation
     public abstract JsonNode apply(final JsonNode node)
         throws JsonPatchException;
 
+    public String getOp() {
+        return op;
+    }
+
+    public JsonPointer getPath() {
+        return path;
+    }
+
     @Override
     public abstract String toString();
 }

@@ -73,6 +73,10 @@ public abstract class PathValueOperation
         serialize(jgen, provider);
     }
 
+    public JsonNode getValue() {
+        return value;
+    }
+
     @Override
     public final String toString()
     {
