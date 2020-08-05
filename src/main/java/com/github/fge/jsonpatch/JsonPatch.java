@@ -151,7 +151,7 @@ public final class JsonPatch
         return ret;
     }
 
-    public List<JsonPatchOperation> getOperations() {
+    public final List<JsonPatchOperation> getOperations() {
         return operations;
     }
 
