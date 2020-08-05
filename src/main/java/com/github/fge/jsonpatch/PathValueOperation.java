@@ -73,8 +73,8 @@ public abstract class PathValueOperation
         serialize(jgen, provider);
     }
 
-    public JsonNode getValue() {
-        return value;
+    public final JsonNode getValue() {
+        return value.deepCopy();
     }
 
     @Override

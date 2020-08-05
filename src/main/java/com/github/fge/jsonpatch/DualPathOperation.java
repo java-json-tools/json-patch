@@ -72,7 +72,7 @@ public abstract class DualPathOperation
         serialize(jgen, provider);
     }
 
-    public JsonPointer getFrom() {
+    public final JsonPointer getFrom() {
         return from;
     }
 
