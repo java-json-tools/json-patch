@@ -36,10 +36,18 @@ final class DiffProcessor
 
     private final Map<JsonPointer, JsonNode> unchanged;
 
+    private final boolean withMoveOrCopyOperation;
+    public static final boolean WITH_MOVE_OR_COPY_OPERATION = true;
+
     private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
-    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged)
+    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged) {
+        this(unchanged, WITH_MOVE_OR_COPY_OPERATION);
+    }
+
+    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, boolean withMoveOrCopyOperation)
     {
+        this.withMoveOrCopyOperation = withMoveOrCopyOperation;
         this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
     }
 
@@ -56,6 +64,10 @@ final class DiffProcessor
 
     void valueAdded(final JsonPointer pointer, final JsonNode value)
     {
+        if (!withMoveOrCopyOperation) {
+            diffs.add(DiffOperation.add(pointer, value));
+            return;
+        }
         final int removalIndex = findPreviouslyRemoved(value);
         if (removalIndex != -1) {
             final DiffOperation removed = diffs.get(removalIndex);

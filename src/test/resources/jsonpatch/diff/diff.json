@@ -134,5 +134,28 @@
         "patch": [
             { "op": "move", "path": "/c", "from": "/a" }
         ]
+    },{
+        "message": "similar element is copied instead of added",
+        "first": {
+            "a": "c"
+        },
+        "second": {
+            "a": "c",
+            "d": "c"
+        },
+        "patch": [
+            { "op": "add", "path": "/d", "value": "c" }
+        ],
+        "withMoveOrCopy": false
+    },
+    {
+        "message": "similar element removed then added is moved instead",
+        "first": { "a": "b" },
+        "second": { "c": "b" },
+        "patch": [
+            { "op": "remove", "path": "/a" },
+            { "op": "add", "path": "/c", "value": "b" }
+        ],
+        "withMoveOrCopy": false
     }
 ]

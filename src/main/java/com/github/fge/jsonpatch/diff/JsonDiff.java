@@ -36,6 +36,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.*;
 
+import static com.github.fge.jsonpatch.diff.DiffProcessor.WITH_MOVE_OR_COPY_OPERATION;
+
 /**
  * JSON "diff" implementation
  *
@@ -81,14 +83,25 @@ public final class JsonDiff
      *
      * @since 1.9
      */
+
+//    public static JsonPatch asJsonPatch(final JsonNode source,
+//                                        final JsonNode target, false)
+//    {
+//        return
+//    }
     public static JsonPatch asJsonPatch(final JsonNode source,
-        final JsonNode target)
+                                        final JsonNode target)
+    {
+        return asJsonPatch(source, target, WITH_MOVE_OR_COPY_OPERATION);
+    }
+    public static JsonPatch asJsonPatch(final JsonNode source,
+        final JsonNode target, final boolean withMoveOrCopyOperation)
     {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
         final Map<JsonPointer, JsonNode> unchanged
             = getUnchangedValues(source, target);
-        final DiffProcessor processor = new DiffProcessor(unchanged);
+        final DiffProcessor processor = new DiffProcessor(unchanged, withMoveOrCopyOperation);
 
         generateDiffs(processor, JsonPointer.empty(), source, target);
         return processor.getPatch();
@@ -104,9 +117,15 @@ public final class JsonDiff
      */
     public static JsonNode asJson(final JsonNode source, final JsonNode target)
     {
+        return asJson(source, target, WITH_MOVE_OR_COPY_OPERATION);
+    }
+
+
+    public static JsonNode asJson(final JsonNode source, final JsonNode target, final boolean withMoveOrCopyOperation)
+    {
         final String s;
         try {
-            s = MAPPER.writeValueAsString(asJsonPatch(source, target));
+            s = MAPPER.writeValueAsString(asJsonPatch(source, target, withMoveOrCopyOperation));
             return MAPPER.readTree(s);
         } catch (IOException e) {
             throw new RuntimeException("cannot generate JSON diff", e);

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.github.fge.jsonpatch.diff.DiffProcessor.WITH_MOVE_OR_COPY_OPERATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JsonDiffTest
@@ -53,17 +54,20 @@ public final class JsonDiffTest
         final List<Object[]> list = Lists.newArrayList();
 
         for (final JsonNode node: testData)
-            list.add(new Object[] { node.get("first"), node.get("second") });
+            list.add(new Object[] {
+                node.get("first"), node.get("second"),
+                node.has("withMoveOrCopy") ? node.get("withMoveOrCopy").booleanValue() : WITH_MOVE_OR_COPY_OPERATION
+            });
 
         return list.iterator();
     }
 
     @Test(dataProvider = "getPatchesOnly")
     public void generatedPatchAppliesCleanly(final JsonNode first,
-        final JsonNode second)
+        final JsonNode second, final boolean withMoveOrCopy)
         throws JsonPatchException
     {
-        final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
+        final JsonPatch patch = JsonDiff.asJsonPatch(first, second, withMoveOrCopy);
         final JsonNode actual = patch.apply(first);
 
         assertThat(EQUIVALENCE.equivalent(second, actual)).overridingErrorMessage(
@@ -82,7 +86,8 @@ public final class JsonDiffTest
                 continue;
             list.add(new Object[] {
                 node.get("message").textValue(), node.get("first"),
-                node.get("second"), node.get("patch")
+                node.get("second"), node.get("patch"),
+                node.has("withMoveOrCopy") ? node.get("withMoveOrCopy").booleanValue() : WITH_MOVE_OR_COPY_OPERATION
             });
         }
 
@@ -94,9 +99,9 @@ public final class JsonDiffTest
         dependsOnMethods = "generatedPatchAppliesCleanly"
     )
     public void generatedPatchesAreWhatIsExpected(final String message,
-        final JsonNode first, final JsonNode second, final JsonNode expected)
+        final JsonNode first, final JsonNode second, final JsonNode expected, final boolean withMoveOrCopyOperation)
     {
-        final JsonNode actual = JsonDiff.asJson(first, second);
+        final JsonNode actual = JsonDiff.asJson(first, second, withMoveOrCopyOperation);
 
         assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
             "patch is not what was expected\nscenario: %s\n"
