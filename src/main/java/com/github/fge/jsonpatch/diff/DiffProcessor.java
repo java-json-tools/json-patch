@@ -36,18 +36,18 @@ final class DiffProcessor
 
     private final Map<JsonPointer, JsonNode> unchanged;
 
-    private final boolean withMoveOrCopyOperation;
-    public static final boolean WITH_MOVE_OR_COPY_OPERATION = true;
+    private final boolean diffDoesntRequireSource;
+    public static final boolean DIFF_DOESNT_REQUIRE_SOURCE = false;
 
     private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
     DiffProcessor(final Map<JsonPointer, JsonNode> unchanged) {
-        this(unchanged, WITH_MOVE_OR_COPY_OPERATION);
+        this(unchanged, DIFF_DOESNT_REQUIRE_SOURCE);
     }
 
-    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, boolean withMoveOrCopyOperation)
+    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, boolean diffDoesntRequireSource)
     {
-        this.withMoveOrCopyOperation = withMoveOrCopyOperation;
+        this.diffDoesntRequireSource = diffDoesntRequireSource;
         this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
     }
 
@@ -64,7 +64,7 @@ final class DiffProcessor
 
     void valueAdded(final JsonPointer pointer, final JsonNode value)
     {
-        if (!withMoveOrCopyOperation) {
+        if (diffDoesntRequireSource) {
             diffs.add(DiffOperation.add(pointer, value));
             return;
         }

@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.github.fge.jsonpatch.diff.DiffProcessor.WITH_MOVE_OR_COPY_OPERATION;
+import static com.github.fge.jsonpatch.diff.DiffProcessor.DIFF_DOESNT_REQUIRE_SOURCE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class JsonDiffTest
@@ -56,7 +56,7 @@ public final class JsonDiffTest
         for (final JsonNode node: testData)
             list.add(new Object[] {
                 node.get("first"), node.get("second"),
-                node.has("withMoveOrCopy") ? node.get("withMoveOrCopy").booleanValue() : WITH_MOVE_OR_COPY_OPERATION
+                node.has("diffDoesntRequireSource") ? node.get("diffDoesntRequireSource").booleanValue() : DIFF_DOESNT_REQUIRE_SOURCE
             });
 
         return list.iterator();
@@ -87,7 +87,7 @@ public final class JsonDiffTest
             list.add(new Object[] {
                 node.get("message").textValue(), node.get("first"),
                 node.get("second"), node.get("patch"),
-                node.has("withMoveOrCopy") ? node.get("withMoveOrCopy").booleanValue() : WITH_MOVE_OR_COPY_OPERATION
+                node.has("diffDoesntRequireSource") ? node.get("diffDoesntRequireSource").booleanValue() : DIFF_DOESNT_REQUIRE_SOURCE
             });
         }
 
@@ -99,9 +99,9 @@ public final class JsonDiffTest
         dependsOnMethods = "generatedPatchAppliesCleanly"
     )
     public void generatedPatchesAreWhatIsExpected(final String message,
-        final JsonNode first, final JsonNode second, final JsonNode expected, final boolean withMoveOrCopyOperation)
+        final JsonNode first, final JsonNode second, final JsonNode expected, final boolean diffDoesntRequireSource)
     {
-        final JsonNode actual = JsonDiff.asJson(first, second, withMoveOrCopyOperation);
+        final JsonNode actual = JsonDiff.asJson(first, second, diffDoesntRequireSource);
 
         assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
             "patch is not what was expected\nscenario: %s\n"

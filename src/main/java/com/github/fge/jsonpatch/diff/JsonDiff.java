@@ -36,7 +36,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.*;
 
-import static com.github.fge.jsonpatch.diff.DiffProcessor.WITH_MOVE_OR_COPY_OPERATION;
+import static com.github.fge.jsonpatch.diff.DiffProcessor.DIFF_DOESNT_REQUIRE_SOURCE;
 
 /**
  * JSON "diff" implementation
@@ -92,16 +92,16 @@ public final class JsonDiff
     public static JsonPatch asJsonPatch(final JsonNode source,
                                         final JsonNode target)
     {
-        return asJsonPatch(source, target, WITH_MOVE_OR_COPY_OPERATION);
+        return asJsonPatch(source, target, DIFF_DOESNT_REQUIRE_SOURCE);
     }
     public static JsonPatch asJsonPatch(final JsonNode source,
-        final JsonNode target, final boolean withMoveOrCopyOperation)
+        final JsonNode target, final boolean diffDoesntRequireSource)
     {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
         final Map<JsonPointer, JsonNode> unchanged
             = getUnchangedValues(source, target);
-        final DiffProcessor processor = new DiffProcessor(unchanged, withMoveOrCopyOperation);
+        final DiffProcessor processor = new DiffProcessor(unchanged, diffDoesntRequireSource);
 
         generateDiffs(processor, JsonPointer.empty(), source, target);
         return processor.getPatch();
@@ -117,7 +117,7 @@ public final class JsonDiff
      */
     public static JsonNode asJson(final JsonNode source, final JsonNode target)
     {
-        return asJson(source, target, WITH_MOVE_OR_COPY_OPERATION);
+        return asJson(source, target, DIFF_DOESNT_REQUIRE_SOURCE);
     }
 
 

@@ -146,7 +146,7 @@
         "patch": [
             { "op": "add", "path": "/d", "value": "c" }
         ],
-        "withMoveOrCopy": false
+        "diffDoesntRequireSource": true
     },
     {
         "message": "similar element removed then added is moved instead",
@@ -156,6 +156,6 @@
             { "op": "remove", "path": "/a" },
             { "op": "add", "path": "/c", "value": "b" }
         ],
-        "withMoveOrCopy": false
+        "diffDoesntRequireSource": true
     }
 ]
