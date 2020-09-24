@@ -95,7 +95,7 @@ public final class JsonDiff
         return asJsonPatch(source, target, DiffOptions.DEFAULT_OPTIONS);
     }
     public static JsonPatch asJsonPatch(final JsonNode source,
-        final JsonNode target, DiffOptions options)
+        final JsonNode target, final DiffOptions options)
     {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
@@ -121,7 +121,7 @@ public final class JsonDiff
     }
 
 
-    public static JsonNode asJson(final JsonNode source, final JsonNode target, DiffOptions options)
+    public static JsonNode asJson(final JsonNode source, final JsonNode target, final DiffOptions options)
     {
         final String s;
         try {

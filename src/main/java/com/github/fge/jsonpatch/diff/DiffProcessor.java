@@ -45,7 +45,7 @@ final class DiffProcessor
         this(unchanged, DiffOptions.DEFAULT_OPTIONS);
     }
 
-    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, DiffOptions options)
+    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, final DiffOptions options)
     {
         this.options = options;
         this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
