@@ -36,18 +36,18 @@ final class DiffProcessor
 
     private final Map<JsonPointer, JsonNode> unchanged;
 
-    private final boolean diffDoesntRequireSource;
+    private final DiffOptions options;
     public static final boolean DIFF_DOESNT_REQUIRE_SOURCE = false;
 
     private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
     DiffProcessor(final Map<JsonPointer, JsonNode> unchanged) {
-        this(unchanged, DIFF_DOESNT_REQUIRE_SOURCE);
+        this(unchanged, DiffOptions.DEFAULT_OPTIONS);
     }
 
-    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, boolean diffDoesntRequireSource)
+    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged, DiffOptions options)
     {
-        this.diffDoesntRequireSource = diffDoesntRequireSource;
+        this.options = options;
         this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
     }
 
@@ -64,7 +64,7 @@ final class DiffProcessor
 
     void valueAdded(final JsonPointer pointer, final JsonNode value)
     {
-        if (diffDoesntRequireSource) {
+        if (options.isDiffDoesntRequireSource()) {
             diffs.add(DiffOperation.add(pointer, value));
             return;
         }

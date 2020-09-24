@@ -135,7 +135,7 @@
             { "op": "move", "path": "/c", "from": "/a" }
         ]
     },{
-        "message": "similar element is copied instead of added",
+        "message": "when diffDoesntRequireSource similar element is added",
         "first": {
             "a": "c"
         },
@@ -146,16 +146,32 @@
         "patch": [
             { "op": "add", "path": "/d", "value": "c" }
         ],
-        "diffDoesntRequireSource": true
+        "options": {
+            "diffDoesntRequireSource": true
+        }
     },
     {
-        "message": "similar element removed then added is moved instead",
+        "message": "when diffDoesntRequireSource similar element is removed then added",
         "first": { "a": "b" },
         "second": { "c": "b" },
         "patch": [
             { "op": "remove", "path": "/a" },
             { "op": "add", "path": "/c", "value": "b" }
         ],
-        "diffDoesntRequireSource": true
+        "options": {
+            "diffDoesntRequireSource": true
+        }
+
+    },
+    {
+        "message": "with default options, similar element removed then added is moved instead",
+        "first": { "a": "b" },
+        "second": { "c": "b" },
+        "patch": [
+            { "op": "move", "path": "/c", "from": "/a" }
+        ],
+        "options": {
+        }
+
     }
 ]

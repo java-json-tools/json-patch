@@ -92,16 +92,16 @@ public final class JsonDiff
     public static JsonPatch asJsonPatch(final JsonNode source,
                                         final JsonNode target)
     {
-        return asJsonPatch(source, target, DIFF_DOESNT_REQUIRE_SOURCE);
+        return asJsonPatch(source, target, DiffOptions.DEFAULT_OPTIONS);
     }
     public static JsonPatch asJsonPatch(final JsonNode source,
-        final JsonNode target, final boolean diffDoesntRequireSource)
+        final JsonNode target, DiffOptions options)
     {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
         final Map<JsonPointer, JsonNode> unchanged
             = getUnchangedValues(source, target);
-        final DiffProcessor processor = new DiffProcessor(unchanged, diffDoesntRequireSource);
+        final DiffProcessor processor = new DiffProcessor(unchanged, options);
 
         generateDiffs(processor, JsonPointer.empty(), source, target);
         return processor.getPatch();
@@ -117,15 +117,15 @@ public final class JsonDiff
      */
     public static JsonNode asJson(final JsonNode source, final JsonNode target)
     {
-        return asJson(source, target, DIFF_DOESNT_REQUIRE_SOURCE);
+        return asJson(source, target, DiffOptions.DEFAULT_OPTIONS);
     }
 
 
-    public static JsonNode asJson(final JsonNode source, final JsonNode target, final boolean withMoveOrCopyOperation)
+    public static JsonNode asJson(final JsonNode source, final JsonNode target, DiffOptions options)
     {
         final String s;
         try {
-            s = MAPPER.writeValueAsString(asJsonPatch(source, target, withMoveOrCopyOperation));
+            s = MAPPER.writeValueAsString(asJsonPatch(source, target, options));
             return MAPPER.readTree(s);
         } catch (IOException e) {
             throw new RuntimeException("cannot generate JSON diff", e);
