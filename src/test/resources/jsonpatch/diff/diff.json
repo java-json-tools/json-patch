@@ -134,5 +134,44 @@
         "patch": [
             { "op": "move", "path": "/c", "from": "/a" }
         ]
+    },{
+        "message": "when diffDoesntRequireSource similar element is added",
+        "first": {
+            "a": "c"
+        },
+        "second": {
+            "a": "c",
+            "d": "c"
+        },
+        "patch": [
+            { "op": "add", "path": "/d", "value": "c" }
+        ],
+        "options": {
+            "diffDoesntRequireSource": true
+        }
+    },
+    {
+        "message": "when diffDoesntRequireSource similar element is removed then added",
+        "first": { "a": "b" },
+        "second": { "c": "b" },
+        "patch": [
+            { "op": "remove", "path": "/a" },
+            { "op": "add", "path": "/c", "value": "b" }
+        ],
+        "options": {
+            "diffDoesntRequireSource": true
+        }
+
+    },
+    {
+        "message": "with default options, similar element removed then added is moved instead",
+        "first": { "a": "b" },
+        "second": { "c": "b" },
+        "patch": [
+            { "op": "move", "path": "/c", "from": "/a" }
+        ],
+        "options": {
+        }
+
     }
 ]

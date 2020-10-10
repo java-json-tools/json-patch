@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.github.fge.jsonpatch.diff.DiffProcessor.DIFF_DOESNT_REQUIRE_SOURCE;
+import static org.assertj.core.api.Assertions.*;
 
 public final class JsonDiffTest
 {
@@ -53,17 +54,20 @@ public final class JsonDiffTest
         final List<Object[]> list = Lists.newArrayList();
 
         for (final JsonNode node: testData)
-            list.add(new Object[] { node.get("first"), node.get("second") });
+            list.add(new Object[] {
+                node.get("first"), node.get("second"),
+                node.has("options") ? getLiteralOptions(node.get("options")) : DiffOptions.DEFAULT_OPTIONS
+            });
 
         return list.iterator();
     }
 
     @Test(dataProvider = "getPatchesOnly")
     public void generatedPatchAppliesCleanly(final JsonNode first,
-        final JsonNode second)
+        final JsonNode second, final DiffOptions options)
         throws JsonPatchException
     {
-        final JsonPatch patch = JsonDiff.asJsonPatch(first, second);
+        final JsonPatch patch = JsonDiff.asJsonPatch(first, second, options);
         final JsonNode actual = patch.apply(first);
 
         assertThat(EQUIVALENCE.equivalent(second, actual)).overridingErrorMessage(
@@ -82,11 +86,24 @@ public final class JsonDiffTest
                 continue;
             list.add(new Object[] {
                 node.get("message").textValue(), node.get("first"),
-                node.get("second"), node.get("patch")
+                node.get("second"), node.get("patch"),
+                node.has("options") ? getLiteralOptions(node.get("options")) : DiffOptions.DEFAULT_OPTIONS
             });
         }
 
         return list.iterator();
+    }
+
+    public DiffOptions getLiteralOptions(JsonNode jsonNode) {
+        DiffOptions.Builder builder = new DiffOptions.Builder();
+        if (jsonNode.has("diffDoesntRequireSource")) {
+            if (jsonNode.get("diffDoesntRequireSource").booleanValue()){
+                builder.diffDoesntRequireSource();
+            } else {
+                builder.diffRequireSource();
+            }
+        }
+        return builder.build();
     }
 
     @Test(
@@ -94,9 +111,9 @@ public final class JsonDiffTest
         dependsOnMethods = "generatedPatchAppliesCleanly"
     )
     public void generatedPatchesAreWhatIsExpected(final String message,
-        final JsonNode first, final JsonNode second, final JsonNode expected)
+        final JsonNode first, final JsonNode second, final JsonNode expected, final DiffOptions options)
     {
-        final JsonNode actual = JsonDiff.asJson(first, second);
+        final JsonNode actual = JsonDiff.asJson(first, second, options);
 
         assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
             "patch is not what was expected\nscenario: %s\n"
