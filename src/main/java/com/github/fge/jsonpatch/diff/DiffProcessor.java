@@ -59,9 +59,7 @@ final class DiffProcessor
         final int removalIndex = findPreviouslyRemoved(value);
         if (removalIndex != -1) {
             final DiffOperation removed = diffs.get(removalIndex);
-            diffs.remove(removalIndex);
-            diffs.add(DiffOperation.move(removed.getFrom(),
-                value, pointer, value));
+            diffs.set(removalIndex, DiffOperation.move(removed.getFrom(), value, pointer, value));
             return;
         }
         final JsonPointer ptr = findUnchangedValue(value);
