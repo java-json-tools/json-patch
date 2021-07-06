@@ -55,8 +55,13 @@ public final class RemoveOperation
         if (path.isEmpty())
             return MissingNode.getInstance();
         if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+        {
+            String msg = BUNDLE.getMessage("jsonPatch.noSuchPath");
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            throw new JsonPatchException(msg);
+        }
         final JsonNode ret = node.deepCopy();
         final JsonNode parentNode = path.parent().get(ret);
         final String raw = Iterables.getLast(path).getToken().getRaw();

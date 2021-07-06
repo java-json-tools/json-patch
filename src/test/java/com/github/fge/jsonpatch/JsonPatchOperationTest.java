@@ -81,12 +81,27 @@ public abstract class JsonPatchOperationTest
         throws IOException
     {
         final JsonPatchOperation op = reader.readValue(patch);
+        System.out.println("Message is:"+ message);
+        if(message.equals("parent of node to add does not exist"))
+        {
+            System.out.println("Stop here");
+        }
 
         try {
             op.apply(node);
             fail("No exception thrown!!");
         } catch (JsonPatchException e) {
-            assertEquals(e.getMessage(), message);
+            String msg = message;
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            String className = this.getClass().toString();
+            System.out.println("ClassName is:"+ className);
+            if(!msg.equalsIgnoreCase(e.getMessage()) && className.contains("CopyOperationTest"))
+            {
+                System.out.println("Stop here");
+            }
+            assertEquals(e.getMessage(), msg);
         }
     }
 
@@ -110,6 +125,11 @@ public abstract class JsonPatchOperationTest
         final JsonNode node, final JsonNode expected)
         throws IOException, JsonPatchException
     {
+        String className = this.getClass().toString();
+        if(className.contains("CopyOperationTest"))
+        {
+            System.out.println("");
+        }
         final JsonPatchOperation op = reader.readValue(patch);
         final JsonNode actual = op.apply(node);
 

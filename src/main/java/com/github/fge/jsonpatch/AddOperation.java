@@ -91,11 +91,20 @@ public final class AddOperation
          */
         final JsonNode parentNode = path.parent().path(node);
         if (parentNode.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchParent"));
-        if (!parentNode.isContainerNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.parentNotContainer"));
+        {
+            String msg = BUNDLE.getMessage("jsonPatch.noSuchParent");
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            throw new JsonPatchException(msg);
+        }
+        if (!parentNode.isContainerNode()) {
+            String msg = BUNDLE.getMessage("jsonPatch.parentNotContainer");
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            throw new JsonPatchException(msg);
+        }
         return parentNode.isArray()
             ? addToArray(path, node)
             : addToObject(path, node);
@@ -119,12 +128,12 @@ public final class AddOperation
         try {
             index = Integer.parseInt(token.toString());
         } catch (NumberFormatException ignored) {
-            throw new JsonPatchException(BUNDLE.getMessage(
+            throw new JsonPatchException("[] " + BUNDLE.getMessage(
                 "jsonPatch.notAnIndex"));
         }
 
         if (index < 0 || index > size)
-            throw new JsonPatchException(BUNDLE.getMessage(
+            throw new JsonPatchException(node.toString() + " " + BUNDLE.getMessage(
                 "jsonPatch.noSuchIndex"));
 
         target.insert(index, value);
