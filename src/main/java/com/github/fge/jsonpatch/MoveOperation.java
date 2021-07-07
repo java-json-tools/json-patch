@@ -88,6 +88,24 @@ public final class MoveOperation
         }
         final JsonPatchOperation remove = new RemoveOperation(from);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
-        return add.apply(remove.apply(node));
+        JsonNode returnNode = null;
+        try {
+            returnNode = add.apply(remove.apply(node));
+        }
+        catch(JsonPatchException jpe)
+        {
+            String msg = BUNDLE.getMessage("jsonPatch.noSuchParent");
+            if(jpe.getMessage().contains(msg))
+            {
+                // Rethrow the JsonPatchException with a new message
+                msg = node.toString() + " " + msg;
+                throw new JsonPatchException(msg);
+            }
+            else
+            {
+                throw jpe;
+            }
+        }
+        return returnNode;
     }
 }

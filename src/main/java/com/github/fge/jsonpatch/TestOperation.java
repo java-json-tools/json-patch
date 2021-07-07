@@ -56,11 +56,15 @@ public final class TestOperation
         throws JsonPatchException
     {
         final JsonNode tested = path.path(node);
-        if (tested.isMissingNode())
-            throw new JsonPatchException(tested.toString() + " "+ BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+        if (tested.isMissingNode()) {
+            String msg = BUNDLE.getMessage("jsonPatch.noSuchPath");
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            throw new JsonPatchException(msg);
+        }
         if (!EQUIVALENCE.equivalent(tested, value))
-            throw new JsonPatchException(tested.toString() + " " + BUNDLE.getMessage(
+            throw new JsonPatchException(node.toString() + " " + BUNDLE.getMessage(
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();
     }

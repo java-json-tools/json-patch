@@ -55,7 +55,7 @@ public final class CopyOperation
         throws JsonPatchException
     {
         final JsonNode dupData = from.path(node).deepCopy();
-        if (path.path(dupData).isMissingNode()) {
+        if(dupData.isMissingNode()){
             String msg = BUNDLE.getMessage("jsonPatch.noSuchPath");
             if(dupData!=null) {
                 msg = node.toString() + " " + msg;
