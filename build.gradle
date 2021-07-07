@@ -21,7 +21,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "http://repo.springsource.org/plugins-release";
+            url "https://repo.springsource.org/plugins-release";
         }
     }
     dependencies {
@@ -31,7 +31,7 @@ buildscript {
 };
 
 plugins {
-    id("net.ltgt.errorprone") version "0.8.1" apply false
+    id("net.ltgt.errorprone") version "1.3.0" apply false
 }
 
 configure(allprojects) {

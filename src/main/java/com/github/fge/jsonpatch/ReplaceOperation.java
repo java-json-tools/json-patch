@@ -62,9 +62,13 @@ public final class ReplaceOperation
          * If remove is done first, the array is empty and add rightly complains
          * that there is no such index in the array.
          */
-        if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+        if (path.path(node).isMissingNode()) {
+            String msg = BUNDLE.getMessage("jsonPatch.noSuchPath");
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            throw new JsonPatchException(msg);
+        }
         final JsonNode replacement = value.deepCopy();
         if (path.isEmpty())
             return replacement;

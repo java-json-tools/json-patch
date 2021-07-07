@@ -81,12 +81,15 @@ public abstract class JsonPatchOperationTest
         throws IOException
     {
         final JsonPatchOperation op = reader.readValue(patch);
-
         try {
             op.apply(node);
             fail("No exception thrown!!");
         } catch (JsonPatchException e) {
-            assertEquals(e.getMessage(), message);
+            String msg = message;
+            if(node!=null) {
+                msg = node.toString() + " " + msg;
+            }
+            assertEquals(e.getMessage(), msg);
         }
     }
 
