@@ -21,7 +21,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "http://repo.springsource.org/plugins-release";
+            url "https://repo.springsource.org/plugins-release";
         }
     }
     dependencies {

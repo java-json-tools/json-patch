@@ -1,0 +1,130 @@
+{
+  "ops": [
+    {
+      "description": "TMF630 - Example 2 - Removing one of the components of an Array Element (the whole structure)",
+      "op": {
+        "op": "remove",
+        "path": "/note?note.author=John Doe"
+      },
+      "node": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [
+          {
+            "date": "2013-07-24T09:55:30.0Z",
+            "author": "Arthur Evans",
+            "text": "Already called the expert"
+          },
+          {
+            "date": "2013-07-25T08:55:12.0Z",
+            "author": "John Doe",
+            "text": "Informed "
+          },
+          {
+            "date": "2013-07-25T07:55:12.0Z",
+            "author": "Diego Salas",
+            "text": "Resolved issue"
+          }
+        ]
+      },
+      "expected": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [
+          {
+            "date": "2013-07-24T09:55:30.0Z",
+            "author": "Arthur Evans",
+            "text": "Already called the expert"
+          },
+          {
+            "date": "2013-07-25T07:55:12.0Z",
+            "author": "Diego Salas",
+            "text": "Resolved issue"
+          }
+        ]
+      }
+    },
+    {
+      "description": "TMF630 - Example 3 - Removing an attribute from one of the components of an array",
+      "op": {
+        "op": "remove",
+        "path": "/productPrice/prodPriceAlteration?prodPrice.name=Regular Price"
+      },
+      "node": {
+        "id": "4501",
+        "description": "This product .... ",
+        "productPrice": [
+          {
+            "name": "Regular Price",
+            "priceType": "recurring",
+            "prodPriceAlteration": {
+              "name": "Shipping Discount ",
+              "description": "This prod price alteration ... "
+            },
+            "price": 4.99
+          },
+          {
+            "name": "Setup Price",
+            "priceType": "one time",
+            "price": 6.20
+          }
+        ]
+      },
+      "expected": {
+        "id": "4501",
+        "description": "This product .... ",
+        "productPrice": [
+          {
+            "name": "Regular Price",
+            "priceType": "recurring",
+            "price": 4.99
+          },
+          {
+            "name": "Setup Price",
+            "priceType": "one time",
+            "price": 6.20
+          }
+        ]
+      }
+    },
+    {
+      "description": "TMF630 - Example 4 - Removing a complete complex structure component of an array",
+      "op": { "op": "remove", "path": "/productPrice? productPrice.name=Setup Price" },
+      "node": {
+        "id": "4501",
+        "description": "This product .... ",
+        "productPrice": [
+          {
+            "name": "Setup Price",
+            "priceType": "one time",
+            "price": 4.99
+          },
+          {
+            "name": "Regular Price",
+            "priceType": "recurring",
+            "prodPriceAlteration": {
+              "name": "Shipping Discount ",
+              "description": "This prod price alteration ... "
+            },
+            "price": 6.20
+          }
+        ]
+      },
+      "expected": {
+        "id": "4501",
+        "description": "This product .... ",
+        "productPrice": [
+          {
+            "name": "Regular Price",
+            "priceType": "recurring",
+            "prodPriceAlteration": {
+              "name": "Shipping Discount ",
+              "description": "This prod price alteration ... "
+            },
+            "price": 6.20
+          }
+        ]
+      }
+    }
+  ]
+}
