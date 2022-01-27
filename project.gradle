@@ -32,8 +32,8 @@ project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386)
 dependencies {
     provided(group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2");
     compile(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.11.0");
+    compile(group: 'com.jayway.jsonpath', name: 'json-path', version: '2.6.0')
     compile(group: "com.github.java-json-tools", name: "msg-simple", version: "1.2");
-    
     compile(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0");
     testCompile(group: "org.testng", name: "testng", version: "7.1.0") {
         exclude(group: "junit", module: "junit");

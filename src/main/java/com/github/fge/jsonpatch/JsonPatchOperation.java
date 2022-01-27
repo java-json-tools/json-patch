@@ -27,6 +27,15 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
@@ -34,12 +43,12 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 
 @JsonSubTypes({
-    @Type(name = "add", value = AddOperation.class),
-    @Type(name = "copy", value = CopyOperation.class),
-    @Type(name = "move", value = MoveOperation.class),
-    @Type(name = "remove", value = RemoveOperation.class),
-    @Type(name = "replace", value = ReplaceOperation.class),
-    @Type(name = "test", value = TestOperation.class)
+        @Type(name = "add", value = AddOperation.class),
+        @Type(name = "copy", value = CopyOperation.class),
+        @Type(name = "move", value = MoveOperation.class),
+        @Type(name = "remove", value = RemoveOperation.class),
+        @Type(name = "replace", value = ReplaceOperation.class),
+        @Type(name = "test", value = TestOperation.class)
 })
 
 /**
@@ -56,11 +65,27 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
  * </ul>
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class JsonPatchOperation
-    implements JsonSerializable
-{
-    protected static final MessageBundle BUNDLE
-        = MessageBundles.getBundle(JsonPatchMessages.class);
+public abstract class JsonPatchOperation implements JsonSerializable {
+    protected static final MessageBundle BUNDLE = MessageBundles.getBundle(JsonPatchMessages.class);
+
+    static {
+        Configuration.setDefaults(new Configuration.Defaults() {
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonNodeJsonProvider();
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.of(Option.SUPPRESS_EXCEPTIONS);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+        });
+    }
 
     protected final String op;
 
@@ -70,16 +95,15 @@ public abstract class JsonPatchOperation
      *
      * However, we need to serialize using .toString().
      */
-    protected final JsonPointer path;
+    protected final String path;
 
     /**
      * Constructor
      *
-     * @param op the operation name
+     * @param op   the operation name
      * @param path the JSON Pointer for this operation
      */
-    protected JsonPatchOperation(final String op, final JsonPointer path)
-    {
+    protected JsonPatchOperation(final String op, final String path) {
         this.op = op;
         this.path = path;
     }
@@ -91,14 +115,13 @@ public abstract class JsonPatchOperation
      * @return the patched value
      * @throws JsonPatchException operation failed to apply to this value
      */
-    public abstract JsonNode apply(final JsonNode node)
-        throws JsonPatchException;
+    public abstract JsonNode apply(final JsonNode node) throws JsonPatchException;
 
     public final String getOp() {
         return op;
     }
 
-    public final JsonPointer getPath() {
+    public final String getPath() {
         return path;
     }
 

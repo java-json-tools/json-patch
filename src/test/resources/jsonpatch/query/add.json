@@ -1,0 +1,38 @@
+{
+  "errors": [],
+  "ops": [
+    {
+      "description": "TMF630 - Example 1 - Adding an attribute to one of the components of an array",
+      "op": {
+        "op": "add",
+        "path": "/note/text?note.author=John Doe",
+        "value":"Informed"
+      },
+      "node": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [{
+          "date": "2013-07-24T09:55:30.0Z",
+          "author": "Arthur Evans"
+        },
+          {
+            "date": "2013-07-25T08:55:12.0Z",
+            "author": "John Doe"
+          }]
+      },
+      "expected": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [{
+          "date": "2013-07-24T09:55:30.0Z",
+          "author": "Arthur Evans"
+        },
+          {
+            "date": "2013-07-25T08:55:12.0Z",
+            "author": "John Doe",
+            "text": "Informed"
+          }]
+      }
+    }
+  ]
+}

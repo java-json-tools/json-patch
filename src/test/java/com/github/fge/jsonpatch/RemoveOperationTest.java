@@ -42,7 +42,7 @@ public final class RemoveOperationTest
         throws JsonPatchException
     {
         final JsonNode node = JacksonUtils.nodeFactory().nullNode();
-        final JsonPatchOperation op = new RemoveOperation(JsonPointer.empty());
+        final JsonPatchOperation op = new RemoveOperation("");
         final JsonNode ret = op.apply(node);
         assertTrue(ret.isMissingNode());
     }

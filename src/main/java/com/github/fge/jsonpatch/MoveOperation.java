@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * JSON Patch {@code move} operation
@@ -62,26 +63,22 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  *     [ { "x": "victim" } ]
  * </pre>
  */
-public final class MoveOperation
-    extends DualPathOperation
-{
+public final class MoveOperation extends DualPathOperation {
     @JsonCreator
-    public MoveOperation(@JsonProperty("from") final JsonPointer from,
-        @JsonProperty("path") final JsonPointer path)
-    {
+    public MoveOperation(@JsonProperty("from") final String from, @JsonProperty("path") final String path) {
         super("move", from, path);
     }
 
     @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        if (from.equals(path))
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        if (from.equals(path)) {
             return node.deepCopy();
-        final JsonNode movedNode = from.path(node);
-        if (movedNode.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+        }
+        String jsonPath = JsonPathParser.tmfStringToJsonPath(from);
+        final JsonNode movedNode = JsonPath.parse(node.deepCopy()).read(jsonPath, JsonNode.class);
+        if (movedNode == null) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        }
         final JsonPatchOperation remove = new RemoveOperation(from);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));
