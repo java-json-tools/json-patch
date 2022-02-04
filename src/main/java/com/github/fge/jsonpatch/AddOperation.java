@@ -22,11 +22,7 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jackson.jsonpointer.ReferenceToken;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -83,23 +79,41 @@ public final class AddOperation extends PathValueOperation {
          * Check the parent node: it must exist and be a container (ie an array
          * or an object) for the add operation to work.
          */
-        final int lastSlashIndex = path.lastIndexOf('/');
-        final String newNodeName = path.substring(lastSlashIndex + 1);
-        final String pathToParent = path.substring(0, lastSlashIndex);
-        final String jsonPath = JsonPathParser.tmfStringToJsonPath(pathToParent);
+        final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
+        final int lastDotIndex = fullJsonPath.lastIndexOf('.');
+        final String newNodeName = fullJsonPath.substring(lastDotIndex + 1)
+                .replace("[", "").replace("]", "");
+        final String pathToParent = fullJsonPath.substring(0, lastDotIndex);
+
         final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
 
-        final JsonNode parentNode = nodeContext.read(jsonPath);
-        if (parentNode == null) {
+        final JsonNode evaluatedJsonParents = nodeContext.read(pathToParent);
+        if (evaluatedJsonParents == null) {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchParent"));
         }
-        if (!parentNode.isContainerNode()) {
+        if (!evaluatedJsonParents.isContainerNode()) {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
         }
 
-        return parentNode.isArray()
-                ? addToArray(nodeContext, jsonPath, newNodeName)
-                : addToObject(nodeContext, jsonPath, newNodeName);
+        if (pathToParent.contains("[?(")) { // json filter result is always a list
+            for (int i = 0; i < evaluatedJsonParents.size(); i++) {
+                JsonNode parentNode = evaluatedJsonParents.get(i);
+                if (!parentNode.isContainerNode()) {
+                    throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
+                }
+                DocumentContext containerContext = JsonPath.parse(parentNode);
+                if (parentNode.isArray()) {
+                    addToArray(containerContext, "$", newNodeName);
+                } else {
+                    addToObject(containerContext, "$", newNodeName);
+                }
+            }
+            return nodeContext.read("$");
+        } else {
+            return evaluatedJsonParents.isArray()
+                    ? addToArray(nodeContext, pathToParent, newNodeName)
+                    : addToObject(nodeContext, pathToParent, newNodeName);
+        }
     }
 
     private JsonNode addToArray(final DocumentContext node, String jsonPath, String newNodeName) throws JsonPatchException {
@@ -108,14 +122,7 @@ public final class AddOperation extends PathValueOperation {
         }
 
         final int size = node.read(jsonPath, JsonNode.class).size();
-        final int index;
-        try {
-            index = Integer.parseInt(newNodeName);
-        } catch (NumberFormatException ignored) {
-            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.notAnIndex"));
-        }
-        if (index < 0 || index > size)
-            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchIndex"));
+        final int index = verifyAndGetArrayIndex(newNodeName, size);
 
         ArrayNode updatedArray = node.read(jsonPath, ArrayNode.class).insert(index, value);
         return "$".equals(jsonPath) ? updatedArray : node.set(jsonPath, updatedArray).read("$", JsonNode.class);
@@ -125,5 +132,18 @@ public final class AddOperation extends PathValueOperation {
         return node
                 .put(jsonPath, newNodeName, value)
                 .read("$", JsonNode.class);
+    }
+
+    private int verifyAndGetArrayIndex(String stringIndex, int size) throws JsonPatchException {
+        int index;
+        try {
+            index = Integer.parseInt(stringIndex);
+        } catch (NumberFormatException ignored) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.notAnIndex"));
+        }
+        if (index < 0 || index > size) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchIndex"));
+        }
+        return index;
     }
 }

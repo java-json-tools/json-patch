@@ -51,8 +51,8 @@ public abstract class DualPathOperation extends JsonPatchOperation {
     public final void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
         jgen.writeStringField("op", op);
-        jgen.writeStringField("path", path.toString());
-        jgen.writeStringField("from", from.toString());
+        jgen.writeStringField("path", path);
+        jgen.writeStringField("from", from);
         jgen.writeEndObject();
     }
 

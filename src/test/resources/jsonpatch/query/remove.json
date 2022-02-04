@@ -1,4 +1,5 @@
 {
+  "errors": [],
   "ops": [
     {
       "description": "TMF630 - Example 2 - Removing one of the components of an Array Element (the whole structure)",
@@ -48,7 +49,7 @@
       "description": "TMF630 - Example 3 - Removing an attribute from one of the components of an array",
       "op": {
         "op": "remove",
-        "path": "/productPrice/prodPriceAlteration?prodPrice.name=Regular Price"
+        "path": "/productPrice/prodPriceAlteration?productPrice.name=Regular Price"
       },
       "node": {
         "id": "4501",
@@ -89,7 +90,7 @@
     },
     {
       "description": "TMF630 - Example 4 - Removing a complete complex structure component of an array",
-      "op": { "op": "remove", "path": "/productPrice? productPrice.name=Setup Price" },
+      "op": { "op": "remove", "path": "/productPrice?productPrice.name=Setup Price" },
       "node": {
         "id": "4501",
         "description": "This product .... ",
