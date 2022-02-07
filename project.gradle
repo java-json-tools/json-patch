@@ -21,10 +21,10 @@
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
 group = "com.github.java-json-tools";
-version = "1.13";
+version = "2.0.0";
 sourceCompatibility = JavaVersion.VERSION_1_7;
 targetCompatibility = JavaVersion.VERSION_1_7; // defaults to sourceCompatibility
-project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java";
+project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax";
 
 /*
  * List of dependencies
@@ -54,9 +54,9 @@ javadoc.options {
     }
     links("https://docs.oracle.com/javase/7/docs/api/");
     links("https://www.javadoc.io/doc/com.google.code.findbugs/jsr305/3.0.2/");
-    links("https://fasterxml.github.com/jackson-databind/javadoc/2.11/");
-    links("https://fasterxml.github.com/jackson-core/javadoc/2.11/");
-    links("https://fasterxml.github.com/jackson-annotations/javadoc/2.11/");
+    links("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/2.11.4/index.html");
+    links("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/2.11.4/index.html");
+    links("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/2.11.4/index.html");
     links("https://www.javadoc.io/doc/com.google.guava/guava/28.2-android/");
     links("https://java-json-tools.github.io/msg-simple/");
     links("https://java-json-tools.github.io/jackson-coreutils/");
