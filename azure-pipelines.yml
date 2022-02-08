@@ -13,7 +13,6 @@ steps:
 - script: |
     git checkout $(Build.SourceBranchName)
     git config --global user.name "Azure DevOps"
-  persistCredentials: true
   displayName: "git config"
 - task: MavenAuthenticate@0
   displayName: 'authenticate maven'
