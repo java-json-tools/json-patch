@@ -41,10 +41,9 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    tasks: 'release -Prelease.useAutomaticVersion=true'
+    tasks: 'clean release -Prelease.useAutomaticVersion=true'
 - task: PublishPipelineArtifact@1
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/target/$(artifactName)
-    artifactName: artifact
+    targetPath: $(System.DefaultWorkingDirectory)/build/libs/
   displayName: "publish build artifact"
