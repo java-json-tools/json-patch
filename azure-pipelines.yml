@@ -12,7 +12,7 @@ pool:
 steps:
 - script: |
     git checkout $(Build.SourceBranchName)
-    git config --global user.name "gravity9piotr"
+    git config --global user.name "Azure DevOps"
   displayName: "git config"
 - task: MavenAuthenticate@0
   displayName: 'authenticate maven'
