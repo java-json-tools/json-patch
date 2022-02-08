@@ -124,6 +124,7 @@ release {
 publishing {
     repositories {
         maven {
+            id = "bt"
             url = "https://pkgs.dev.azure.com/Gravity9Solutions/BT/_packaging/bt/maven/v1"
         }
     }
