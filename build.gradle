@@ -128,13 +128,15 @@ publishing {
         }
     }
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
         }
     }
 }
 
-afterReleaseBuild.dependsOn publish
+signing {
+    sign publishing.publications.mavenJava
+}
 
 wrapper {
     gradleVersion = "5.6.3";
