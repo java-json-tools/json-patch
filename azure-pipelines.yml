@@ -45,6 +45,6 @@ steps:
 - task: PublishPipelineArtifact@1
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/build/libs/$(artifactName)
+    targetPath: $(System.DefaultWorkingDirectory)/target/$(artifactName)
     artifactName: artifact
   displayName: "publish build artifact"
