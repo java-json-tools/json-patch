@@ -10,6 +10,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- checkout: self
+  persistCredentials: true
+  displayName: "git credentials"
 - script: |
     git checkout $(Build.SourceBranchName)
     git config --global user.name "Azure DevOps"
