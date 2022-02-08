@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * JSON Patch {@code test} operation
@@ -38,30 +38,24 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  * is defined by JSON Schema itself. As such, this operation reuses {@link
  * JsonNumEquals} for testing equality.</p>
  */
-public final class TestOperation
-    extends PathValueOperation
-{
-    private static final JsonNumEquals EQUIVALENCE
-        = JsonNumEquals.getInstance();
+public final class TestOperation extends PathValueOperation {
+    private static final JsonNumEquals EQUIVALENCE = JsonNumEquals.getInstance();
 
     @JsonCreator
-    public TestOperation(@JsonProperty("path") final JsonPointer path,
-        @JsonProperty("value") final JsonNode value)
-    {
+    public TestOperation(@JsonProperty("path") final String path, @JsonProperty("value") final JsonNode value) {
         super("test", path, value);
     }
 
     @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        final JsonNode tested = path.path(node);
-        if (tested.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
-        if (!EQUIVALENCE.equivalent(tested, value))
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.valueTestFailure"));
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        final String jsonPath = JsonPathParser.tmfStringToJsonPath(path);
+        final JsonNode tested = JsonPath.parse(node.deepCopy()).read(jsonPath);
+        if (tested == null) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        }
+        if (!EQUIVALENCE.equivalent(tested, value)) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.valueTestFailure"));
+        }
         return node.deepCopy();
     }
 }

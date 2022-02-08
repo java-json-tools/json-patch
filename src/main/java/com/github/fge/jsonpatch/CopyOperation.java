@@ -22,7 +22,7 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * JSON Patch {@code copy} operation
@@ -40,24 +40,20 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  *
  * <p>It is an error if {@code from} fails to resolve to a JSON value.</p>
  */
-public final class CopyOperation
-    extends DualPathOperation
-{
+public final class CopyOperation extends DualPathOperation {
+
     @JsonCreator
-    public CopyOperation(@JsonProperty("from") final JsonPointer from,
-        @JsonProperty("path") final JsonPointer path)
-    {
+    public CopyOperation(@JsonProperty("from") final String from, @JsonProperty("path") final String path) {
         super("copy", from, path);
     }
 
     @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        final JsonNode dupData = from.path(node).deepCopy();
-        if (dupData.isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        final String jsonPath = JsonPathParser.tmfStringToJsonPath(from);
+        final JsonNode dupData = JsonPath.parse(node.deepCopy()).read(jsonPath);
+        if (dupData == null) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        }
         return new AddOperation(path, dupData).apply(node);
     }
 }

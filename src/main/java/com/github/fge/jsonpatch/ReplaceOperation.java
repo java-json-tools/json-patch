@@ -22,9 +22,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * JSON Patch {@code replace} operation
@@ -35,46 +34,28 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  * <p>It is an error condition if {@code path} does not point to an actual JSON
  * value.</p>
  */
-public final class ReplaceOperation
-    extends PathValueOperation
-{
+public final class ReplaceOperation extends PathValueOperation {
+
     @JsonCreator
-    public ReplaceOperation(@JsonProperty("path") final JsonPointer path,
-        @JsonProperty("value") final JsonNode value)
-    {
+    public ReplaceOperation(@JsonProperty("path") final String path, @JsonProperty("value") final JsonNode value) {
         super("replace", path, value);
     }
 
     @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        /*
-         * FIXME cannot quite be replaced by a remove + add because of arrays.
-         * For instance:
-         *
-         * { "op": "replace", "path": "/0", "value": 1 }
-         *
-         * with
-         *
-         * [ "x" ]
-         *
-         * If remove is done first, the array is empty and add rightly complains
-         * that there is no such index in the array.
-         */
-        if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        final String jsonPath = JsonPathParser.tmfStringToJsonPath(path);
+        final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
+        final JsonNode nodeAtPath = nodeContext.read(jsonPath);
+        if (nodeAtPath == null) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        }
         final JsonNode replacement = value.deepCopy();
-        if (path.isEmpty())
+        if (path.isEmpty()) {
             return replacement;
-        final JsonNode ret = node.deepCopy();
-        final JsonNode parent = path.parent().get(ret);
-        final String rawToken = Iterables.getLast(path).getToken().getRaw();
-        if (parent.isObject())
-            ((ObjectNode) parent).replace(rawToken, replacement);
-        else
-            ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
-        return ret;
+        }
+
+        return nodeContext
+                .set(jsonPath, value)
+                .read("$", JsonNode.class);
     }
 }

@@ -1,0 +1,645 @@
+{
+  "errors": [],
+  "ops": [
+    {
+      "op": {
+        "op": "add",
+        "path": "/contactMedium/wrapper?contactMedium.mediumType=qRXcJlpNjx",
+        "value": "12"
+      },
+      "node": {
+        "aristocraticTitle": "Baron",
+        "contactMedium": [
+          {
+            "mediumType": "qRXcJlpNjx",
+            "preferred": false,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          },
+          {
+            "mediumType": "asfasdfgasdf",
+            "preferred": true,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          }
+        ],
+        "creditRating": [
+          {
+            "creditAgencyName": "wrSavzqmHm",
+            "ratingScore": 66,
+            "validFor": {
+              "endDateTime": "2021-07-31T11:00:17Z",
+              "startDateTime": "2021-07-30T10:21:17Z"
+            }
+          }
+        ],
+        "disability": [
+          {
+            "disabilityCode": "QgHhbBLahC",
+            "disabilityName": "ouqGwsvLEf",
+            "validFor": {
+              "endDateTime": "2021-08-03T04:29:17Z",
+              "startDateTime": "2021-07-28T00:27:17Z"
+            }
+          }
+        ],
+        "externalReference": [
+          {
+            "externalReferenceType": "aIOPiNhbmo",
+            "name": "RIlMwNlVmu"
+          }
+        ],
+        "individualIdentification": [
+          {
+            "identificationId": "DqReHbjoAZ",
+            "issuingDate": "2021-07-31T09:46:17Z",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "href": "OXMkUnCJZU",
+              "size": {
+                "amount": 744,
+                "units": "JCxEtmpdJp"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T23:24:17Z",
+                "startDateTime": "2021-07-28T01:50:17Z"
+              }
+            },
+            "validFor": {
+              "endDateTime": "2021-08-03T23:35:17Z",
+              "startDateTime": "2021-07-30T06:43:17Z"
+            }
+          }
+        ],
+        "languageAbility": [
+          {
+            "isFavouriteLanguage": false,
+            "languageCode": "ZcpsxgQNhM",
+            "writingProficiency": "zWYDbRYonQ",
+            "validFor": {
+              "endDateTime": "2021-08-02T05:17:17Z",
+              "startDateTime": "2021-07-28T22:04:17Z"
+            }
+          }
+        ],
+        "otherName": [
+          {
+            "aristocraticTitle": "qpMBXqEnNP",
+            "title": "mlfshyAJHW",
+            "validFor": {
+              "endDateTime": "2021-08-01T06:06:17Z",
+              "startDateTime": "2021-07-29T14:22:17Z"
+            }
+          }
+        ],
+        "partyCharacteristic": [
+          {
+            "name": "OKMcApMuEM",
+            "valueType": "sdraPevzAe",
+            "value": "HEIlNQxeHi"
+          }
+        ],
+        "relatedParty": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "href": "WRYrNaAtsf",
+            "name": "EYOufmlArK",
+            "role": "OtbxPWgead",
+            "@referredType": "idUvdppQWd"
+          }
+        ],
+        "skill": [
+          {
+            "comment": "yfFsTAPwkJ",
+            "evaluatedLevel": "kahUzknbkv",
+            "skillCode": "UjeonFMegY",
+            "skillName": "NdjXHHuZze",
+            "validFor": {
+              "endDateTime": "2021-07-30T22:35:17Z",
+              "startDateTime": "2021-07-28T09:45:17Z"
+            }
+          }
+        ],
+        "status": "initialized",
+        "taxExemptionCertificate": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "size": {
+                "amount": 399,
+                "units": "nEbqvKVtps"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T15:27:17Z",
+                "startDateTime": "2021-07-27T16:20:17Z"
+              }
+            },
+            "taxDefinition": [
+              {
+                "id": "61bb19204b8a355d3bdb45a4",
+                "name": "shnwvwDoob",
+                "taxType": "wjtBLFqKRt"
+              }
+            ],
+            "validFor": {
+              "endDateTime": "2021-08-01T12:01:17Z",
+              "startDateTime": "2021-07-30T05:23:17Z"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "aristocraticTitle": "Baron",
+        "contactMedium": [
+          {
+            "mediumType": "qRXcJlpNjx",
+            "preferred": false,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            },
+            "wrapper": "12"
+          },
+          {
+            "mediumType": "asfasdfgasdf",
+            "preferred": true,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          }
+        ],
+        "creditRating": [
+          {
+            "creditAgencyName": "wrSavzqmHm",
+            "ratingScore": 66,
+            "validFor": {
+              "endDateTime": "2021-07-31T11:00:17Z",
+              "startDateTime": "2021-07-30T10:21:17Z"
+            }
+          }
+        ],
+        "disability": [
+          {
+            "disabilityCode": "QgHhbBLahC",
+            "disabilityName": "ouqGwsvLEf",
+            "validFor": {
+              "endDateTime": "2021-08-03T04:29:17Z",
+              "startDateTime": "2021-07-28T00:27:17Z"
+            }
+          }
+        ],
+        "externalReference": [
+          {
+            "externalReferenceType": "aIOPiNhbmo",
+            "name": "RIlMwNlVmu"
+          }
+        ],
+        "individualIdentification": [
+          {
+            "identificationId": "DqReHbjoAZ",
+            "issuingDate": "2021-07-31T09:46:17Z",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "href": "OXMkUnCJZU",
+              "size": {
+                "amount": 744,
+                "units": "JCxEtmpdJp"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T23:24:17Z",
+                "startDateTime": "2021-07-28T01:50:17Z"
+              }
+            },
+            "validFor": {
+              "endDateTime": "2021-08-03T23:35:17Z",
+              "startDateTime": "2021-07-30T06:43:17Z"
+            }
+          }
+        ],
+        "languageAbility": [
+          {
+            "isFavouriteLanguage": false,
+            "languageCode": "ZcpsxgQNhM",
+            "writingProficiency": "zWYDbRYonQ",
+            "validFor": {
+              "endDateTime": "2021-08-02T05:17:17Z",
+              "startDateTime": "2021-07-28T22:04:17Z"
+            }
+          }
+        ],
+        "otherName": [
+          {
+            "aristocraticTitle": "qpMBXqEnNP",
+            "title": "mlfshyAJHW",
+            "validFor": {
+              "endDateTime": "2021-08-01T06:06:17Z",
+              "startDateTime": "2021-07-29T14:22:17Z"
+            }
+          }
+        ],
+        "partyCharacteristic": [
+          {
+            "name": "OKMcApMuEM",
+            "valueType": "sdraPevzAe",
+            "value": "HEIlNQxeHi"
+          }
+        ],
+        "relatedParty": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "href": "WRYrNaAtsf",
+            "name": "EYOufmlArK",
+            "role": "OtbxPWgead",
+            "@referredType": "idUvdppQWd"
+          }
+        ],
+        "skill": [
+          {
+            "comment": "yfFsTAPwkJ",
+            "evaluatedLevel": "kahUzknbkv",
+            "skillCode": "UjeonFMegY",
+            "skillName": "NdjXHHuZze",
+            "validFor": {
+              "endDateTime": "2021-07-30T22:35:17Z",
+              "startDateTime": "2021-07-28T09:45:17Z"
+            }
+          }
+        ],
+        "status": "initialized",
+        "taxExemptionCertificate": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "size": {
+                "amount": 399,
+                "units": "nEbqvKVtps"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T15:27:17Z",
+                "startDateTime": "2021-07-27T16:20:17Z"
+              }
+            },
+            "taxDefinition": [
+              {
+                "id": "61bb19204b8a355d3bdb45a4",
+                "name": "shnwvwDoob",
+                "taxType": "wjtBLFqKRt"
+              }
+            ],
+            "validFor": {
+              "endDateTime": "2021-08-01T12:01:17Z",
+              "startDateTime": "2021-07-30T05:23:17Z"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "op": {
+        "op": "add",
+        "path": "/contactMedium/wrapper?contactMedium.preferred=false",
+        "value": {"inside": 12}
+      },
+      "node": {
+        "aristocraticTitle": "Baron",
+        "contactMedium": [
+          {
+            "mediumType": "qRXcJlpNjx",
+            "preferred": false,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          },
+          {
+            "mediumType": "asfasdfgasdf",
+            "preferred": true,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          }
+        ],
+        "creditRating": [
+          {
+            "creditAgencyName": "wrSavzqmHm",
+            "ratingScore": 66,
+            "validFor": {
+              "endDateTime": "2021-07-31T11:00:17Z",
+              "startDateTime": "2021-07-30T10:21:17Z"
+            }
+          }
+        ],
+        "disability": [
+          {
+            "disabilityCode": "QgHhbBLahC",
+            "disabilityName": "ouqGwsvLEf",
+            "validFor": {
+              "endDateTime": "2021-08-03T04:29:17Z",
+              "startDateTime": "2021-07-28T00:27:17Z"
+            }
+          }
+        ],
+        "externalReference": [
+          {
+            "externalReferenceType": "aIOPiNhbmo",
+            "name": "RIlMwNlVmu"
+          }
+        ],
+        "individualIdentification": [
+          {
+            "identificationId": "DqReHbjoAZ",
+            "issuingDate": "2021-07-31T09:46:17Z",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "href": "OXMkUnCJZU",
+              "size": {
+                "amount": 744,
+                "units": "JCxEtmpdJp"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T23:24:17Z",
+                "startDateTime": "2021-07-28T01:50:17Z"
+              }
+            },
+            "validFor": {
+              "endDateTime": "2021-08-03T23:35:17Z",
+              "startDateTime": "2021-07-30T06:43:17Z"
+            }
+          }
+        ],
+        "languageAbility": [
+          {
+            "isFavouriteLanguage": false,
+            "languageCode": "ZcpsxgQNhM",
+            "writingProficiency": "zWYDbRYonQ",
+            "validFor": {
+              "endDateTime": "2021-08-02T05:17:17Z",
+              "startDateTime": "2021-07-28T22:04:17Z"
+            }
+          }
+        ],
+        "otherName": [
+          {
+            "aristocraticTitle": "qpMBXqEnNP",
+            "title": "mlfshyAJHW",
+            "validFor": {
+              "endDateTime": "2021-08-01T06:06:17Z",
+              "startDateTime": "2021-07-29T14:22:17Z"
+            }
+          }
+        ],
+        "partyCharacteristic": [
+          {
+            "name": "OKMcApMuEM",
+            "valueType": "sdraPevzAe",
+            "value": "HEIlNQxeHi"
+          }
+        ],
+        "relatedParty": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "href": "WRYrNaAtsf",
+            "name": "EYOufmlArK",
+            "role": "OtbxPWgead",
+            "@referredType": "idUvdppQWd"
+          }
+        ],
+        "skill": [
+          {
+            "comment": "yfFsTAPwkJ",
+            "evaluatedLevel": "kahUzknbkv",
+            "skillCode": "UjeonFMegY",
+            "skillName": "NdjXHHuZze",
+            "validFor": {
+              "endDateTime": "2021-07-30T22:35:17Z",
+              "startDateTime": "2021-07-28T09:45:17Z"
+            }
+          }
+        ],
+        "status": "initialized",
+        "taxExemptionCertificate": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "size": {
+                "amount": 399,
+                "units": "nEbqvKVtps"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T15:27:17Z",
+                "startDateTime": "2021-07-27T16:20:17Z"
+              }
+            },
+            "taxDefinition": [
+              {
+                "id": "61bb19204b8a355d3bdb45a4",
+                "name": "shnwvwDoob",
+                "taxType": "wjtBLFqKRt"
+              }
+            ],
+            "validFor": {
+              "endDateTime": "2021-08-01T12:01:17Z",
+              "startDateTime": "2021-07-30T05:23:17Z"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "aristocraticTitle": "Baron",
+        "contactMedium": [
+          {
+            "mediumType": "qRXcJlpNjx",
+            "preferred": false,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            },
+            "wrapper": {"inside":  12}
+          },
+          {
+            "mediumType": "asfasdfgasdf",
+            "preferred": true,
+            "characteristic": {
+              "addressKeyType": "NAD",
+              "addressKey": "wunMHlcIQP",
+              "city": "kiNnXHrWwz"
+            },
+            "validFor": {
+              "endDateTime": "2021-08-02T12:31:17Z",
+              "startDateTime": "2021-07-28T16:33:17Z"
+            }
+          }
+        ],
+        "creditRating": [
+          {
+            "creditAgencyName": "wrSavzqmHm",
+            "ratingScore": 66,
+            "validFor": {
+              "endDateTime": "2021-07-31T11:00:17Z",
+              "startDateTime": "2021-07-30T10:21:17Z"
+            }
+          }
+        ],
+        "disability": [
+          {
+            "disabilityCode": "QgHhbBLahC",
+            "disabilityName": "ouqGwsvLEf",
+            "validFor": {
+              "endDateTime": "2021-08-03T04:29:17Z",
+              "startDateTime": "2021-07-28T00:27:17Z"
+            }
+          }
+        ],
+        "externalReference": [
+          {
+            "externalReferenceType": "aIOPiNhbmo",
+            "name": "RIlMwNlVmu"
+          }
+        ],
+        "individualIdentification": [
+          {
+            "identificationId": "DqReHbjoAZ",
+            "issuingDate": "2021-07-31T09:46:17Z",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "href": "OXMkUnCJZU",
+              "size": {
+                "amount": 744,
+                "units": "JCxEtmpdJp"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T23:24:17Z",
+                "startDateTime": "2021-07-28T01:50:17Z"
+              }
+            },
+            "validFor": {
+              "endDateTime": "2021-08-03T23:35:17Z",
+              "startDateTime": "2021-07-30T06:43:17Z"
+            }
+          }
+        ],
+        "languageAbility": [
+          {
+            "isFavouriteLanguage": false,
+            "languageCode": "ZcpsxgQNhM",
+            "writingProficiency": "zWYDbRYonQ",
+            "validFor": {
+              "endDateTime": "2021-08-02T05:17:17Z",
+              "startDateTime": "2021-07-28T22:04:17Z"
+            }
+          }
+        ],
+        "otherName": [
+          {
+            "aristocraticTitle": "qpMBXqEnNP",
+            "title": "mlfshyAJHW",
+            "validFor": {
+              "endDateTime": "2021-08-01T06:06:17Z",
+              "startDateTime": "2021-07-29T14:22:17Z"
+            }
+          }
+        ],
+        "partyCharacteristic": [
+          {
+            "name": "OKMcApMuEM",
+            "valueType": "sdraPevzAe",
+            "value": "HEIlNQxeHi"
+          }
+        ],
+        "relatedParty": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "href": "WRYrNaAtsf",
+            "name": "EYOufmlArK",
+            "role": "OtbxPWgead",
+            "@referredType": "idUvdppQWd"
+          }
+        ],
+        "skill": [
+          {
+            "comment": "yfFsTAPwkJ",
+            "evaluatedLevel": "kahUzknbkv",
+            "skillCode": "UjeonFMegY",
+            "skillName": "NdjXHHuZze",
+            "validFor": {
+              "endDateTime": "2021-07-30T22:35:17Z",
+              "startDateTime": "2021-07-28T09:45:17Z"
+            }
+          }
+        ],
+        "status": "initialized",
+        "taxExemptionCertificate": [
+          {
+            "id": "61bb19204b8a355d3bdb45a4",
+            "attachment": {
+              "id": "61bb19204b8a355d3bdb45a4",
+              "size": {
+                "amount": 399,
+                "units": "nEbqvKVtps"
+              },
+              "validFor": {
+                "endDateTime": "2021-08-01T15:27:17Z",
+                "startDateTime": "2021-07-27T16:20:17Z"
+              }
+            },
+            "taxDefinition": [
+              {
+                "id": "61bb19204b8a355d3bdb45a4",
+                "name": "shnwvwDoob",
+                "taxType": "wjtBLFqKRt"
+              }
+            ],
+            "validFor": {
+              "endDateTime": "2021-08-01T12:01:17Z",
+              "startDateTime": "2021-07-30T05:23:17Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

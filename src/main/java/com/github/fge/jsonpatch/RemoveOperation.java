@@ -26,10 +26,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 import java.io.IOException;
 
@@ -39,39 +38,31 @@ import java.io.IOException;
  * <p>This operation only takes one pointer ({@code path}) as an argument. It
  * is an error condition if no JSON value exists at that pointer.</p>
  */
-public final class RemoveOperation
-    extends JsonPatchOperation
-{
+public final class RemoveOperation extends JsonPatchOperation {
     @JsonCreator
-    public RemoveOperation(@JsonProperty("path") final JsonPointer path)
-    {
+    public RemoveOperation(@JsonProperty("path") final String path) {
         super("remove", path);
     }
 
     @Override
-    public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
-        if (path.isEmpty())
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        if (path.isEmpty()) {
             return MissingNode.getInstance();
-        if (path.path(node).isMissingNode())
-            throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
-        final JsonNode ret = node.deepCopy();
-        final JsonNode parentNode = path.parent().get(ret);
-        final String raw = Iterables.getLast(path).getToken().getRaw();
-        if (parentNode.isObject())
-            ((ObjectNode) parentNode).remove(raw);
-        else
-            ((ArrayNode) parentNode).remove(Integer.parseInt(raw));
-        return ret;
+        }
+
+        final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
+        final String jsonPath = JsonPathParser.tmfStringToJsonPath(path);
+
+        if (nodeContext.read(jsonPath) == null) {
+            throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
+        }
+        return nodeContext
+                .delete(jsonPath)
+                .read("$", JsonNode.class);
     }
 
     @Override
-    public void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException, JsonProcessingException
-    {
+    public void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
         jgen.writeStringField("op", "remove");
         jgen.writeStringField("path", path.toString());
@@ -79,16 +70,13 @@ public final class RemoveOperation
     }
 
     @Override
-    public void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
-    {
+    public void serializeWithType(final JsonGenerator jgen, final SerializerProvider provider, final TypeSerializer typeSer)
+            throws IOException, JsonProcessingException {
         serialize(jgen, provider);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "op: " + op + "; path: \"" + path + '"';
     }
 }
