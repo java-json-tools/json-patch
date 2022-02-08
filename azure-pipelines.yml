@@ -10,7 +10,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- checkout: self
+- checkout: $(Build.SourceBranchName)
   persistCredentials: true
   displayName: "git checkout and credentials"
 - task: MavenAuthenticate@0
