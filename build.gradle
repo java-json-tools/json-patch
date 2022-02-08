@@ -134,10 +134,6 @@ publishing {
     }
 }
 
-signing {
-    sign publishing.publications.mavenJava
-}
-
 wrapper {
     gradleVersion = "5.6.3";
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
