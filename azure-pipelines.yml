@@ -10,6 +10,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- script: |
+    git checkout $(Build.SourceBranchName)
+    git config --global user.name "Azure DevOps"
+  displayName: "git config"
+- task: MavenAuthenticate@0
+  displayName: 'authenticate maven'
+  inputs:
+    artifactsFeeds: bt
 - task: Gradle@2
   inputs:
     workingDirectory: ''
@@ -20,4 +28,20 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
-    tasks: 'build'
+    tasks: 'clean test'
+- task: Gradle@2
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    workingDirectory: ''
+    gradleWrapperFile: 'gradlew'
+    gradleOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    tasks: 'release -Prelease.useAutomaticVersion=true'
+- task: PublishPipelineArtifact@1
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    targetPath: $(System.DefaultWorkingDirectory)/build/libs/$(artifactName)
+    artifactName: artifact
+  displayName: "publish build artifact"
