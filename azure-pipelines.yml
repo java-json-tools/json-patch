@@ -10,10 +10,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: |
-    git checkout $(Build.SourceBranchName)
-    git config --global user.name "Azure DevOps"
-  displayName: "git config"
+- checkout: self
+  persistCredentials: true
+  displayName: "git checkout and credentials"
 - task: MavenAuthenticate@0
   displayName: 'authenticate maven'
   inputs:
