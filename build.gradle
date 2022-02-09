@@ -122,6 +122,8 @@ release {
     newVersionCommitMessage = '[Gradle Release Plugin][skip ci] - new version commit: '
 }
 
+afterReleaseBuild.dependsOn publish
+
 publishing {
     repositories {
         maven {
