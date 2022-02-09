@@ -34,6 +34,7 @@ plugins {
     id "maven-publish"
     id("net.ltgt.errorprone") version "0.8.1" apply false
     id 'net.researchgate.release' version '2.8.1'
+    id "net.linguica.maven-settings" version "0.5"
 }
 
 configure(allprojects) {
@@ -126,6 +127,9 @@ publishing {
         maven {
             name = "bt"
             url = "https://pkgs.dev.azure.com/Gravity9Solutions/BT/_packaging/bt/maven/v1"
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
     publications {
