@@ -126,6 +126,9 @@ publishing {
         maven {
             name = "bt"
             url = "https://pkgs.dev.azure.com/Gravity9Solutions/BT/_packaging/bt/maven/v1"
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
     publications {
