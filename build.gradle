@@ -46,7 +46,6 @@ configure(allprojects) {
 
 apply(plugin: "java");
 apply(plugin: "maven");
-apply(plugin: "signing");
 apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
