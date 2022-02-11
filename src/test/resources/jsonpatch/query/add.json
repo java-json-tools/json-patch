@@ -527,6 +527,75 @@
           }
         ]
       }
+    },
+    {
+      "description": "Raw json path",
+      "op": {
+        "op": "add",
+        "path": "$.note[?(@.author=='Arthur Evans')].books[?(@.pages > 300)].tags",
+        "value": "long,heavy"
+      },
+      "node": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [
+          {
+            "date": "2013-07-24T09:55:30.0Z",
+            "author": "Arthur Evans",
+            "books": [
+              {
+                "title": "W łazience i w kuchni",
+                "pages": 223
+              },
+              {
+                "title": "Miś i Honorata",
+                "pages": 390
+              }
+            ]
+          },
+          {
+            "date": "2013-07-25T08:55:12.0Z",
+            "author": "John Doe",
+            "books": [
+              {
+                "title": "Anna Karolina",
+                "pages": 450
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "id": "1",
+        "correlationId": "TT53482",
+        "note": [
+          {
+            "date": "2013-07-24T09:55:30.0Z",
+            "author": "Arthur Evans",
+            "books": [
+              {
+                "title": "W łazience i w kuchni",
+                "pages": 223
+              },
+              {
+                "title": "Miś i Honorata",
+                "pages": 390,
+                "tags": "long,heavy"
+              }
+            ]
+          },
+          {
+            "date": "2013-07-25T08:55:12.0Z",
+            "author": "John Doe",
+            "books": [
+              {
+                "title": "Anna Karolina",
+                "pages": 450
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
