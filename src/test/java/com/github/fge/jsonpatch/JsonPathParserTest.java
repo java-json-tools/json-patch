@@ -78,4 +78,11 @@ public class JsonPathParserTest {
         assertEquals(result, expected);
     }
 
+    @Test
+    public void shouldLeaveJsonPathStatementsUntouched() throws JsonPatchException {
+        String filterQuery = "$.arrayPath[?(@.innerArray[?(@.nestedVal=='as')] empty false)].innerArray[?(@.nestedVal=='df')].name";
+        String expected = "$.arrayPath[?(@.innerArray[?(@.nestedVal=='as')] empty false)].innerArray[?(@.nestedVal=='df')].name";
+        String result = JsonPathParser.tmfStringToJsonPath(filterQuery);
+        assertEquals(result, expected);
+    }
 }
