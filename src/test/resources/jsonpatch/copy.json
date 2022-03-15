@@ -3,12 +3,12 @@
         {
             "op": { "op": "copy", "from": "/a", "path": "/b" },
             "node": {},
-            "message": "jsonPatch.noSuchPath"
+            "message": "No results for path: $['a']"
         },
         {
             "op": { "op": "copy", "from": "/a", "path": "/b/c" },
             "node": { "a": 1 },
-            "message": "jsonPatch.noSuchParent"
+            "message": "No results for path: $['b']"
         }
     ],
     "ops": [

@@ -1,5 +1,16 @@
 {
-  "errors": [],
+  "errors": [
+    {
+      "op": { "op": "add", "path": "$.a[?(@.aa)].aax[0].b=='11'", "value": 1 },
+      "node": { "a": [{"aa": [{"b":  "val", "c": false}]}]},
+      "message": "Missing property in path $['a'][0]['aax']"
+    },
+    {
+      "op": { "op": "add", "path": "$.a[?(@.aa)].aa.b=='11'", "value": 1 },
+      "node": { "a": [{"aa": [{"b":  "val", "c": false}]}]},
+      "message": "reference token is not an array index"
+    }
+  ],
   "ops": [
     {
       "op": {

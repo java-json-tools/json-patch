@@ -85,7 +85,7 @@ public abstract class JsonPatchOperationTest
         try {
             op.apply(node);
             fail("No exception thrown!!");
-        } catch (JsonPatchException e) {
+        } catch (Exception e) {
             assertEquals(e.getMessage(), message);
         }
     }

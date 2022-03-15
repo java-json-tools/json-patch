@@ -3,12 +3,12 @@
         {
             "op": { "op": "move", "from": "/a", "path": "/a/b" },
             "node": {},
-            "message": "jsonPatch.noSuchPath"
+            "message": "No results for path: $['a']"
         },
         {
             "op": { "op": "move", "from": "/a", "path": "/b/c" },
             "node": { "a": "b" },
-            "message": "jsonPatch.noSuchParent"
+            "message": "No results for path: $['b']"
         }
     ],
     "ops": [

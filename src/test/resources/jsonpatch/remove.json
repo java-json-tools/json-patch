@@ -3,7 +3,7 @@
         {
             "op": { "op": "remove", "path": "/x/y" },
             "node": { "x": {} },
-            "message": "jsonPatch.noSuchPath"
+            "message": "No results for path: $['x']['y']"
         }
     ],
     "ops": [
