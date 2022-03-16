@@ -76,7 +76,7 @@ public abstract class JsonPatchOperation implements JsonSerializable {
 
             @Override
             public Set<Option> options() {
-                return EnumSet.of(Option.SUPPRESS_EXCEPTIONS);
+                return EnumSet.of(Option.REQUIRE_PROPERTIES);
             }
 
             @Override

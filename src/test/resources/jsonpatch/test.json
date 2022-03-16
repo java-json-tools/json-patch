@@ -3,7 +3,7 @@
         {
             "op": { "op": "test", "path": "/x", "value": {} },
             "node": [ 1, 2 ],
-            "message": "jsonPatch.noSuchPath"
+            "message": "Expected to find an object with property ['x'] in path $ but found 'com.fasterxml.jackson.databind.node.ArrayNode'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
         },
         {
             "op": { "op": "test", "path": "", "value": true },

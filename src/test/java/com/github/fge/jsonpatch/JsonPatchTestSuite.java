@@ -77,7 +77,7 @@ public final class JsonPatchTestSuite
             // Have to do that... TestNG tries to be too smart with regards
             // to iterable collections...
             assertTrue(actual.equals(expected));
-        } catch (JsonPatchException ignored) {
+        } catch (Exception ignored) {
             if (valid)
                 fail("Test was expected to succeed!!");
         }

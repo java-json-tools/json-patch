@@ -1,5 +1,21 @@
 {
-  "errors": [],
+  "errors": [
+    {
+      "op": { "op": "add", "path": "$.a[?(@.aa)].aax[0].b=='11'", "value": 1 },
+      "node": { "a": [{"aa": [{"b":  "val", "c": false}]}]},
+      "message": "Missing property in path $['a'][0]['aax']"
+    },
+    {
+      "op": { "op": "add", "path": "$.a[?(@.aa)].aa.b=='11'", "value": 1 },
+      "node": { "a": [{"aa": [{"b":  "val", "c": false}]}]},
+      "message": "reference token is not an array index"
+    },
+    {
+      "op": { "op": "add", "path": "$.a[0].aa[0].b.c]", "value": 1 },
+      "node": { "a": [{"aa": []}]},
+      "message": "Expected to find an object with property ['b'] in path $['a'][0]['aa'][0] but found 'null'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
+    }
+  ],
   "ops": [
     {
       "op": {
