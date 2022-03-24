@@ -47,7 +47,7 @@ public final class TestOperation extends PathValueOperation {
     }
 
     @Override
-    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+    public JsonNode applyInternal(final JsonNode node) throws JsonPatchException {
         final String jsonPath = JsonPathParser.tmfStringToJsonPath(path);
         final JsonNode tested = JsonPath.parse(node.deepCopy()).read(jsonPath);
         if (tested == null) {

@@ -69,7 +69,7 @@ public final class MoveOperation extends DualPathOperation {
     }
 
     @Override
-    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+    public JsonNode applyInternal(final JsonNode node) throws JsonPatchException {
         if (from.equals(path)) {
             return node.deepCopy();
         }

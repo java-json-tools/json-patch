@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
@@ -114,7 +115,15 @@ public abstract class JsonPatchOperation implements JsonSerializable {
      * @return the patched value
      * @throws JsonPatchException operation failed to apply to this value
      */
-    public abstract JsonNode apply(final JsonNode node) throws JsonPatchException;
+    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+        try {
+            return applyInternal(node);
+        } catch (JsonPathException e) {
+            throw new JsonPatchException(e.getMessage(), e);
+        }
+    }
+
+    public abstract JsonNode applyInternal(final JsonNode node) throws JsonPatchException;
 
     public final String getOp() {
         return op;
