@@ -45,7 +45,7 @@ public final class RemoveOperation extends JsonPatchOperation {
     }
 
     @Override
-    public JsonNode apply(final JsonNode node) throws JsonPatchException {
+    public JsonNode applyInternal(final JsonNode node) throws JsonPatchException {
         if (path.isEmpty()) {
             return MissingNode.getInstance();
         }
