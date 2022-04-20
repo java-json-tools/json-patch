@@ -352,23 +352,6 @@
     },
 
     {
-        "comment": "test against implementation-specific numeric parsing",
-        "doc": {
-            "1e0": "foo"
-        },
-        "patch": [
-            {
-                "op": "test",
-                "path": "/1e0",
-                "value": "foo"
-            }
-        ],
-        "expected": {
-            "1e0": "foo"
-        }
-    },
-
-    {
         "comment": "test with bad number should fail",
         "doc": ["foo", "bar"],
         "patch": [
