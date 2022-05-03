@@ -54,9 +54,9 @@ javadoc.options {
     }
     links("https://docs.oracle.com/javase/7/docs/api/");
     links("https://www.javadoc.io/doc/com.google.code.findbugs/jsr305/3.0.2/");
-    links("https://fasterxml.github.com/jackson-databind/javadoc/2.11/");
-    links("https://fasterxml.github.com/jackson-core/javadoc/2.11/");
-    links("https://fasterxml.github.com/jackson-annotations/javadoc/2.11/");
+    links("https://github.com/FasterXML/jackson-databind/tree/2.11/docs/javadoc/2.11");
+    links("https://github.com/FasterXML/jackson-core/tree/2.11/docs/javadoc/2.11");
+    links("https://github.com/FasterXML/jackson-annotations/tree/2.11/docs/javadoc/2.11");
     links("https://www.javadoc.io/doc/com.google.guava/guava/28.2-android/");
     links("https://java-json-tools.github.io/msg-simple/");
     links("https://java-json-tools.github.io/jackson-coreutils/");
