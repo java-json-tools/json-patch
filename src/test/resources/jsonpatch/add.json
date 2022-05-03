@@ -53,6 +53,16 @@
             "expected": { "array": [ 2, null, "hello", {}, 1 ] }
         },
         {
+            "op": { "op": "add", "path": "/array", "value": ["world"] },
+            "node": { "array": ["hello"] },
+            "expected": { "array": [ "hello", "world" ] }
+        },
+        {
+            "op": { "op": "add", "path": "/array", "value": ["hello"] },
+            "node": {},
+            "expected": { "array": [ "hello" ] }
+        },
+        {
             "op": { "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] },
             "node": {
                 "obj": {

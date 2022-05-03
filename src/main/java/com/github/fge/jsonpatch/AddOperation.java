@@ -136,7 +136,23 @@ public final class AddOperation
         final TokenResolver<JsonNode> token = Iterables.getLast(path);
         final JsonNode ret = node.deepCopy();
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
-        target.set(token.getToken().getRaw(), value);
+
+        final String objectName = token.getToken().getRaw();
+        final JsonNode targetObject = target.get(objectName);
+
+        if (targetObject != null && targetObject.isArray()) {
+            addToArrayObject((ArrayNode) targetObject);
+        } else {
+            target.set(objectName, value);
+        }
         return ret;
+    }
+
+    private void addToArrayObject(ArrayNode targetObject) {
+        if (value.isArray()) {
+            targetObject.addAll((ArrayNode) value);
+        } else {
+            targetObject.add(value);
+        }
     }
 }

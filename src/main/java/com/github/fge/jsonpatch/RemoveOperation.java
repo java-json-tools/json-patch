@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
@@ -42,10 +43,13 @@ import java.io.IOException;
 public final class RemoveOperation
     extends JsonPatchOperation
 {
+    private final JsonNode value;
+
     @JsonCreator
-    public RemoveOperation(@JsonProperty("path") final JsonPointer path)
+    public RemoveOperation(@JsonProperty("path") final JsonPointer path, @JsonProperty(value = "value") final JsonNode value)
     {
         super("remove", path);
+        this.value = value;
     }
 
     @Override
@@ -56,15 +60,51 @@ public final class RemoveOperation
             return MissingNode.getInstance();
         if (path.path(node).isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
+                    "jsonPatch.noSuchPath"));
         final JsonNode ret = node.deepCopy();
         final JsonNode parentNode = path.parent().get(ret);
-        final String raw = Iterables.getLast(path).getToken().getRaw();
+        final String fieldName = Iterables.getLast(path).getToken().getRaw();
+
         if (parentNode.isObject())
-            ((ObjectNode) parentNode).remove(raw);
+            removeFromObject(parentNode, fieldName);
         else
-            ((ArrayNode) parentNode).remove(Integer.parseInt(raw));
+            ((ArrayNode) parentNode).remove(Integer.parseInt(fieldName));
         return ret;
+    }
+
+    private void removeFromObject(JsonNode parentNode, String fieldName) {
+        final JsonNode targetObject = parentNode.get(fieldName);
+        if (targetObject.isArray()) {
+            if (value.isArray()) {
+                final ArrayNode arr = remove((ArrayNode) targetObject, (ArrayNode) value);
+                ((ObjectNode) parentNode).replace(fieldName, arr);
+            } else {
+                final ArrayNode arr = remove((ArrayNode) targetObject, value);
+                ((ObjectNode) parentNode).replace(fieldName, arr);
+            }
+        } else {
+            ((ObjectNode) parentNode).remove(fieldName);
+        }
+    }
+
+    private ArrayNode remove(ArrayNode arrayObject, JsonNode toRemove) {
+        ArrayNode reduced = arrayObject.deepCopy();
+        int i = 0;
+        for (JsonNode e : arrayObject) {
+            if (e.equals(toRemove)) {
+                reduced.remove(i);
+            }
+            i++;
+        }
+        return reduced;
+    }
+
+    private ArrayNode remove(ArrayNode arrayObject, ArrayNode toRemove) {
+        ArrayNode reduced = arrayObject.deepCopy();
+        for (JsonNode rem : toRemove) {
+            reduced = remove(reduced, rem);
+        }
+        return reduced;
     }
 
     @Override
@@ -75,6 +115,10 @@ public final class RemoveOperation
         jgen.writeStartObject();
         jgen.writeStringField("op", "remove");
         jgen.writeStringField("path", path.toString());
+        if (value != null && !value.equals(NullNode.getInstance())) {
+            jgen.writeFieldName("value");
+            jgen.writeTree(value);
+        }
         jgen.writeEndObject();
     }
 
