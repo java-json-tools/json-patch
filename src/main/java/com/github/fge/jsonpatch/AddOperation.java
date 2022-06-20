@@ -88,7 +88,7 @@ public final class AddOperation extends PathValueOperation {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
         }
 
-        if (pathDetails.isContainsFiltersOrMultiIndexesNotation()) { // json filter result is always a list
+        if (pathDetails.doesContainFiltersOrMultiIndexesNotation()) { // json filter result is always a list
             for (int i = 0; i < evaluatedJsonParents.size(); i++) {
                 JsonNode parentNode = evaluatedJsonParents.get(i);
                 if (!parentNode.isContainerNode()) {

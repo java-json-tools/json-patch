@@ -22,7 +22,7 @@ public class PathDetails {
         return newNodeName;
     }
 
-    public boolean isContainsFiltersOrMultiIndexesNotation() {
+    public boolean doesContainFiltersOrMultiIndexesNotation() {
         return containsFiltersOrMultiIndexesNotation;
     }
 }
