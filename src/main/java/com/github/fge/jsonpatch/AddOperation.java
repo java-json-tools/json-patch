@@ -75,18 +75,11 @@ public final class AddOperation extends PathValueOperation {
         if (path.isEmpty()) {
             return value;
         }
-        /*
-         * Check the parent node: it must exist and be a container (ie an array
-         * or an object) for the add operation to work.
-         */
-        final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
-        final int lastDotIndex = fullJsonPath.lastIndexOf('.');
-        final String newNodeName = fullJsonPath.substring(lastDotIndex + 1)
-                .replace("[", "").replace("]", "");
-        final String pathToParent = fullJsonPath.substring(0, lastDotIndex);
+        PathDetails pathDetails = PathParser.getParentPathAndNewNodeName(path);
+        final String pathToParent = pathDetails.getPathToParent();
+        final String newNodeName = pathDetails.getNewNodeName();
 
         final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
-
         final JsonNode evaluatedJsonParents = nodeContext.read(pathToParent);
         if (evaluatedJsonParents == null) {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchParent"));
@@ -95,7 +88,7 @@ public final class AddOperation extends PathValueOperation {
             throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
         }
 
-        if (pathToParent.contains("[?(")) { // json filter result is always a list
+        if (pathDetails.doesContainFiltersOrMultiIndexesNotation()) { // json filter result is always a list
             for (int i = 0; i < evaluatedJsonParents.size(); i++) {
                 JsonNode parentNode = evaluatedJsonParents.get(i);
                 if (!parentNode.isContainerNode()) {
