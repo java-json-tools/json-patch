@@ -234,4 +234,17 @@ public class PathParserTest {
         assertEquals(result.getPathToParent(), "$");
         assertEquals(result.getNewNodeName(), "id");
     }
+
+    @Test
+    void should_parse_json_path_with_dash_at_the_end() throws JsonPatchException {
+        // given
+        String path = "$[?(@.contactMedium[?(@.characteristic.contactType == 'primary' && @.characteristic.emailAddress)] empty true)].contactMedium.-";
+
+        // when
+        PathDetails result = PathParser.getParentPathAndNewNodeName(path);
+
+        // then
+        assertEquals(result.getPathToParent(), "$[?(@.contactMedium[?(@.characteristic.contactType == 'primary' && @.characteristic.emailAddress)] empty true)]['contactMedium']");
+        assertEquals(result.getNewNodeName(), "-");
+    }
 }

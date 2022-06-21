@@ -65,7 +65,7 @@
     },
 
     {
-        "comment": "adding the title in the first two books",
+        "comment": "adding new book at the end",
         "doc": {
             "store": {
                 "book": [
@@ -100,8 +100,13 @@
         "patch": [
             {
                 "op": "add",
-                "path": "$..book[:2].title",
-                "value":  "qux"
+                "path": "$..book.-",
+                "value":  {
+                    "category": "new category",
+                    "author": "John Doe",
+                    "title": "Test book",
+                    "price": 18.95
+                }
             }
         ],
         "expected": {
@@ -110,13 +115,13 @@
                     {
                         "category": "reference",
                         "author": "Nigel Rees",
-                        "title": "qux",
+                        "title": "Sayings of the Century",
                         "price": 8.95
                     },
                     {
                         "category": "fiction",
                         "author": "Herman Melville",
-                        "title": "qux",
+                        "title": "Moby Dick",
                         "isbn": "0-553-21311-3",
                         "price": 8.99
                     },
@@ -126,6 +131,12 @@
                         "title": "The Lord of the Rings",
                         "isbn": "0-395-19395-8",
                         "price": 22.99
+                    },
+                    {
+                        "category": "new category",
+                        "author": "John Doe",
+                        "title": "Test book",
+                        "price": 18.95
                     }
                 ],
                 "bicycle": {
