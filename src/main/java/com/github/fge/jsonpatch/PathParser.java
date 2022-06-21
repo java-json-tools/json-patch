@@ -17,6 +17,7 @@ public class PathParser {
      * @param path Path in JsonPath or JsonPointer notation
      * @return PathDetails containing path to parent, name of new node and boolean value if path contains filter or multi
      * index notation
+     * @throws JsonPatchException when invalid path provided
      * */
     public static PathDetails getParentPathAndNewNodeName(String path) throws JsonPatchException {
         final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
