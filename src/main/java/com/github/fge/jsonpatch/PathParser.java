@@ -10,6 +10,14 @@ public class PathParser {
 
     private static final String FILTER_PLACEHOLDER = "[?]";
 
+    /**
+     * This method parses JsonPath to find node name that needs to be added and path to the parent of new node.
+     * Additionally, it finds if path contains filter or multi index notation (like [1:5])
+     *
+     * @param path Path in JsonPath or JsonPointer notation
+     * @return PathDetails containing path to parent, name of new node and boolean value if path contains filter or multi
+     * index notation
+     * */
     public static PathDetails getParentPathAndNewNodeName(String path) throws JsonPatchException {
         final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
         final Path compiledPath = compilePath(fullJsonPath);
@@ -21,7 +29,7 @@ public class PathParser {
         StringBuilder sb = new StringBuilder();
         sb.append("$");
         for (int i = 0; i < splitJsonPath.length - 1; i++) {
-            if (splitJsonPath[i].equals("")) {
+            if (splitJsonPath[i].isEmpty()) {
                 continue;
             }
             if (splitJsonPath[i].equals(FILTER_PLACEHOLDER)) {

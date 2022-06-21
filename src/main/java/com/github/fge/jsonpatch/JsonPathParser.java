@@ -5,7 +5,6 @@ public class JsonPathParser {
     private static final String ARRAY_ELEMENT_REGEX = "(?<=\\.)(\\d+)";
 
     public static String tmfStringToJsonPath(String path) throws JsonPatchException {
-        path = path.replaceAll("\\['", ".").replaceAll("']", "");
         if (path.startsWith("$")) {
             return path;
         }

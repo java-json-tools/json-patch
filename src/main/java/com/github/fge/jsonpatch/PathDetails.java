@@ -2,11 +2,11 @@ package com.github.fge.jsonpatch;
 
 public class PathDetails {
 
-    private String pathToParent;
+    private final String pathToParent;
 
-    private String newNodeName;
+    private final String newNodeName;
 
-    private boolean containsFiltersOrMultiIndexesNotation;
+    private final boolean containsFiltersOrMultiIndexesNotation;
 
     public PathDetails(String pathToParent, String newNodeName, boolean containsFiltersOrMultiIndexesNotation) {
         this.pathToParent = pathToParent;
@@ -24,5 +24,14 @@ public class PathDetails {
 
     public boolean doesContainFiltersOrMultiIndexesNotation() {
         return containsFiltersOrMultiIndexesNotation;
+    }
+
+    @Override
+    public String toString() {
+        return "PathDetails{" +
+                "pathToParent='" + pathToParent + '\'' +
+                ", newNodeName='" + newNodeName + '\'' +
+                ", containsFiltersOrMultiIndexesNotation=" + containsFiltersOrMultiIndexesNotation +
+                '}';
     }
 }
