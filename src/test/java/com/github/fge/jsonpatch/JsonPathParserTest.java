@@ -2,7 +2,7 @@ package com.github.fge.jsonpatch;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class JsonPathParserTest {
 
@@ -44,5 +44,17 @@ public class JsonPathParserTest {
         String expected = "$.arrayPath[?(@.innerArray[?(@.nestedVal=='as')] empty false)].innerArray[?(@.nestedVal=='df')].name";
         String result = JsonPathParser.tmfStringToJsonPath(filterQuery);
         assertEquals(result, expected);
+    }
+
+    @Test(expectedExceptions = JsonPatchException.class, expectedExceptionsMessageRegExp = "Invalid path, `//` is not allowed in JsonPointer expressions.")
+    public void shouldThrowExceptionWhenDoubleSlashesInJsonPointerPath() throws JsonPatchException {
+        String filterQuery = "/characteristic/0//age";
+        JsonPathParser.tmfStringToJsonPath(filterQuery);
+    }
+
+    @Test(expectedExceptions = JsonPatchException.class)
+    public void shouldThrowExceptionWhenQuestionMarkInJsonPointerPath() throws JsonPatchException {
+        String filterQuery = "/characteristic/0/age?";
+        JsonPathParser.tmfStringToJsonPath(filterQuery);
     }
 }
