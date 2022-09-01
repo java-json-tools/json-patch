@@ -31,8 +31,11 @@ import com.github.fge.msgsimple.load.MessageBundles;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of JSON Patch
@@ -96,6 +99,10 @@ public final class JsonPatch
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
 
+    // https://datatracker.ietf.org/doc/html/draft-ietf-appsawg-json-patch-10
+    private static final Set<String> VALID_OPERATIONS
+        = new HashSet<>(Arrays.asList("test", "add", "copy", "move", "remove", "replace"));
+
     /**
      * List of operations
      */
@@ -127,6 +134,8 @@ public final class JsonPatch
         throws IOException
     {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
+        BUNDLE.checkArgumentFormat(isValidJsonPatch(node), "jsonPatch.invalidPatch", node);
+
         return JacksonUtils.getReader().forType(JsonPatch.class)
             .readValue(node);
     }
@@ -178,5 +187,56 @@ public final class JsonPatch
         throws IOException
     {
         serialize(jgen, provider);
+    }
+
+    private static boolean isValidJsonPatch(final JsonNode patch)
+    {
+        return hasValidOperation(patch)
+                   && hasValidPath(patch)
+                   && hasValidOptionalAttributes(patch);
+    }
+
+    private static boolean hasValidOptionalAttributes(JsonNode patchElement)
+    {
+        // https://datatracker.ietf.org/doc/html/draft-ietf-appsawg-json-patch-10#section-4
+        switch(patchElement.get("op").asText()) {
+            case "test":
+            case "add":
+            case "replace":
+                return hasAttribute("value", patchElement);
+
+            case "move":
+            case "copy":
+                return hasStringAttribute("from", patchElement);
+
+            case "remove":
+            default:
+                return true;
+        }
+    }
+
+    private static boolean hasStringAttribute(String attribute, JsonNode patchElement)
+    {
+        return hasAttribute(attribute, patchElement)
+                   && patchElement.get(attribute).isTextual();
+    }
+
+    private static boolean hasAttribute(String attribute, JsonNode patchElement)
+    {
+        return patchElement.has(attribute)
+                   && !patchElement.get(attribute).isMissingNode();
+    }
+
+    private static boolean hasValidPath(JsonNode patchElement)
+    {
+        return patchElement.has("path")
+                   && patchElement.get("path").isTextual();
+    }
+
+    private static boolean hasValidOperation(JsonNode patchElement)
+    {
+        return patchElement.has("op")
+                   && patchElement.get("op").isTextual()
+                   && VALID_OPERATIONS.contains(patchElement.get("op").asText());
     }
 }
