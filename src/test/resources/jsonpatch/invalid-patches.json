@@ -1,0 +1,40 @@
+[
+  // predicate with no operation
+  [{"path": "/field1", "value": {"id":123}}],
+
+  // predicate with no path
+  [{"op": "test", "value": {"id":123}}],
+
+  // predicate with no value
+  [{"op": "test", "path": "/field1"}],
+
+  // predicate with non-text path attribute
+  [{"op": "test", "path": 1, "value": {"id":123}}],
+
+  // patch with no operation
+  [{"path": "/field1/a", "value": "b"}],
+
+  // patch with no path
+  [{"op": "add", "value": "b"}],
+
+  // patch with non-text path
+  [{"op": "add", "path": 123, "value": "b"}],
+
+  // ADD patch with no value
+  [{"op": "add", "path": "/field1/a"}],
+
+  // REPLACE patch with no value
+  [{"op": "replace", "path": "/field1/a"}],
+
+  // MOVE patch with no from attribute
+  [{"op": "move", "path": "/field1/a"}],
+
+  // COPY patch with no from attribute
+  [{"op": "move", "path": "/field1/a"}],
+
+  // MOVE patch with no non-text from attribute
+  [{"op": "move", "path": "/field1/a", "from": 123}],
+
+  // COPY patch with no non-text from attribute
+  [{"op": "copy", "path": "/field1/a", "from": 123}]
+]
