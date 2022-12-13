@@ -1,0 +1,47 @@
+[
+  {
+    "op": "remove",
+    "path": "/Entitlements/?",
+    "value_locator": {
+      "Application Key": "121",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "144~Network Security Role"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/Entitlements/-",
+    "value": {
+      "Application Key": "122",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "144~Network Security Role2"
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/Entitlements/?/Entitlement Key",
+    "value": "updated",
+    "value_locator": {
+      "Application Key": "100",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "565~Deployment Owners"
+    }
+  },
+
+  {
+    "op": "replace",
+    "path": "/Entitlements/?/Additional Info",
+    "value": "test updated",
+    "value_locator": {
+      "Application Key": "100",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "565~Deployment Owners"
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/Role Owner Login",
+    "value": "JDOE"
+  }
+]
+

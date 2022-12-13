@@ -22,7 +22,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+
 
 /**
  * JSON Patch {@code copy} operation
@@ -44,8 +45,8 @@ public final class CopyOperation
     extends DualPathOperation
 {
     @JsonCreator
-    public CopyOperation(@JsonProperty("from") final JsonPointer from,
-        @JsonProperty("path") final JsonPointer path)
+    public CopyOperation(@JsonProperty("from") final JsonPointerCustom from,
+        @JsonProperty("path") final JsonPointerCustom path)
     {
         super("copy", from, path);
     }
@@ -58,6 +59,15 @@ public final class CopyOperation
         if (dupData.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.noSuchPath"));
+        return new AddOperation(path, dupData).apply(node);
+    }
+
+    @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        final JsonNode dupData = from.path(node).deepCopy();
+        if (dupData.isMissingNode())
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.noSuchPath"));
         return new AddOperation(path, dupData).apply(node);
     }
 }

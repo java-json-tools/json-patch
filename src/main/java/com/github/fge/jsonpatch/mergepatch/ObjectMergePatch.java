@@ -93,6 +93,11 @@ final class ObjectMergePatch
     }
 
     @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        return null;
+    }
+
+    @Override
     public void serialize(final JsonGenerator jgen,
         final SerializerProvider provider)
         throws IOException, JsonProcessingException

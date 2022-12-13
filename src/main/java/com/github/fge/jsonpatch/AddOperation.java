@@ -24,9 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
 import com.github.fge.jackson.jsonpointer.ReferenceToken;
 import com.github.fge.jackson.jsonpointer.TokenResolver;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 
 import java.util.NoSuchElementException;
 
@@ -66,22 +69,21 @@ import java.util.NoSuchElementException;
  * </pre>
  */
 public final class AddOperation
-    extends PathValueOperation
-{
+        extends PathValueOperation {
     private static final ReferenceToken LAST_ARRAY_ELEMENT
-        = ReferenceToken.fromRaw("-");
+            = ReferenceToken.fromRaw("-");
+
+    Logger logger = LoggerFactory.getLogger(AddOperation.class);
 
     @JsonCreator
-    public AddOperation(@JsonProperty("path") final JsonPointer path,
-        @JsonProperty("value") final JsonNode value)
-    {
+    public AddOperation(@JsonProperty("path") final JsonPointerCustom path,
+                        @JsonProperty("value") final JsonNode value) {
         super("add", path, value);
     }
 
     @Override
     public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
+            throws JsonPatchException {
         if (path.isEmpty())
             return value;
 
@@ -92,18 +94,49 @@ public final class AddOperation
         final JsonNode parentNode = path.parent().path(node);
         if (parentNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchParent"));
+                    "jsonPatch.noSuchParent"));
         if (!parentNode.isContainerNode())
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.parentNotContainer"));
+                    "jsonPatch.parentNotContainer"));
         return parentNode.isArray()
-            ? addToArray(path, node)
-            : addToObject(path, node);
+                ? addToArray(path, node)
+                : addToObject(path, node);
     }
 
-    private JsonNode addToArray(final JsonPointer path, final JsonNode node)
-        throws JsonPatchException
-    {
+    @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        if (path.isEmpty())
+            return value;
+
+        /*
+         * Check the parent node: it must exist and be a container (ie an array
+         * or an object) for the add operation to work.
+         */
+        final JsonNode parentNode = path.parent().path(node);
+
+        if (parentNode.isMissingNode() && flag)
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.noSuchParent"));
+
+        if (parentNode.isMissingNode() && !flag)
+            logger.error("jsonPatch.noSuchParent");
+
+        if (!parentNode.isContainerNode() && flag)
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.parentNotContainer"));
+
+        if (!parentNode.isContainerNode() && !flag)
+            logger.error("jsonPatch.parentNotContainer");
+
+
+        return parentNode.isArray()
+                ? addToArray(path, node)
+                : addToObject(path, node);
+    }
+
+    private JsonNode addToArray(final JsonPointerCustom path, final JsonNode node)
+            throws JsonPatchException {
+
         final JsonNode ret = node.deepCopy();
         final ArrayNode target = (ArrayNode) path.parent().get(ret);
 
@@ -120,23 +153,23 @@ public final class AddOperation
             index = Integer.parseInt(token.toString());
         } catch (NumberFormatException ignored) {
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.notAnIndex"));
+                    "jsonPatch.notAnIndex"));
         }
 
         if (index < 0 || index > size)
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchIndex"));
+                    "jsonPatch.noSuchIndex"));
 
         target.insert(index, value);
         return ret;
     }
 
-    private JsonNode addToObject(final JsonPointer path, final JsonNode node)
-    {
+    private JsonNode addToObject(final JsonPointerCustom path, final JsonNode node) {
         final TokenResolver<JsonNode> token = Iterables.getLast(path);
         final JsonNode ret = node.deepCopy();
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
         target.set(token.getToken().getRaw(), value);
         return ret;
     }
+
 }

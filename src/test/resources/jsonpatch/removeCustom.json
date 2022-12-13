@@ -1,0 +1,94 @@
+{
+  "errors": [
+    {
+      "op": {
+        "op": "remove",
+        "path": "/hd/?"
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "121",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "144~Network Security Role"
+          }
+        ]
+      },
+      "message": "jsonPatch.noSuchPath"
+    },
+    {
+      "op": {
+        "op": "remove",
+        "path": "/Entitlements/?"
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "000",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "144~Network Security Role"
+          }
+        ]
+      },
+      "message": "jsonPatch.noSuchPath"
+    }
+  ],
+  "ops": [
+    {
+      "op": {
+        "op": "remove",
+        "path": "/Entitlements/?",
+        "value_locator": {
+          "Application Key": "121",
+          "Entitlement Type": "UD_GROUPS_GROUPS",
+          "Entitlement Name": "144~Network Security Role"
+        }
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "121",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "144~Network Security Role"
+          }
+        ]
+      },
+      "expected": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+        ]
+      }
+    }
+  ]
+}

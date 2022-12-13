@@ -1,0 +1,29 @@
+{
+  "Role Display Name": "Test Role Pset",
+  "Role Category": "Default",
+  "Role Name": "Test Role Pset",
+  "Role Description": "Test Role Pset",
+  "Organization": "Confluxsys",
+  "Role Owner Login": "PBULE",
+  "Role ID": "14350",
+  "$identifier": "14350",
+  "Entitlements": [
+    {
+      "Application Key": "121",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "144~Network Security Role"
+    },
+    {
+      "Application Key": "562",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "565~Deployment Owners"
+    },
+    {
+      "Application Key": "100",
+      "Entitlement Type": "UD_GROUPS_GROUPS",
+      "Entitlement Name": "565~Deployment Owners",
+      "Entitlement Key": "askjdhfiegig02k",
+      "Additional Info": "test"
+    }
+  ]
+}

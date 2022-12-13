@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
 
 /**
  * JSON Patch {@code test} operation
@@ -45,7 +45,7 @@ public final class TestOperation
         = JsonNumEquals.getInstance();
 
     @JsonCreator
-    public TestOperation(@JsonProperty("path") final JsonPointer path,
+    public TestOperation(@JsonProperty("path") final JsonPointerCustom path,
         @JsonProperty("value") final JsonNode value)
     {
         super("test", path, value);
@@ -63,5 +63,10 @@ public final class TestOperation
             throw new JsonPatchException(BUNDLE.getMessage(
                 "jsonPatch.valueTestFailure"));
         return node.deepCopy();
+    }
+
+    @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        return null;
     }
 }

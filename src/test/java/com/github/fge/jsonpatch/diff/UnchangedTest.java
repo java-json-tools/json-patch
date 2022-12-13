@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
 import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -39,8 +39,8 @@ import static org.testng.Assert.assertEquals;
 public final class UnchangedTest
 {
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
-    private static final TypeReference<Map<JsonPointer, JsonNode>> TYPE_REF
-        = new TypeReference<Map<JsonPointer, JsonNode>>()
+    private static final TypeReference<Map<JsonPointerCustom, JsonNode>> TYPE_REF
+        = new TypeReference<Map<JsonPointerCustom, JsonNode>>()
     {
     };
 
@@ -68,9 +68,9 @@ public final class UnchangedTest
 
     @Test(dataProvider = "getTestData")
     public void computeUnchangedValuesWorks(final JsonNode first,
-        final JsonNode second, final Map<JsonPointer, JsonNode> expected)
+        final JsonNode second, final Map<JsonPointerCustom, JsonNode> expected)
     {
-        final Map<JsonPointer, JsonNode> actual
+        final Map<JsonPointerCustom, JsonNode> actual
             = JsonDiff.getUnchangedValues(first, second);
 
         assertEquals(actual, expected);

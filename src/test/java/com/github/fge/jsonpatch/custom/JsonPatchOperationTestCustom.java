@@ -17,13 +17,16 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch;
+package com.github.fge.jsonpatch.custom;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.JsonPatchMessages;
+import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 import com.google.common.collect.Lists;
@@ -34,10 +37,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotSame;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 @Test
-public abstract class JsonPatchOperationTest {
+public abstract class JsonPatchOperationTestCustom {
     private static final MessageBundle BUNDLE
             = MessageBundles.getBundle(JsonPatchMessages.class);
 
@@ -48,9 +54,9 @@ public abstract class JsonPatchOperationTest {
     private final JsonNode ops;
     private final ObjectReader reader;
 
-    protected JsonPatchOperationTest(final String prefix)
+    protected JsonPatchOperationTestCustom(final String prefix)
             throws IOException {
-        final String resource = "jsonpatch/" + prefix + ".json";
+        final String resource = "/jsonpatch/" + prefix + ".json";
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
@@ -79,7 +85,7 @@ public abstract class JsonPatchOperationTest {
         final JsonPatchOperation op = reader.readValue(patch);
 
         try {
-            op.apply(node);
+            op.apply(node, true);
             fail("No exception thrown!!");
         } catch (JsonPatchException e) {
             assertEquals(e.getMessage(), message);
@@ -105,13 +111,15 @@ public abstract class JsonPatchOperationTest {
                                                      final JsonNode node, final JsonNode expected)
             throws IOException, JsonPatchException {
         final JsonPatchOperation op = reader.readValue(patch);
-        final JsonNode actual = op.apply(node);
+        final JsonNode actual = op.apply(node, true);
 
         assertTrue(EQUIVALENCE.equivalent(actual, expected),
                 "patched node differs from expectations: expected " + expected
                         + " but found " + actual);
+
+
         if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
-            assertNotSame(node, actual,
+            assertNotSame(node.toPrettyString(), actual.toPrettyString(),
                     "operation didn't make a copy of the input node");
     }
 }

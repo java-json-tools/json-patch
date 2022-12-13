@@ -21,7 +21,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "http://repo.springsource.org/plugins-release";
+            url "https://repo.springsource.org/plugins-release";
         }
     }
     dependencies {
@@ -81,6 +81,8 @@ repositories {
  * Add errorprone checking.
  */
 dependencies {
+    // https://mvnrepository.com/artifact/org.glassfish/javax.json
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
     errorprone("com.google.errorprone:error_prone_core:2.3.3")
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
@@ -113,6 +115,21 @@ allprojects {
         }
         tasks.withType(Javadoc) {
             options.addStringOption('Xwerror', '-quiet')
+        }
+        tasks.withType(JavaCompile) {
+            options.errorprone {
+                disableWarningsInGeneratedCode = true
+                ignoreUnknownCheckNames = true
+                allErrorsAsWarnings = true
+                // workaround for: https://github.com/google/error-prone/issues/780
+                errorproneArgs = ['-Xep:ParameterName:OFF',
+                                  '-Xep:FallThrough:OFF',
+                                  '-Xep:FunctionalInterfaceClash:OFF',
+                                  '-Xep:AssertionFailureIgnored:OFF',
+                                  '-Xlint:unchecked',
+                                  '-Xlint:deprecation'
+                ]
+            }
         }
     }
 }

@@ -1,0 +1,66 @@
+{
+  "errors": [
+    {
+      "op": {
+        "op": "add",
+        "path": "/a/b/c",
+        "value": 1
+      },
+      "node": {
+        "a": "b"
+      },
+      "message": "jsonPatch.noSuchParent"
+    }
+  ],
+  "ops": [
+    {
+      "op": {
+        "op": "add",
+        "path": "/Entitlements/-",
+        "value": {
+          "Application Key": "122",
+          "Entitlement Type": "UD_GROUPS_GROUPS",
+          "Entitlement Name": "144~Network Security Role2"
+        }
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+        ]
+      },
+      "expected": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "122",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "144~Network Security Role2"
+          }
+        ]
+      }
+    },
+    {
+      "op": {
+        "op": "add",
+        "path": "",
+        "value": null
+      },
+      "node": {},
+      "expected": null
+    }
+  ]
+}

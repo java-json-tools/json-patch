@@ -19,9 +19,13 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JsonNumEquals;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 
@@ -29,76 +33,68 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 // TODO: cleanup
-final class DiffProcessor
-{
+final class DiffProcessor {
     private static final JsonNumEquals EQUIVALENCE
-        = JsonNumEquals.getInstance();
+            = JsonNumEquals.getInstance();
 
-    private final Map<JsonPointer, JsonNode> unchanged;
+    private final Map<JsonPointerCustom, JsonNode> unchanged;
 
     private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
 
-    DiffProcessor(final Map<JsonPointer, JsonNode> unchanged)
-    {
-        this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
+    DiffProcessor(final Map<JsonPointerCustom, JsonNode> unchanged) {
+        this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointerCustom, JsonNode>(unchanged));
     }
 
-    void valueReplaced(final JsonPointer pointer, final JsonNode oldValue,
-        final JsonNode newValue)
-    {
+    void valueReplaced(final JsonPointerCustom pointer, final JsonNode oldValue,
+                       final JsonNode newValue) {
         diffs.add(DiffOperation.replace(pointer, oldValue, newValue));
     }
 
-    void valueRemoved(final JsonPointer pointer, final JsonNode value)
-    {
+    void valueRemoved(final JsonPointerCustom pointer, final JsonNode value) {
         diffs.add(DiffOperation.remove(pointer, value));
     }
 
-    void valueAdded(final JsonPointer pointer, final JsonNode value)
-    {
+    void valueAdded(final JsonPointerCustom pointer, final JsonNode value) {
         final int removalIndex = findPreviouslyRemoved(value);
         if (removalIndex != -1) {
             final DiffOperation removed = diffs.get(removalIndex);
             diffs.remove(removalIndex);
             diffs.add(DiffOperation.move(removed.getFrom(),
-                value, pointer, value));
+                    value, pointer, value));
             return;
         }
-        final JsonPointer ptr = findUnchangedValue(value);
+        final JsonPointerCustom ptr = findUnchangedValue(value);
         final DiffOperation op = ptr != null
-            ? DiffOperation.copy(ptr, pointer, value)
-            : DiffOperation.add(pointer, value);
+                ? DiffOperation.copy(ptr, pointer, value)
+                : DiffOperation.add(pointer, value);
 
         diffs.add(op);
     }
 
-    JsonPatch getPatch()
-    {
+    JsonPatch getPatch() {
         final List<JsonPatchOperation> list = new ArrayList<JsonPatchOperation>();
 
-        for (final DiffOperation op: diffs)
+        for (final DiffOperation op : diffs)
             list.add(op.asJsonPatchOperation());
 
         return new JsonPatch(list);
     }
 
     @Nullable
-    private JsonPointer findUnchangedValue(final JsonNode value)
-    {
-        for (final Map.Entry<JsonPointer, JsonNode> entry: unchanged.entrySet())
+    private JsonPointerCustom findUnchangedValue(final JsonNode value) {
+        for (final Map.Entry<JsonPointerCustom, JsonNode> entry : unchanged.entrySet())
             if (EQUIVALENCE.equivalent(value, entry.getValue()))
                 return entry.getKey();
         return null;
     }
 
-    private int findPreviouslyRemoved(final JsonNode value)
-    {
+    private int findPreviouslyRemoved(final JsonNode value) {
         DiffOperation op;
 
         for (int i = 0; i < diffs.size(); i++) {
             op = diffs.get(i);
             if (op.getType() == DiffOperation.Type.REMOVE
-                && EQUIVALENCE.equivalent(value, op.getOldValue()))
+                    && EQUIVALENCE.equivalent(value, op.getOldValue()))
                 return i;
         }
         return -1;

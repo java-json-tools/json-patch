@@ -17,18 +17,14 @@
  * - ASL 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package com.github.fge.jsonpatch;
+package com.github.fge.jsonpatch.custom;
 
 import java.io.IOException;
 
-public final class AddOperationTest
-    extends JsonPatchOperationTest
-{
-    public AddOperationTest()
-        throws IOException
-    {
-        super("add");
+public final class ReplaceOperationTestCustom
+        extends JsonPatchOperationTestCustom {
+    public ReplaceOperationTestCustom()
+            throws IOException {
+        super("replaceCustom");
     }
-
-
 }

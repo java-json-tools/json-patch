@@ -24,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
@@ -34,12 +35,12 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 
 @JsonSubTypes({
-    @Type(name = "add", value = AddOperation.class),
-    @Type(name = "copy", value = CopyOperation.class),
-    @Type(name = "move", value = MoveOperation.class),
-    @Type(name = "remove", value = RemoveOperation.class),
-    @Type(name = "replace", value = ReplaceOperation.class),
-    @Type(name = "test", value = TestOperation.class)
+        @Type(name = "add", value = AddOperation.class),
+        @Type(name = "copy", value = CopyOperation.class),
+        @Type(name = "move", value = MoveOperation.class),
+        @Type(name = "remove", value = RemoveOperation.class),
+        @Type(name = "replace", value = ReplaceOperation.class),
+        @Type(name = "test", value = TestOperation.class)
 })
 
 /**
@@ -57,12 +58,13 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class JsonPatchOperation
-    implements JsonSerializable
-{
+        implements JsonSerializable {
     protected static final MessageBundle BUNDLE
-        = MessageBundles.getBundle(JsonPatchMessages.class);
+            = MessageBundles.getBundle(JsonPatchMessages.class);
 
-    protected final String op;
+
+    public  /* JFTP final-remove comments only*/ String op;
+
 
     /*
      * Note: no need for a custom deserializer, Jackson will try and find a
@@ -70,16 +72,23 @@ public abstract class JsonPatchOperation
      *
      * However, we need to serialize using .toString().
      */
-    protected final JsonPointer path;
+    public JsonPointerCustom path;
+
+    public JsonNode value_locator;
 
     /**
      * Constructor
      *
-     * @param op the operation name
+     * @param op   the operation name
      * @param path the JSON Pointer for this operation
      */
-    protected JsonPatchOperation(final String op, final JsonPointer path)
-    {
+    protected JsonPatchOperation(final String op, final JsonPointerCustom path, final JsonNode value_locator) {
+        this.op = op;
+        this.path = path;
+        this.value_locator = value_locator.deepCopy();
+    }
+
+    protected JsonPatchOperation(final String op, final JsonPointerCustom path) {
         this.op = op;
         this.path = path;
     }
@@ -92,16 +101,25 @@ public abstract class JsonPatchOperation
      * @throws JsonPatchException operation failed to apply to this value
      */
     public abstract JsonNode apply(final JsonNode node)
-        throws JsonPatchException;
+            throws JsonPatchException;
+
+    public abstract JsonNode apply(final JsonNode node, boolean flag)
+            throws JsonPatchException;
 
     public final String getOp() {
         return op;
     }
 
-    public final JsonPointer getPath() {
+    public JsonPointerCustom getPath() {
         return path;
+    }
+
+    public void setPath(JsonPointerCustom path) {
+        this.path = path;
     }
 
     @Override
     public abstract String toString();
+
+
 }

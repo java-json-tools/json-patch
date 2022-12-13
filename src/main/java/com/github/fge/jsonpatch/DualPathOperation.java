@@ -21,11 +21,13 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+
 
 import java.io.IOException;
 
@@ -33,30 +35,27 @@ import java.io.IOException;
  * Base class for JSON Patch operations taking two JSON Pointers as arguments
  */
 public abstract class DualPathOperation
-    extends JsonPatchOperation
-{
+        extends JsonPatchOperation {
     @JsonSerialize(using = ToStringSerializer.class)
-    protected final JsonPointer from;
+    protected final JsonPointerCustom from;
 
     /**
      * Protected constructor
      *
-     * @param op operation name
+     * @param op   operation name
      * @param from source path
      * @param path destination path
      */
-    protected DualPathOperation(final String op, final JsonPointer from,
-        final JsonPointer path)
-    {
+    protected DualPathOperation(final String op, final JsonPointerCustom from,
+                                final JsonPointerCustom path) {
         super(op, path);
         this.from = from;
     }
 
     @Override
     public final void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException, JsonProcessingException
-    {
+                                final SerializerProvider provider)
+            throws IOException, JsonProcessingException {
         jgen.writeStartObject();
         jgen.writeStringField("op", op);
         jgen.writeStringField("path", path.toString());
@@ -66,19 +65,17 @@ public abstract class DualPathOperation
 
     @Override
     public final void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
-    {
+                                        final SerializerProvider provider, final TypeSerializer typeSer)
+            throws IOException, JsonProcessingException {
         serialize(jgen, provider);
     }
 
-    public final JsonPointer getFrom() {
+    public final JsonPointerCustom getFrom() {
         return from;
     }
 
     @Override
-    public final String toString()
-    {
+    public final String toString() {
         return "op: " + op + "; from: \"" + from + "\"; path: \"" + path + '"';
     }
 }

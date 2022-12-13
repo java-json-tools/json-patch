@@ -21,14 +21,20 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.fge.jackson.JacksonUtils;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,15 +97,14 @@ import java.util.List;
  * constructor for this class ({@link JsonPatch#fromJson(JsonNode)} is used.</p>
  */
 public final class JsonPatch
-    implements JsonSerializable, Patch
-{
+        implements JsonSerializable, Patch {
     private static final MessageBundle BUNDLE
-        = MessageBundles.getBundle(JsonPatchMessages.class);
+            = MessageBundles.getBundle(JsonPatchMessages.class);
 
     /**
      * List of operations
      */
-    private final List<JsonPatchOperation> operations;
+    public final List<JsonPatchOperation> operations;
 
     /**
      * Constructor
@@ -109,9 +114,10 @@ public final class JsonPatch
      * @param operations the list of operations for this patch
      * @see JsonPatchOperation
      */
+
+
     @JsonCreator
-    public JsonPatch(final List<JsonPatchOperation> operations)
-    {
+    public JsonPatch(final List<JsonPatchOperation> operations) {
         this.operations = Collections.unmodifiableList(new ArrayList<JsonPatchOperation>(operations));
     }
 
@@ -120,15 +126,14 @@ public final class JsonPatch
      *
      * @param node the JSON representation of the generated JSON Patch
      * @return a JSON Patch
-     * @throws IOException input is not a valid JSON patch
+     * @throws IOException          input is not a valid JSON patch
      * @throws NullPointerException input is null
      */
     public static JsonPatch fromJson(final JsonNode node)
-        throws IOException
-    {
+            throws IOException {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         return JacksonUtils.getReader().forType(JsonPatch.class)
-            .readValue(node);
+                .readValue(node);
     }
 
     /**
@@ -136,17 +141,26 @@ public final class JsonPatch
      *
      * @param node the value to apply the patch to
      * @return the patched JSON value
-     * @throws JsonPatchException failed to apply patch
+     * @throws JsonPatchException   failed to apply patch
      * @throws NullPointerException input is null
      */
     @Override
     public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
+            throws JsonPatchException {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         JsonNode ret = node;
-        for (final JsonPatchOperation operation: operations)
+        for (final JsonPatchOperation operation : operations)
             ret = operation.apply(ret);
+        return ret;
+    }
+
+    @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
+        JsonNode ret = node;
+
+        for (final JsonPatchOperation operation : operations)
+            ret = operation.apply(ret, flag);
 
         return ret;
     }
@@ -156,27 +170,27 @@ public final class JsonPatch
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return operations.toString();
     }
 
     @Override
     public void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException
-    {
+                          final SerializerProvider provider)
+            throws IOException {
         jgen.writeStartArray();
-        for (final JsonPatchOperation op: operations)
+        for (final JsonPatchOperation op : operations)
             op.serialize(jgen, provider);
         jgen.writeEndArray();
     }
 
     @Override
     public void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException
-    {
+                                  final SerializerProvider provider, final TypeSerializer typeSer)
+            throws IOException {
         serialize(jgen, provider);
     }
 }
+
+
+//Map<JsonPointer, Set<List<String>>

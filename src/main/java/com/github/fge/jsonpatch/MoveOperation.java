@@ -22,7 +22,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+
 
 /**
  * JSON Patch {@code move} operation
@@ -63,26 +64,36 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
  * </pre>
  */
 public final class MoveOperation
-    extends DualPathOperation
-{
+        extends DualPathOperation {
     @JsonCreator
-    public MoveOperation(@JsonProperty("from") final JsonPointer from,
-        @JsonProperty("path") final JsonPointer path)
-    {
+    public MoveOperation(@JsonProperty("from") final JsonPointerCustom from,
+                         @JsonProperty("path") final JsonPointerCustom path) {
         super("move", from, path);
     }
 
     @Override
     public JsonNode apply(final JsonNode node)
-        throws JsonPatchException
-    {
+            throws JsonPatchException {
         if (from.equals(path))
             return node.deepCopy();
         final JsonNode movedNode = from.path(node);
         if (movedNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
-                "jsonPatch.noSuchPath"));
-        final JsonPatchOperation remove = new RemoveOperation(from);
+                    "jsonPatch.noSuchPath"));
+        final JsonPatchOperation remove = new RemoveOperation(from,value_locator);
+        final JsonPatchOperation add = new AddOperation(path, movedNode);
+        return add.apply(remove.apply(node));
+    }
+
+    @Override
+    public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+        if (from.equals(path))
+            return node.deepCopy();
+        final JsonNode movedNode = from.path(node);
+        if (movedNode.isMissingNode())
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.noSuchPath"));
+        final JsonPatchOperation remove = new RemoveOperation(from,value_locator);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));
     }
