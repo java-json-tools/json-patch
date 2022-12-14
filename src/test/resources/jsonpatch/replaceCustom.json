@@ -10,6 +10,102 @@
         "x": {}
       },
       "message": "jsonPatch.noSuchPath"
+    },
+    {
+      "op": {
+        "op": "replace",
+        "path": "/khjd/?/Entitlement Key",
+        "value": "updated",
+        "value_locator": {
+          "Application Key": "100",
+          "Entitlement Type": "UD_GROUPS_GROUPS",
+          "Entitlement Name": "565~Deployment Owners"
+        }
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "100",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "565~Deployment Owners",
+            "Entitlement Key": "askjdhfiegig02k",
+            "Additional Info": "test"
+          }
+        ]
+      },
+      "message": "jsonPatch.noSuchPath"
+    },
+    {
+      "op": {
+        "op": "replace",
+        "path": null,
+        "value": "updated",
+        "value_locator": {
+          "Application Key": "100",
+          "Entitlement Type": "UD_GROUPS_GROUPS",
+          "Entitlement Name": "565~Deployment Owners"
+        }
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "100",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "565~Deployment Owners",
+            "Entitlement Key": "askjdhfiegig02k",
+            "Additional Info": "test"
+          }
+        ]
+      },
+      "message": "jsonPatch.noSuchPath"
+    },
+    {
+      "op": {
+        "op": "replace",
+        "path": "/khjd/?/Entitlement Key",
+        "value": "updated",
+        "value_locator": {
+          "Application Key": "100",
+          "Entitlement Type": "UD_GROUPS_GROUPS",
+          "Entitlement Name": "565~Deployment Owners"
+        }
+      },
+      "node": {
+        "Role Display Name": "Test Role Pset",
+        "Role Category": "Default",
+        "Role Name": "Test Role Pset",
+        "Role Description": "Test Role Pset",
+        "Organization": "Confluxsys",
+        "Role Owner Login": "PBULE",
+        "Role ID": "14350",
+        "$identifier": "14350",
+        "Entitlements": [
+          {
+            "Application Key": "100",
+            "Entitlement Type": "UD_GROUPS_GROUPS",
+            "Entitlement Name": "565~Deployment Owners",
+            "Entitlement Key": "askjdhfiegig02k",
+            "Additional Info": "test"
+          }
+        ]
+      },
+      "message": "jsonPatch.noSuchPath"
     }
   ],
   "ops": [

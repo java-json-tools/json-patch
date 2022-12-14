@@ -10,6 +10,17 @@
         "x": {}
       },
       "message": "jsonPatch.noSuchPath"
+    },
+    {
+      "op": {
+        "op": "replace",
+        "path": "/x/y",
+        "value": 42
+      },
+      "node": {
+        "x": {}
+      },
+      "message": "jsonPatch.noSuchPath"
     }
   ],
   "ops": [

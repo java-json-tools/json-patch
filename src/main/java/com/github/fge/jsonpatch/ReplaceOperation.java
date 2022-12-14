@@ -109,10 +109,26 @@ public final class ReplaceOperation
 
         JsonNode result = null;
 
-        if (path.toString().contains("?")) {
+        if (path != null && path.toString().contains("?")) {
 
             JsonNode valueLocatorNode = value_locator.deepCopy();
-            ArrayNode array = (ArrayNode) node.get("Entitlements");
+
+            JsonPointerCustom array_node_path = null;
+            try {
+                array_node_path = JsonPointerCustom.getBeforeUnknown(path.toString());
+            } catch (JsonPointerException e) {
+                logger.error(e.getMessage());
+            }
+
+            final String raw = Iterables.getLast(array_node_path).getToken().getRaw();
+
+            ArrayNode array = (ArrayNode) node.get(raw);
+            if (array == null && flag)
+                throw new JsonPatchException(BUNDLE.getMessage(
+                        "jsonPatch.noSuchPath"));
+            else if (array == null && !flag) {
+                logger.error("jsonPatch.noSuchPath");
+            }
 
             //taking indexes of nodes that we want to update using valueLocatorNode
             int indOg = getNodeToUpdate(valueLocatorNode, array);
@@ -157,7 +173,7 @@ public final class ReplaceOperation
             result = node;
         } else {
 
-            if (path.path(node).isMissingNode() && flag)
+            if (path == null ||  (path.path(node).isMissingNode() && flag) )
                 throw new JsonPatchException(BUNDLE.getMessage(
                         "jsonPatch.noSuchPath"));
             else if (path.path(node).isMissingNode() && !flag)

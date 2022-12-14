@@ -93,8 +93,10 @@ public final class RemoveOperation
 
     @Override
     public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+
         JsonNode result = null;
-        if (path.toString().contains("?")) {
+
+        if (path != null && path.toString().contains("?")) {
             JsonNode valueLocatorNode = value_locator.deepCopy();
 
             JsonPointerCustom array_node_path;
@@ -105,7 +107,6 @@ public final class RemoveOperation
             }
 
             final String raw = Iterables.getLast(array_node_path).getToken().getRaw();
-
             ArrayNode array = (ArrayNode) node.get(raw);
 
             if (array == null && flag)
@@ -129,7 +130,7 @@ public final class RemoveOperation
             result = node;
 
         } else {
-            if (path.path(node).isMissingNode() && flag)
+            if (path == null || (path.path(node).isMissingNode() && flag))
                 throw new JsonPatchException(BUNDLE.getMessage(
                         "jsonPatch.noSuchPath"));
             result = apply(node);
