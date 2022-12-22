@@ -21,7 +21,9 @@ package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
@@ -29,7 +31,9 @@ import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.sun.org.slf4j.internal.Logger;
 import com.sun.org.slf4j.internal.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 
 
 /**
@@ -96,6 +100,7 @@ public final class ReplaceOperation
     }
 
     private int getNodeToUpdate(JsonNode valueLocatorNode, ArrayNode array) {
+
         for (int i = 0; i < array.size(); i++) {
             if (array.get(i).get("Application Key").equals(valueLocatorNode.get("Application Key")) &&
                     array.get(i).get("Entitlement Type").equals(valueLocatorNode.get("Entitlement Type")) &&

@@ -10,7 +10,10 @@ import org.testng.annotations.Test;
 import javax.json.Json;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @Test
@@ -159,35 +162,45 @@ public class CustomTestTemp {
 
     @Test
     public void testPractice() {
-
+        JsonNode jsonNode;
         //map1
-        JsonNode source;
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            source = new ObjectMapper().readTree(new File("/Users/confluxsys/IdeaProjects/json-patch/src/test/resources/jsonpatch/custom.base/old.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Map<String, Object> source_result = mapper.convertValue(source, new TypeReference<Map<String, Object>>() {
-        });
-        for (String key : source_result.keySet()) {
-            System.out.println(key + " : " + source_result.get(key));
-        }
-        System.out.println(source_result);
-
-        //map2
-        JsonNode value_locator = null;
-        try {
-            value_locator = new ObjectMapper().readTree("{\n" +
+            jsonNode = new ObjectMapper().readTree("{\n" +
                     "  \"Application Key\": \"100\",\n" +
                     "  \"Entitlement Type\": \"UD_GROUPS_GROUPS\",\n" +
                     "  \"Entitlement Name\": \"565~Deployment Owners\"\n" +
-                    "}");
+                    "}\n");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        Map<String, Object> value_locator_map = mapper.convertValue(value_locator, new TypeReference<Map<String, Object>>() {
+        //System.out.println(jsonNode);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> result = mapper.convertValue(jsonNode, new TypeReference<Map<String, Object>>() {
         });
-        System.out.println(value_locator_map);
+
+        ArrayList<String> arr = new ArrayList<>();
+        for (Map.Entry<String, Object> ele : result.entrySet()) {
+            arr.add(ele.getKey());
+        }
+
+        System.out.println(arr);
+
+//map2
+//        JsonNode value_locator = null;
+//        try {
+//            value_locator = new ObjectMapper().readTree("{\n" +
+//                    "  \"Application Key\": \"100\",\n" +
+//                    "  \"Entitlement Type\": \"UD_GROUPS_GROUPS\",\n" +
+//                    "  \"Entitlement Name\": \"565~Deployment Owners\"\n" +
+//                    "}");
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//        Map<String, Object> value_locator_map = mapper.convertValue(value_locator, new TypeReference<Map<String, Object>>() {
+//        });
+//        System.out.println(value_locator_map);
+
     }
 }

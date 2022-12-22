@@ -1,4 +1,10 @@
 {
+  "Application Key": "100",
+  "Entitlement Type": "UD_GROUPS_GROUPS",
+  "Entitlement Name": "565~Deployment Owners"
+}
+
+{
   "Role Display Name": "Test Role Pset",
   "Role Category": "Default",
   "Role Name": "Test Role Pset",
