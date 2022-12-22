@@ -50,7 +50,7 @@ public abstract class JsonPatchOperationTest {
 
     protected JsonPatchOperationTest(final String prefix)
             throws IOException {
-        final String resource = "jsonpatch/" + prefix + ".json";
+        final String resource = "/jsonpatch/" + prefix + ".json";
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
         ops = node.get("ops");
@@ -86,6 +86,9 @@ public abstract class JsonPatchOperationTest {
         }
     }
 
+
+
+
     @DataProvider
     public final Iterator<Object[]> getOps() {
         final List<Object[]> list = Lists.newArrayList();
@@ -100,16 +103,20 @@ public abstract class JsonPatchOperationTest {
         return list.iterator();
     }
 
+
     @Test(dataProvider = "getOps")
     public final void operationsYieldExpectedResults(final JsonNode patch,
                                                      final JsonNode node, final JsonNode expected)
             throws IOException, JsonPatchException {
+
         final JsonPatchOperation op = reader.readValue(patch);
+
         final JsonNode actual = op.apply(node);
 
         assertTrue(EQUIVALENCE.equivalent(actual, expected),
                 "patched node differs from expectations: expected " + expected
                         + " but found " + actual);
+
         if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
             assertNotSame(node, actual,
                     "operation didn't make a copy of the input node");

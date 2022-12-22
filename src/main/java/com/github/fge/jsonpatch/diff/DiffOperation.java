@@ -22,7 +22,9 @@ package com.github.fge.jsonpatch.diff;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
 import com.github.fge.jsonpatch.AddOperation;
 import com.github.fge.jsonpatch.CopyOperation;
 import com.github.fge.jsonpatch.JsonPatchOperation;
@@ -30,16 +32,22 @@ import com.github.fge.jsonpatch.MoveOperation;
 import com.github.fge.jsonpatch.RemoveOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 final class DiffOperation {
     private final Type type;
     /* An op's "from", if any */
     private final JsonPointerCustom from;
-    /* Value displaced by this operation, if any */
-    private final JsonNode oldValue;
-    /* An op's "path", if any */
-    private final JsonPointerCustom path;
     /* An op's "value", if any */
     private final JsonNode value;
+    /* An op's "path", if any */
+    private final JsonPointerCustom path;
+
+    /* Value displaced by this operation, if any */
+    private final JsonNode oldValue;
+
 
     static DiffOperation add(final JsonPointerCustom path,
                              final JsonNode value) {
@@ -81,8 +89,8 @@ final class DiffOperation {
 //    }
 
     public DiffOperation(final Type type, final JsonPointerCustom from,
-                          final JsonNode oldValue, final JsonPointerCustom path,
-                          final JsonNode value) {
+                         final JsonNode oldValue, final JsonPointerCustom path,
+                         final JsonNode value) {
         this.type = type;
         this.from = from;
         this.oldValue = oldValue;
@@ -137,24 +145,28 @@ final class DiffOperation {
         REMOVE {
             @Override
             JsonPatchOperation toOperation(final DiffOperation op) {
-                return new RemoveOperation(op.from, op.value);
+
+                ObjectNode value_locator = new ObjectMapper().createObjectNode();
+
+                value_locator.set("Application Key", op.oldValue.get("Application Key"));
+                value_locator.set("Entitlement Type", op.oldValue.get("Entitlement Type"));
+                value_locator.set("Entitlement Name", op.oldValue.get("Entitlement Name"));
+
+                return new RemoveOperation(op.from, value_locator);
             }
         },
         REPLACE {
             @Override
             JsonPatchOperation toOperation(final DiffOperation op) {
-                String str = "{\n" +
-                        "  \"Application Key\": \"100\",\n" +
-                        "  \"Entitlement Type\": \"UD_GROUPS_GROUPS\",\n" +
-                        "  \"Entitlement Name\": \"565~Deployment Owners\"\n" +
-                        "}";
-                JsonNode valueLocator;
-                try {
-                    valueLocator = new ObjectMapper().readTree(str);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                return new ReplaceOperation(op.from, op.value, valueLocator);
+
+                ObjectNode value_locator = new ObjectMapper().createObjectNode();
+
+                value_locator.set("Application Key", op.oldValue.get("Application Key"));
+                value_locator.set("Entitlement Type", op.oldValue.get("Entitlement Type"));
+                value_locator.set("Entitlement Name", op.oldValue.get("Entitlement Name"));
+
+
+                return new ReplaceOperation(op.from, op.value, value_locator);
             }
         },
         ;

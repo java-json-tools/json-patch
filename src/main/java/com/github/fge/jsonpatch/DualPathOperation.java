@@ -36,6 +36,7 @@ import java.io.IOException;
  */
 public abstract class DualPathOperation
         extends JsonPatchOperation {
+
     @JsonSerialize(using = ToStringSerializer.class)
     protected final JsonPointerCustom from;
 

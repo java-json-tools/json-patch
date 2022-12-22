@@ -101,10 +101,12 @@ public final class AddOperation
         return parentNode.isArray()
                 ? addToArray(path, node)
                 : addToObject(path, node);
+
     }
 
     @Override
     public JsonNode apply(JsonNode node, boolean flag) throws JsonPatchException {
+
         if (path.isEmpty())
             return value;
 
@@ -148,6 +150,7 @@ public final class AddOperation
         }
 
         final int size = target.size();
+
         final int index;
         try {
             index = Integer.parseInt(token.toString());
@@ -156,12 +159,15 @@ public final class AddOperation
                     "jsonPatch.notAnIndex"));
         }
 
+
         if (index < 0 || index > size)
             throw new JsonPatchException(BUNDLE.getMessage(
                     "jsonPatch.noSuchIndex"));
 
         target.insert(index, value);
+
         return ret;
+
     }
 
     private JsonNode addToObject(final JsonPointerCustom path, final JsonNode node) {
@@ -170,6 +176,8 @@ public final class AddOperation
         final ObjectNode target = (ObjectNode) path.parent().get(ret);
         target.set(token.getToken().getRaw(), value);
         return ret;
+
+
     }
 
 }

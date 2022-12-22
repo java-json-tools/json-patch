@@ -34,19 +34,19 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotSame;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 @Test
-public abstract class JsonPatchOperationTestCustom {
-    private static final MessageBundle BUNDLE
-            = MessageBundles.getBundle(JsonPatchMessages.class);
+public abstract class JsonPatchOperationTest
+{
+    private static final MessageBundle BUNDLE;
+
+    static {
+        BUNDLE = MessageBundles.getBundle(JsonPatchMessages.class);
+    }
 
     private static final JsonNumEquals EQUIVALENCE
             = JsonNumEquals.getInstance();
@@ -55,8 +55,9 @@ public abstract class JsonPatchOperationTestCustom {
     private final JsonNode ops;
     private final ObjectReader reader;
 
-    protected JsonPatchOperationTestCustom(final String prefix)
-            throws IOException {
+    protected JsonPatchOperationTest(final String prefix)
+            throws IOException
+    {
         final String resource = "/jsonpatch/" + prefix + ".json";
         final JsonNode node = JsonLoader.fromResource(resource);
         errors = node.get("errors");
@@ -66,25 +67,29 @@ public abstract class JsonPatchOperationTestCustom {
 
     @DataProvider
     public final Iterator<Object[]> getErrors()
-            throws NoSuchFieldException, IllegalAccessException {
+            throws NoSuchFieldException, IllegalAccessException
+    {
         final List<Object[]> list = Lists.newArrayList();
-        for (final JsonNode node : errors)
+
+        for (final JsonNode node: errors)
             list.add(new Object[]{
                     node.get("op"),
                     node.get("node"),
                     BUNDLE.getMessage(node.get("message").textValue())
             });
+
         return list.iterator();
     }
 
     @Test(dataProvider = "getErrors")
     public final void errorsAreCorrectlyReported(final JsonNode patch,
                                                  final JsonNode node, final String message)
-            throws IOException {
+            throws IOException
+    {
         final JsonPatchOperation op = reader.readValue(patch);
 
         try {
-            op.apply(node, true);
+            op.apply(node);
             fail("No exception thrown!!");
         } catch (JsonPatchException e) {
             assertEquals(e.getMessage(), message);
@@ -92,10 +97,11 @@ public abstract class JsonPatchOperationTestCustom {
     }
 
     @DataProvider
-    public final Iterator<Object[]> getOps() {
+    public final Iterator<Object[]> getOps()
+    {
         final List<Object[]> list = Lists.newArrayList();
 
-        for (final JsonNode node : ops)
+        for (final JsonNode node: ops)
             list.add(new Object[]{
                     node.get("op"),
                     node.get("node"),
@@ -105,26 +111,19 @@ public abstract class JsonPatchOperationTestCustom {
         return list.iterator();
     }
 
-
-
     @Test(dataProvider = "getOps")
     public final void operationsYieldExpectedResults(final JsonNode patch,
                                                      final JsonNode node, final JsonNode expected)
-            throws IOException, JsonPatchException {
-
+            throws IOException, JsonPatchException
+    {
         final JsonPatchOperation op = reader.readValue(patch);
-        final JsonNode actual = op.apply(node, true);
+        final JsonNode actual = op.apply(node);
 
         assertTrue(EQUIVALENCE.equivalent(actual, expected),
                 "patched node differs from expectations: expected " + expected
                         + " but found " + actual);
-
         if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
-            assertNotSame(node.toPrettyString(), actual.toPrettyString(),
+            assertNotSame(node, actual,
                     "operation didn't make a copy of the input node");
     }
-
 }
-
-
-

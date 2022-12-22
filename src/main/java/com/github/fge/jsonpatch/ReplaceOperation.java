@@ -65,7 +65,6 @@ public final class ReplaceOperation
     @Override
     public JsonNode apply(final JsonNode node)
             throws JsonPatchException {
-
         /*
          * FIXME cannot quite be replaced by a remove + add because of arrays.
          * For instance:
@@ -79,6 +78,10 @@ public final class ReplaceOperation
          * If remove is done first, the array is empty and add rightly complains
          * that there is no such index in the array.
          */
+        if (path.path(node).isMissingNode())
+            throw new JsonPatchException(BUNDLE.getMessage(
+                    "jsonPatch.noSuchPath"));
+
         final JsonNode replacement = value.deepCopy();
         if (path.isEmpty())
             return replacement;
@@ -91,7 +94,6 @@ public final class ReplaceOperation
             ((ArrayNode) parent).set(Integer.parseInt(rawToken), replacement);
         return ret;
     }
-
 
     private int getNodeToUpdate(JsonNode valueLocatorNode, ArrayNode array) {
         for (int i = 0; i < array.size(); i++) {
@@ -132,6 +134,14 @@ public final class ReplaceOperation
 
             //taking indexes of nodes that we want to update using valueLocatorNode
             int indOg = getNodeToUpdate(valueLocatorNode, array);
+            //taking indexes of nodes that we want to remove using valueLocatorNode
+            if (indOg == -1 && flag)
+                throw new JsonPatchException(BUNDLE.getMessage(
+                        "jsonPatch.noSuchPath"));
+            else if (indOg == -1 && flag == false) {
+                logger.error("jsonPatch.noSuchPath");
+            }
+
             //taking indexes of nodes that we want to update using valueLocatorNode
             int indToUpdate = getNodeToUpdate(valueLocatorNode, array);
 
@@ -160,7 +170,6 @@ public final class ReplaceOperation
             else if (updatedNode.get(rawToken) == null && !flag)
                 logger.error("jsonPatch.noSuchPath");
 
-
             //update the node >> updatedNode
             if (updatedNode.isObject() && rawToken != null) {
                 ((ObjectNode) updatedNode).replace(rawToken, value);
@@ -173,7 +182,7 @@ public final class ReplaceOperation
             result = node;
         } else {
 
-            if (path == null ||  (path.path(node).isMissingNode() && flag) )
+            if (path == null || (path.path(node).isMissingNode() && flag))
                 throw new JsonPatchException(BUNDLE.getMessage(
                         "jsonPatch.noSuchPath"));
             else if (path.path(node).isMissingNode() && !flag)
@@ -183,5 +192,4 @@ public final class ReplaceOperation
         }
         return result;
     }
-
 }

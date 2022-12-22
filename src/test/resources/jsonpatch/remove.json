@@ -1,26 +1,75 @@
 {
-    "errors": [
-        {
-            "op": { "op": "remove", "path": "/x/y" },
-            "node": { "x": {} },
-            "message": "jsonPatch.noSuchPath"
+  "errors": [
+    {
+      "op": {
+        "op": "remove",
+        "path": "/x/y"
+      },
+      "node": {
+        "x": {}
+      },
+      "message": "jsonPatch.noSuchPath"
+    }
+  ],
+  "ops": [
+    {
+      "op": {
+        "op": "remove",
+        "path": "/x/y"
+      },
+      "node": {
+        "x": {
+          "a": "b",
+          "y": {}
         }
-    ],
-    "ops": [
-        {
-            "op": { "op": "remove", "path": "/x/y" },
-            "node": { "x": { "a": "b", "y": {} } },
-            "expected": { "x": { "a": "b" } }
-        },
-        {
-            "op": { "op": "remove", "path": "/0/2" },
-            "node": [ [ "a", "b", "c"], "d", "e" ],
-            "expected": [ [ "a", "b" ], "d", "e" ]
-        },
-        {
-            "op": { "op": "remove", "path": "/x/0" },
-            "node": { "x": [ "y", "z" ], "foo": "bar" },
-            "expected": { "x": [ "z" ], "foo": "bar" }
+      },
+      "expected": {
+        "x": {
+          "a": "b"
         }
-    ]
+      }
+    },
+    {
+      "op": {
+        "op": "remove",
+        "path": "/0/2"
+      },
+      "node": [
+        [
+          "a",
+          "b",
+          "c"
+        ],
+        "d",
+        "e"
+      ],
+      "expected": [
+        [
+          "a",
+          "b"
+        ],
+        "d",
+        "e"
+      ]
+    },
+    {
+      "op": {
+        "op": "remove",
+        "path": "/x/0"
+      },
+      "node": {
+        "x": [
+          "y",
+          "z"
+        ],
+        "foo": "bar"
+      },
+      "expected": {
+        "x": [
+          "z"
+        ],
+        "foo": "bar"
+      }
+    }
+  ]
 }

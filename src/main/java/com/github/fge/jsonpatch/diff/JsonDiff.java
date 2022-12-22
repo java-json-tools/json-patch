@@ -19,6 +19,7 @@
 
 package com.github.fge.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -99,8 +100,7 @@ public final class JsonDiff {
         return processor.getPatch();
     }
 
-
-    public static JsonPatch asJsonPatchWith(final JsonNode source,
+     public static JsonPatch asJsonPatchWith(final JsonNode source,
                                             final JsonNode target) {
         BUNDLE.checkNotNull(source, "common.nullArgument");
         BUNDLE.checkNotNull(target, "common.nullArgument");
@@ -238,7 +238,7 @@ public final class JsonDiff {
 
 
     static Map<JsonPointerCustom, JsonNode> getUnchangedValues(final JsonNode source,
-                                                         final JsonNode target) {
+                                                               final JsonNode target) {
         final Map<JsonPointerCustom, JsonNode> ret = new HashMap<JsonPointerCustom, JsonNode>();
         computeUnchanged(ret, JsonPointerCustom.empty(), source, target);
         return ret;
@@ -258,7 +258,6 @@ public final class JsonDiff {
             return; // nothing in common
 
         // We know they are both the same type, so...
-
         switch (firstType) {
             case OBJECT:
                 computeObject(ret, pointer, first, second);

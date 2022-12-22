@@ -96,41 +96,55 @@ public final class RemoveOperation
 
         JsonNode result = null;
 
+        //see if path is null and check if its has ?
         if (path != null && path.toString().contains("?")) {
+
+            //get the value locator
             JsonNode valueLocatorNode = value_locator.deepCopy();
 
-            JsonPointerCustom array_node_path;
+            JsonPointerCustom array_node_path = null;
             try {
+                //get the path before ? i.e.>> /Entitlements
                 array_node_path = JsonPointerCustom.getBeforeUnknown(path.toString());
             } catch (JsonPointerException e) {
-                throw new RuntimeException(e);
+                logger.error("JsonPointerException: " + e.getMessage() + " " + "Please provide valid path string or tokens");
             }
+            if (array_node_path != null) {
+                //get the raw representation of the field i.e >> Entitlements
+                final String raw = Iterables.getLast(array_node_path).getToken().getRaw();
+                //get the array node Entitlements
+                ArrayNode array = (ArrayNode) node.get(raw);
 
-            final String raw = Iterables.getLast(array_node_path).getToken().getRaw();
-            ArrayNode array = (ArrayNode) node.get(raw);
+                //if array is null and flag is true then throw exception
+                if (array == null && flag)
+                    throw new JsonPatchException(BUNDLE.getMessage(
+                            "jsonPatch.noSuchPath"));
+                    //els log the exception
+                else if (array == null && !flag) {
+                    logger.error("jsonPatch.noSuchPath");
+                }
 
-            if (array == null && flag)
-                throw new JsonPatchException(BUNDLE.getMessage(
-                        "jsonPatch.noSuchPath"));
-            else if (array == null && !flag) {
-                logger.error("jsonPatch.noSuchPath");
+                //taking indexes of nodes that we want to remove using valueLocatorNode
+                int indOg = getNodeToUpdate(valueLocatorNode, array);
+
+                // if its not present then throw exception
+                if (indOg == -1 && flag)
+                    throw new JsonPatchException(BUNDLE.getMessage(
+                            "jsonPatch.noSuchPath"));
+                    //else log the exception
+                else if (indOg == -1 && flag == false) {
+                    logger.error("jsonPatch.noSuchPath");
+                }
+
+                //remove the node
+                array.remove(indOg);
+                result = node;
             }
-
-            //taking indexes of nodes that we want to remove using valueLocatorNode
-            int indOg = getNodeToUpdate(valueLocatorNode, array);
-
-            if (indOg == -1 && flag)
-                throw new JsonPatchException(BUNDLE.getMessage(
-                        "jsonPatch.noSuchPath"));
-            else if (indOg == -1 && flag == false) {
-                logger.error("jsonPatch.noSuchPath");
-            }
-
-            array.remove(indOg);
-            result = node;
 
         } else {
+            // if path is null  or if path is missing
             if (path == null || (path.path(node).isMissingNode() && flag))
+                //throw exception
                 throw new JsonPatchException(BUNDLE.getMessage(
                         "jsonPatch.noSuchPath"));
             result = apply(node);

@@ -21,12 +21,14 @@ package com.github.fge.jsonpatch;
 
 import java.io.IOException;
 
+
+
+
 public final class AddOperationTest
     extends JsonPatchOperationTest
 {
     public AddOperationTest()
-        throws IOException
-    {
+        throws IOException {
         super("add");
     }
 

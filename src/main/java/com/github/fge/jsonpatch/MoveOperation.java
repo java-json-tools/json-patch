@@ -22,6 +22,8 @@ package com.github.fge.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.jsonpointer.JsonPointerCustom;
 
 
@@ -80,7 +82,9 @@ public final class MoveOperation
         if (movedNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                     "jsonPatch.noSuchPath"));
-        final JsonPatchOperation remove = new RemoveOperation(from,value_locator);
+
+        value_locator = new ObjectMapper().createObjectNode();
+        final JsonPatchOperation remove = new RemoveOperation(from, value_locator);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));
     }
@@ -93,7 +97,10 @@ public final class MoveOperation
         if (movedNode.isMissingNode())
             throw new JsonPatchException(BUNDLE.getMessage(
                     "jsonPatch.noSuchPath"));
-        final JsonPatchOperation remove = new RemoveOperation(from,value_locator);
+
+        value_locator = new ObjectMapper().createObjectNode();
+
+        final JsonPatchOperation remove = new RemoveOperation(from, value_locator);
         final JsonPatchOperation add = new AddOperation(path, movedNode);
         return add.apply(remove.apply(node));
     }
