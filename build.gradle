@@ -19,14 +19,15 @@
 
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
         maven {
-            url "https://repo.springsource.org/plugins-release";
+            url "https://repo.spring.io/plugins-snapshot";
         }
     }
     dependencies {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
-        classpath(group: "org.springframework.build.gradle", name: "propdeps-plugin", version: "0.0.7");
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.8-SNAPSHOT'
     }
 };
 
