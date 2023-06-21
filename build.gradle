@@ -23,19 +23,20 @@ buildscript {
         mavenCentral()
         maven {
             url "https://repo.spring.io/plugins-snapshot";
+            content {
+                includeGroupByRegex "io\\.spring\\.gradle\\.*"
+            }
         }
     }
     dependencies {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
         classpath 'io.spring.gradle:propdeps-plugin:0.0.8-SNAPSHOT'
+        classpath 'org.owasp:dependency-check-gradle:8.2.1'
     }
 };
 
 plugins {
-    id "maven-publish"
     id("net.ltgt.errorprone") version "0.8.1" apply false
-    id 'net.researchgate.release' version '2.8.1'
-    id "net.linguica.maven-settings" version "0.5"
 }
 
 configure(allprojects) {
@@ -51,7 +52,7 @@ apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
 apply(plugin: "net.ltgt.errorprone");
-
+apply(plugin: 'org.owasp.dependencycheck');
 apply(from: "project.gradle");
 
 group = "com.github.java-json-tools";
@@ -61,16 +62,13 @@ group = "com.github.java-json-tools";
  */
 repositories {
     mavenCentral();
-    maven {
-        url "https://pkgs.dev.azure.com/Gravity9Solutions/BT/_packaging/bt/maven/v1"
-    }
 }
 
 /*
  * Add errorprone checking.
  */
 dependencies {
-    errorprone("com.google.errorprone:error_prone_core:2.3.3")
+    errorprone('com.google.errorprone:error_prone_core:2.20.0')
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
@@ -117,29 +115,6 @@ artifacts {
     archives javadocJar;
 }
 
-release {
-    preTagCommitMessage = '[Gradle Release Plugin][skip ci] - pre tag commit: '
-    newVersionCommitMessage = '[Gradle Release Plugin][skip ci] - new version commit: '
-}
-
-afterReleaseBuild.dependsOn publish
-
-publishing {
-    repositories {
-        maven {
-            name = "bt"
-            url = "https://pkgs.dev.azure.com/Gravity9Solutions/BT/_packaging/bt/maven/v1"
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
 
 wrapper {
     gradleVersion = "5.6.3";
