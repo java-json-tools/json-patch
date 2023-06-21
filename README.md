@@ -188,6 +188,16 @@ Updates object to:
 }
 ```
 
+### Remove operation
+
+* Remove element with name `a`  
+`{ "op": "remove", "path": "/a" }`  
+<br />
+
+* Remove element from array with name `list` at index `2`  
+`{ "op": "remove", "path": "/list/2" }`  
+<br />
+
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
