@@ -33,12 +33,12 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.fasterxml.jackson.annotation.JsonSubTypes.*;
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+import static com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "op")
 
@@ -51,7 +51,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
         @Type(name = "test", value = TestOperation.class)
 })
 
-/**
+/*
  * Base abstract class for one patch operation
  *
  * <p>Two more abstract classes extend this one according to the arguments of
@@ -63,6 +63,7 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
  *     <li>{@link PathValueOperation} for operations taking a value as an
  *     argument ({@code add}, {@code replace} and {@code test}).</li>
  * </ul>
+ *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class JsonPatchOperation implements JsonSerializable {

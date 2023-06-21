@@ -5,4 +5,4 @@ META-INF
 out
 build
 .gradle
-
+.sdkmanrc

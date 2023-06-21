@@ -23,11 +23,15 @@ buildscript {
         mavenCentral()
         maven {
             url "https://repo.spring.io/plugins-snapshot";
+            content {
+                includeGroupByRegex "io\\.spring\\.gradle\\.*"
+            }
         }
     }
     dependencies {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
         classpath 'io.spring.gradle:propdeps-plugin:0.0.8-SNAPSHOT'
+        classpath 'org.owasp:dependency-check-gradle:8.2.1'
     }
 };
 
@@ -51,7 +55,7 @@ apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "idea");
 apply(plugin: "eclipse");
 apply(plugin: "net.ltgt.errorprone");
-
+apply(plugin: 'org.owasp.dependencycheck');
 apply(from: "project.gradle");
 
 group = "com.github.java-json-tools";
@@ -70,7 +74,7 @@ repositories {
  * Add errorprone checking.
  */
 dependencies {
-    errorprone('com.google.errorprone:error_prone_core:2.18.0')
+    errorprone('com.google.errorprone:error_prone_core:2.20.0')
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
