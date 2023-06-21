@@ -156,57 +156,174 @@ final JsonNode patched = patch.apply(orig);
 
 * Add field `a` with value `1` to object  
 `{ "op": "add", "path": "/a", "value": 1 }`  
-<br />
+  Before:
+    ```json
+    {
+      "b": "test2"
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "a": 1,
+      "b": "test2"
+    }
+    ```
+    <br />
 
 * Add element with value `1` at the end of array with name `array`  
 `{ "op": "add", "path": "/array/-", "value": 1 }`  
-<br/>
+  Before:
+    ```json
+    {
+      "array": [0, 1, 2, 3]
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "array": [0, 1, 2, 3, 1]
+    }
+    ```
+    <br />
+
 * Add element with value `1` at the specific index of array with name `array`  
 `{ "op": "add", "path": "/array/2", "value": 1 }`  
-<br />
+  Before:
+    ```json
+    {
+      "array": [0, 1, 2, 3]
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "array": [0, 1, 1, 2, 3]
+    }
+    ```
+    <br />
 
 * Add element with name `b` into inner object  
 `{ "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] }`  
-<br/>
+  Before:
+    ```json
+    {
+      "obj": {
+        "inner": {
+          "a": "test"
+        }   
+      }
+    }
+    ```
 
+  After:
+    ```json
+    {
+      "obj": {
+        "inner": {
+          "a": "test",
+          "b": [1, 2]
+        }   
+      }
+    }
+    ```
+    <br />
 * If element with name `a` exists, then `add` operation overrides it.  
-If current object looks like below:
-```json
-{ 
-  "a": 0
-}
-```
-Then this operation:
-```json
-{ "op": "add", "path": "/a", "value": 1 }
-```
+`{ "op": "add", "path": "/a", "value": 1 }`
 
-Updates object to:
-```json
-{ 
-  "a": 1
-}
-```
-
+    Before:
+    ```json
+    {
+      "a": 0
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "a": 1
+    }
+    ```
+    <br />
 ### Remove operation
 
 * Remove element with name `a`  
-`{ "op": "remove", "path": "/a" }`  
-<br />
+`{ "op": "remove", "path": "/a" }`   
+    Before:
+    ```json
+    {
+      "a": "test",
+      "b": "test2"
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "b": "test2"
+    }
+    ```
+    <br />
 
 * Remove element from array with name `list` at index `2`  
 `{ "op": "remove", "path": "/list/2" }`  
-<br />
-
+    Before:
+    ```json
+    { 
+      "a": "test",
+      "list": [0, 1, 2, 3, 4]
+    }
+    ```
+  
+    After:
+    ```json
+    {
+      "a": "test",
+      "list": [0, 1, 3, 4]
+    }
+    ```
 ### Replace operation
 
 * Replace value for element with name `a` to `new-value`  
 `{ "op": "replace", "path": "/a", "value": "new-value"}`  
-<br />
+
+    Before:
+    ```json
+    {
+      "a": "test",
+      "b": "test2"
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "a": "new-value",
+      "b": "test2"
+    }
+    ```
+    <br />
 
 * Replace value with `new-value` for 2nd element in array with name `array` 
 `{ "op": "replace", "path": "/array/2", "value": "new-value"}`  
-<br />
+Before:
+    ```json
+    {
+      "a": "test",
+      "array": ["test0", "test1", "test2"]
+    }
+    ```
+
+    After:
+    ```json
+    {
+      "a": "test",
+      "array": ["test0", "test1", "new-value"]
+    }
+    ```
 
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
