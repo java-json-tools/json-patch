@@ -1,18 +1,81 @@
 {
     "errors": [
         {
-            "op": { "op": "add", "path": "/a/b/c", "value": 1 },
-            "node": { "a": "b" },
-            "message": "Expected to find an object with property ['b'] in path $['a'] but found 'java.lang.String'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
+            "op": {
+                "op": "add",
+                "path": "/a/b/c",
+                "value": 1
+            },
+            "node": {
+                "a": "b"
+            },
+            "message": "Expected to find an object with property ['b'] in path $['a'] but found 'com.fasterxml.jackson.databind.node.TextNode'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
         },
         {
-            "op": { "op": "add", "path": "/~1", "value": 1 },
+            "op": {
+                "op": "add",
+                "path": "/a/b/c",
+                "value": 1
+            },
+            "node": {
+                "a": 2
+            },
+            "message": "Expected to find an object with property ['b'] in path $['a'] but found 'com.fasterxml.jackson.databind.node.IntNode'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
+        },
+        {
+            "op": {
+                "op": "add",
+                "path": "/a/b/c",
+                "value": 1
+            },
+            "node": {
+                "a": [
+                    "b"
+                ]
+            },
+            "message": "Expected to find an object with property ['b'] in path $['a'] but found 'com.fasterxml.jackson.databind.node.ArrayNode'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
+        },
+        {
+            "op": {
+                "op": "add",
+                "path": "/a/b/c",
+                "value": 1
+            },
+            "node": {
+                "a": null
+            },
+            "message": "Expected to find an object with property ['b'] in path $['a'] but found 'com.fasterxml.jackson.databind.node.NullNode'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider'."
+        },
+        {
+            "op": {
+                "op": "add",
+                "path": "/a/b/c",
+                "value": 1
+            },
+            "node": {
+                "other": 1
+            },
+            "message": "Missing property in path $['a']"
+        },
+        {
+            "op": {
+                "op": "add",
+                "path": "/~1",
+                "value": 1
+            },
             "node": [],
             "message": "jsonPatch.notAnIndex"
         },
         {
-            "op": { "op": "add", "path": "/3", "value": 1 },
-            "node": [ 1, 2 ],
+            "op": {
+                "op": "add",
+                "path": "/3",
+                "value": 1
+            },
+            "node": [
+                1,
+                2
+            ],
             "message": "jsonPatch.noSuchIndex"
         },
         {
