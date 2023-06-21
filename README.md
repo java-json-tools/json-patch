@@ -383,6 +383,49 @@ Before:
   }
   ```
   
+### Move operation
+
+* Move value from field `a` to field `b`  
+`{ "op": "move", "from": "/a", "path": "/b" }`
+
+  Before:
+  ```json
+  {
+    "a": 1,
+    "b": 2
+  }
+  ```
+  
+  After:
+  ```json
+  {
+    "b": 1
+  }
+  ```
+  <br />
+
+* Move first element of an array to the end of array
+  `{ "op": "move", "from": "/array/0", "path": "/array/-" }`
+
+  Before:
+  ```json
+  {
+    "array": [1, 2, 3]
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "array": [2, 3, 1]
+  }
+  ```
+  <br />
+
+### Test operation
+* Check if field `a` has value `test-value`  
+  `{ "op": "test", "path": "/a", "value": "test-value" }`
+
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
