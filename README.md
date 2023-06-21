@@ -307,7 +307,7 @@ final JsonNode patched = patch.apply(orig);
     ```
     <br />
 
-* Replace value with `new-value` for 2nd element in array with name `array` 
+* Replace value with `new-value` for 2nd element in array with name `array`  
 `{ "op": "replace", "path": "/array/2", "value": "new-value"}`  
 Before:
     ```json
@@ -324,7 +324,65 @@ Before:
       "array": ["test0", "test1", "new-value"]
     }
     ```
+  
+### Copy operation
 
+* Copy value from filed `a` to field `b` which does not exist  
+`{ "op": "copy", "from": "/a", "path": "/b" }`
+
+  Before:
+  ```json
+  {
+    "a": "test"
+  }
+  ```
+  
+  After:
+  ```json
+  {
+    "a": "test",
+    "b": "test"
+  }
+  ```
+
+* Copy value from filed `a` to field `b` which exists - value will be updated  
+  `{ "op": "copy", "from": "/a", "path": "/b" }`  
+
+  Before:
+  ```json
+  {
+    "a": "test",
+    "b": "old value"
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "a": "test",
+    "b": "test"
+  }
+  ```
+  
+* Copy first element of array to the end of array  
+  `{ "op": "copy", "from": "/array/0", "path": "/array/-" }`
+
+  Before:
+  ```json
+  {
+    "array": [0, 1, 2],
+    "b": "old value"
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "array": [0, 1, 2, 0],
+    "b": "old value"
+  }
+  ```
+  
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
