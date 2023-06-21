@@ -198,6 +198,16 @@ Updates object to:
 `{ "op": "remove", "path": "/list/2" }`  
 <br />
 
+### Replace operation
+
+* Replace value for element with name `a` to `new-value`  
+`{ "op": "replace", "path": "/a", "value": "new-value"}`  
+<br />
+
+* Replace value with `new-value` for 2nd element in array with name `array` 
+`{ "op": "replace", "path": "/array/2", "value": "new-value"}`  
+<br />
+
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
