@@ -150,6 +150,45 @@ Applying a patch also uses an `.apply()` method:
 final JsonNode patched = patch.apply(orig);
 ```
 
+## Examples of JSON Patch operations with JSON Pointer
+
+### Add operation
+
+* Add field `a` with value `1` to object  
+`{ "op": "add", "path": "/a", "value": 1 }`  
+<br />
+
+* Add element with value `1` at the end of array with name `array`  
+`{ "op": "add", "path": "/array/-", "value": 1 }`  
+<br/>
+* Add element with value `1` at the specific index of array with name `array`  
+`{ "op": "add", "path": "/array/2", "value": 1 }`  
+<br />
+
+* Add element with name `b` into inner object  
+`{ "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] }`  
+<br/>
+
+* If element with name `a` exists, then `add` operation overrides it.  
+If current object looks like below:
+```json
+{ 
+  "a": 0
+}
+```
+Then this operation:
+```json
+{ "op": "add", "path": "/a", "value": 1 }
+```
+
+Updates object to:
+```json
+{ 
+  "a": 1
+}
+```
+
+
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
