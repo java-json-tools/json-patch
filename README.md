@@ -150,6 +150,283 @@ Applying a patch also uses an `.apply()` method:
 final JsonNode patched = patch.apply(orig);
 ```
 
+## Examples of JSON Patch operations with JSON Pointer
+
+### Add operation
+
+* Add field `a` with value `1` to object  
+`{ "op": "add", "path": "/a", "value": 1 }`  
+  Before:
+    ```json
+    {
+      "b": "test2"
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "a": 1,
+      "b": "test2"
+    }
+    ```
+    <br />
+
+* Add element with value `1` at the end of array with name `array`  
+`{ "op": "add", "path": "/array/-", "value": 1 }`  
+  Before:
+    ```json
+    {
+      "array": [0, 1, 2, 3]
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "array": [0, 1, 2, 3, 1]
+    }
+    ```
+    <br />
+
+* Add element with value `1` at the specific index of array with name `array`  
+`{ "op": "add", "path": "/array/2", "value": 1 }`  
+  Before:
+    ```json
+    {
+      "array": [0, 1, 2, 3]
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "array": [0, 1, 1, 2, 3]
+    }
+    ```
+    <br />
+
+* Add element with name `b` into inner object  
+`{ "op": "add", "path": "/obj/inner/b", "value": [ 1, 2 ] }`  
+  Before:
+    ```json
+    {
+      "obj": {
+        "inner": {
+          "a": "test"
+        }   
+      }
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "obj": {
+        "inner": {
+          "a": "test",
+          "b": [1, 2]
+        }   
+      }
+    }
+    ```
+    <br />
+* If element with name `a` exists, then `add` operation overrides it.  
+`{ "op": "add", "path": "/a", "value": 1 }`
+
+    Before:
+    ```json
+    {
+      "a": 0
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "a": 1
+    }
+    ```
+    <br />
+### Remove operation
+
+* Remove element with name `a`  
+`{ "op": "remove", "path": "/a" }`   
+    Before:
+    ```json
+    {
+      "a": "test",
+      "b": "test2"
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "b": "test2"
+    }
+    ```
+    <br />
+
+* Remove element from array with name `list` at index `2`  
+`{ "op": "remove", "path": "/list/2" }`  
+    Before:
+    ```json
+    { 
+      "a": "test",
+      "list": [0, 1, 2, 3, 4]
+    }
+    ```
+  
+    After:
+    ```json
+    {
+      "a": "test",
+      "list": [0, 1, 3, 4]
+    }
+    ```
+### Replace operation
+
+* Replace value for element with name `a` to `new-value`  
+`{ "op": "replace", "path": "/a", "value": "new-value"}`  
+
+    Before:
+    ```json
+    {
+      "a": "test",
+      "b": "test2"
+    }
+    ```
+    
+    After:
+    ```json
+    {
+      "a": "new-value",
+      "b": "test2"
+    }
+    ```
+    <br />
+
+* Replace value with `new-value` for 2nd element in array with name `array`  
+`{ "op": "replace", "path": "/array/2", "value": "new-value"}`  
+Before:
+    ```json
+    {
+      "a": "test",
+      "array": ["test0", "test1", "test2"]
+    }
+    ```
+
+    After:
+    ```json
+    {
+      "a": "test",
+      "array": ["test0", "test1", "new-value"]
+    }
+    ```
+  
+### Copy operation
+
+* Copy value from filed `a` to field `b` which does not exist  
+`{ "op": "copy", "from": "/a", "path": "/b" }`
+
+  Before:
+  ```json
+  {
+    "a": "test"
+  }
+  ```
+  
+  After:
+  ```json
+  {
+    "a": "test",
+    "b": "test"
+  }
+  ```
+
+* Copy value from filed `a` to field `b` which exists - value will be updated  
+  `{ "op": "copy", "from": "/a", "path": "/b" }`  
+
+  Before:
+  ```json
+  {
+    "a": "test",
+    "b": "old value"
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "a": "test",
+    "b": "test"
+  }
+  ```
+  
+* Copy first element of array to the end of array  
+  `{ "op": "copy", "from": "/array/0", "path": "/array/-" }`
+
+  Before:
+  ```json
+  {
+    "array": [0, 1, 2],
+    "b": "old value"
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "array": [0, 1, 2, 0],
+    "b": "old value"
+  }
+  ```
+  
+### Move operation
+
+* Move value from field `a` to field `b`  
+`{ "op": "move", "from": "/a", "path": "/b" }`
+
+  Before:
+  ```json
+  {
+    "a": 1,
+    "b": 2
+  }
+  ```
+  
+  After:
+  ```json
+  {
+    "b": 1
+  }
+  ```
+  <br />
+
+* Move first element of an array to the end of array
+  `{ "op": "move", "from": "/array/0", "path": "/array/-" }`
+
+  Before:
+  ```json
+  {
+    "array": [1, 2, 3]
+  }
+  ```
+
+  After:
+  ```json
+  {
+    "array": [2, 3, 1]
+  }
+  ```
+  <br />
+
+### Test operation
+* Check if field `a` has value `test-value`  
+  `{ "op": "test", "path": "/a", "value": "test-value" }`
+
+
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
