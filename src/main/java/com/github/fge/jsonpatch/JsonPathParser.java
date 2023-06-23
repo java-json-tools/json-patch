@@ -13,6 +13,9 @@ public class JsonPathParser {
             throw new JsonPatchException("Invalid path, `//` is not allowed in JsonPointer expressions.");
         }
 
-        return "$" + path.replace('/', '.').replaceAll(ARRAY_ELEMENT_REGEX, "[$1]");
+        return "$" + path.replace('/', '.')
+                .replace("~1", "/") // / must be escaped in JsonPointer using ~1
+                .replace("~0", "~") // ~ must be escaped in JsonPointer using ~0
+                .replaceAll(ARRAY_ELEMENT_REGEX, "[$1]");
     }
 }
