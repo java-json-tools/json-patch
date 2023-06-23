@@ -11,6 +11,11 @@ only.
 
 **Note the "L" in "LGPL". LGPL AND GPL ARE QUITE DIFFERENT!**
 
+## Fork
+
+This library was forked from the original repository(https://github.com/java-json-tools/json-patch) by gravity9 to
+maintain and extend it as the original library is no longer supported.
+
 ## What this is
 
 This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [RFC
