@@ -17,7 +17,7 @@ public class PathParser {
 	 * @return PathDetails containing path to parent, name of new node and boolean value if path contains filter or multi
 	 * index notation
 	 * @throws JsonPatchException when invalid path provided
-	 */
+	 * */
 	public static PathDetails getParentPathAndNewNodeName(String path) throws JsonPatchException {
 		final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
 		final Path compiledPath = compilePath(fullJsonPath);
@@ -53,16 +53,16 @@ public class PathParser {
 
 	private static boolean isMultiIndexNotation(String path) {
 		String pathWithoutBracket = path
-			.replace("[", "")
-			.replace("]", "");
+				.replace("[", "")
+				.replace("]", "");
 		return !pathWithoutBracket.startsWith("'") && !pathWithoutBracket.matches("[0-9]+");
 	}
 
 	private static String getNewNodeName(String[] splitJsonPath) {
 		return splitJsonPath[splitJsonPath.length - 1]
-			.replace("'", "")
-			.replace("[", "")
-			.replace("]", "");
+				.replace("'", "")
+				.replace("[", "")
+				.replace("]", "");
 	}
 
 	/**
@@ -70,11 +70,11 @@ public class PathParser {
 	 * This method is called after PathCompiler.compile, so we are sure now, that the path is correct
 	 * and bracket notation is used.
 	 * We can now split JsonPath using positive lookahead regex (without removing separator).
-	 */
+	 * */
 	private static String[] splitJsonPath(Path compiledPath) {
 		return compiledPath.toString()
-			.replace("$", "")
-			.split("(?=\\[)");
+				.replace("$", "")
+				.split("(?=\\[)");
 	}
 
 	private static Path compilePath(String fullJsonPath) throws JsonPatchException {
@@ -98,23 +98,81 @@ public class PathParser {
 			return new ArrayList<>();
 		}
 		List<String> filters = new ArrayList<>();
-		int openingBracketPosition = -1;
-		int counter = 0;
+		FilterParserState filterParserState = new FilterParserState();
 		for (int i = 0; i < jsonPath.length(); i++) {
-			if (jsonPath.charAt(i) == '[' && jsonPath.charAt(i + 1) == '?') {
-				if (openingBracketPosition == -1) {
-					openingBracketPosition = i;
-				}
-				counter++;
-			}
-			if (jsonPath.charAt(i) == ']' && counter > 0) {
-				counter--;
-				if (counter == 0) {
-					filters.add(jsonPath.substring(openingBracketPosition, i + 1));
-					openingBracketPosition = -1;
-				}
-			}
+			checkIfOpenBracket(jsonPath, i, filterParserState);
+			checkIfCloseBracket(jsonPath, i, filterParserState, filters);
 		}
 		return filters;
+	}
+
+	private static void checkIfCloseBracket(String jsonPath, int currentPosition, FilterParserState filterParserState, List<String> filters) {
+		if (jsonPath.charAt(currentPosition) == ']' && filterParserState.getNumberOfOpenInternalSquareBrackets() > 0) {
+			filterParserState.decreaseNumberOfOpenInternalSquareBrackets();
+		} else if (jsonPath.charAt(currentPosition) == ']' && filterParserState.getNumberOfOpenedFilters() > 0) {
+			filterParserState.decreaseNumberOfOpenedFilters();
+			if (filterParserState.noOpenFiltersAndBrackets()) {
+				filters.add(jsonPath.substring(filterParserState.getFilterOpeningPosition(), currentPosition + 1));
+				filterParserState.setFilterOpeningPosition(-1);
+			}
+		}
+	}
+
+	private static void checkIfOpenBracket(String jsonPath, int currentPosition, FilterParserState filterParserState) {
+		if (jsonPath.charAt(currentPosition) == '[' && jsonPath.charAt(currentPosition + 1) == '?') {
+			if (!filterParserState.wasOpeningFilterBracketFound()) {
+				filterParserState.setFilterOpeningPosition(currentPosition);
+			}
+			filterParserState.increaseNumberOfOpenedFilters();
+		} else if (jsonPath.charAt(currentPosition) == '[') {
+			filterParserState.increaseNumberOfOpenInternalSquareBrackets();
+		}
+	}
+
+	private static class FilterParserState {
+
+		private int filterOpeningPosition = -1;
+		private int numberOfOpenedFilters = 0; // filter starts with [?
+		private int numberOfOpenInternalSquareBrackets = 0; // only [, without ?
+
+		public boolean wasOpeningFilterBracketFound() {
+			return filterOpeningPosition != -1;
+		}
+
+		public void setFilterOpeningPosition(int position) {
+			this.filterOpeningPosition = position;
+		}
+
+		public void increaseNumberOfOpenedFilters() {
+			this.numberOfOpenedFilters++;
+		}
+
+		public void decreaseNumberOfOpenedFilters() {
+			this.numberOfOpenedFilters--;
+		}
+
+		public void increaseNumberOfOpenInternalSquareBrackets() {
+			this.numberOfOpenInternalSquareBrackets++;
+		}
+
+		public void decreaseNumberOfOpenInternalSquareBrackets() {
+			this.numberOfOpenInternalSquareBrackets--;
+		}
+
+		public int getNumberOfOpenedFilters() {
+			return numberOfOpenedFilters;
+		}
+
+		public int getNumberOfOpenInternalSquareBrackets() {
+			return numberOfOpenInternalSquareBrackets;
+		}
+
+		public int getFilterOpeningPosition() {
+			return filterOpeningPosition;
+		}
+
+		public boolean noOpenFiltersAndBrackets() {
+			return numberOfOpenedFilters == 0 && numberOfOpenInternalSquareBrackets == 0;
+		}
 	}
 }
