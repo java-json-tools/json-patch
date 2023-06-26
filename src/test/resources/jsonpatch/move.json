@@ -36,6 +36,1060 @@
             "op": { "op": "move", "from": "/a", "path": "/b/2" },
             "node": { "a": "helo", "b": [ 1, 2, 3, 4 ] },
             "expected": { "b": [ 1, 2, "helo", 3, 4 ] }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[0].pages",
+                "path": "$.store.book[-1:].pages"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "pages": 250
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[0].title",
+                "path": "$.store.book[*].title"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Sayings of the Century",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "Sayings of the Century",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[?(@.author=='J.R.R. Tolkien')].isbn",
+                "path": "$.store.book[?(@.author=='Nigel Rees')].isbn"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "isbn": ["0-395-19395-8"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[?(@.isbn)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[?(!@.isbn)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$.store.book[?(@.price < 10)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.author =~ /.*Tolkien/i)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.category == 'fiction')]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.category != 'fiction')]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.title contains 'of')]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.tags empty true)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": []
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": []
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.tags empty false)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": []
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": []
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.tags subsetof ['tag1', 'tag2', 'tag3'])]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": ["tag5"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1", "tag2"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": ["tag5"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1", "tag2"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
+        },
+
+        {
+            "op": {
+                "op": "move",
+                "from": "$..book[?(@.tags size 2)]",
+                "path": "$.store.movedBooks"
+            },
+            "node": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": ["tag5"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1", "tag2"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                },
+                "expensive": 10
+            },
+            "expected": {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century",
+                            "price": 8.95,
+                            "pages": 250,
+                            "tags": ["tag5"]
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "J.R.R. Tolkien",
+                            "title": "The Lord of the Rings",
+                            "isbn": "0-395-19395-8",
+                            "price": 22.99,
+                            "tags": ["tag2"]
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    },
+                    "movedBooks": [
+                        {
+                            "category": "fiction",
+                            "author": "Herman Melville",
+                            "title": "Moby Dick",
+                            "isbn": "0-553-21311-3",
+                            "price": 8.99,
+                            "tags": ["tag1", "tag2"]
+                        }
+                    ]
+                },
+                "expensive": 10
+            }
         }
     ]
 }
