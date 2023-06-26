@@ -54,3 +54,48 @@ javadoc.options {
     links("https://java-json-tools.github.io/msg-simple/");
     links("https://java-json-tools.github.io/jackson-coreutils/");
 }
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'json-patch-query'
+        packaging 'jar'
+        // optionally artifactId can be defined here
+        description 'JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax'
+        url 'https://github.com/gravity9-tech/json-patch'
+
+        scm {
+          connection 'scm:git:https://github.com/java-json-tools/json-patch.git'
+          developerConnection 'scm:git:ssh://github.com:java-json-tools/json-patch.git'
+          url 'https://github.com/gravity9-tech/json-patch'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'manfred'
+            name 'Manfred Moser'
+            email 'manfred@sonatype.com'
+          }
+        }
+      }
+    }
+  }
+}

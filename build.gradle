@@ -33,6 +33,7 @@ plugins {
 }
 
 apply(plugin: "java");
+apply(plugin: "signing");
 apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "net.ltgt.errorprone");
 apply(plugin: 'org.owasp.dependencycheck');
@@ -97,6 +98,10 @@ artifacts {
     archives jar;
     archives sourcesJar;
     archives javadocJar;
+}
+
+signing {
+    sign configurations.archives
 }
 
 wrapper {
