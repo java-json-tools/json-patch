@@ -1,6 +1,5 @@
 [![License LGPLv3][LGPLv3 badge]][LGPLv3]
 [![License ASL 2.0][ASL 2.0 badge]][ASL 2.0]
-[![Build Status][Travis badge]][Travis]
 [![Maven Central][Maven Central badge]][Maven]
 
 ## Read me first
@@ -39,17 +38,18 @@ With Gradle:
 
 ```groovy
 dependencies {
-    compile(group: "com.github.java-json-tools", name: "json-patch", version: "yourVersionHere");
+  compile(group: "com.gravity9", name: "java-json-tools", version: "yourVersionHere");
 }
 ```
 
 With Maven:
 
 ```xml
+
 <dependency>
-    <groupId>com.github.java-json-tools</groupId>
-    <artifactId>json-patch</artifactId>
-    <version>yourVersionHere</version>
+  <groupId>com.gravity9</groupId>
+  <artifactId>java-json-tools</artifactId>
+  <version>yourVersionHere</version>
 </dependency>
 ```
 
@@ -466,7 +466,5 @@ Examples of JsonPath:
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
 [ASL 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
-[Travis Badge]: https://travis-ci.com/java-json-tools/json-patch.svg?branch=master
-[Travis]: https://travis-ci.com/java-json-tools/json-patch
 [Maven Central badge]: https://img.shields.io/maven-central/v/com.github.java-json-tools/json-patch.svg
 [Maven]: https://search.maven.org/artifact/com.github.java-json-tools/json-patch
