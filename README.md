@@ -20,7 +20,7 @@ maintain and extend it as the original library is no longer supported.
 This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [RFC
 7386 (JSON
 Merge Patch)](http://tools.ietf.org/html/rfc7386) written in Java,
-which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.2.x) at its core.
+which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.x) at its core.
 
 Its features are:
 
@@ -45,7 +45,6 @@ dependencies {
 With Maven:
 
 ```xml
-
 <dependency>
   <groupId>com.gravity9</groupId>
   <artifactId>java-json-tools</artifactId>
@@ -53,7 +52,8 @@ With Maven:
 </dependency>
 ```
 
-Versions before 1.10 are available at `groupId` `com.github.fge`.
+Versions before 1.10 are available at `groupId` `com.github.fge` and `artifactId` `json-patch`.
+Versions 1.10 to 1.13 are available at `groupId` `com.github.java-json-tools` and `artifactId` `json-patch`.
 
 ## JSON "diff" factorization
 
