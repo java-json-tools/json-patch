@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.gravity9.jsonpatch.JsonPatch;
 import com.gravity9.jsonpatch.JsonPatchException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.testng.annotations.DataProvider;
@@ -50,7 +51,9 @@ public final class JsonDiffTest {
 		final List<Object[]> list = Lists.newArrayList();
 
 		for (final JsonNode node : testData)
-			list.add(new Object[]{node.get("first"), node.get("second")});
+			if (!node.has("ignoreFields")) {
+				list.add(new Object[]{node.get("first"), node.get("second")});
+			}
 
 		return list.iterator();
 	}
@@ -73,7 +76,7 @@ public final class JsonDiffTest {
 		final List<Object[]> list = Lists.newArrayList();
 
 		for (final JsonNode node : testData) {
-			if (!node.has("patch"))
+			if (!node.has("patch") || node.has("ignoreFields"))
 				continue;
 			list.add(new Object[]{
 				node.get("message").textValue(), node.get("first"),
@@ -95,6 +98,43 @@ public final class JsonDiffTest {
 		assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
 			"patch is not what was expected\nscenario: %s\n"
 				+ "expected: %s\nactual: %s\n", message, expected, actual
+		).isTrue();
+	}
+
+	@DataProvider
+	public Iterator<Object[]> getDiffsWithIgnoredFields() {
+		final List<Object[]> list = Lists.newArrayList();
+
+		for (final JsonNode node : testData) {
+			if (node.has("ignoreFields")) {
+				list.add(new Object[]{
+						node.get("message").textValue(), node.get("first"),
+						node.get("second"), node.get("patch"), node.get("ignoreFields")
+				});
+			}
+		}
+
+		return list.iterator();
+	}
+
+	@Test(
+			dataProvider = "getDiffsWithIgnoredFields"
+	)
+	public void generatedPatchesIgnoreFields(final String message,
+											 final JsonNode first, final JsonNode second, final JsonNode expected,
+											 final JsonNode ignoreFields) {
+
+		final List<String> ignoreFieldsList = new ArrayList<>();
+		final Iterator<JsonNode> ignoreFieldsIterator = ignoreFields.elements();
+		while (ignoreFieldsIterator.hasNext()) {
+			ignoreFieldsList.add(ignoreFieldsIterator.next().textValue());
+		}
+
+		final JsonNode actual = JsonDiff.asJsonIgnoringFields(first, second, ignoreFieldsList);
+
+		assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
+				"patch is not what was expected\nscenario: %s\n"
+						+ "expected: %s\nactual: %s\n", message, expected, actual
 		).isTrue();
 	}
 }
