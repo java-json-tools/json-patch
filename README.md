@@ -432,6 +432,36 @@ Before:
   `{ "op": "test", "path": "/a", "value": "test-value" }`
 
 
+## JsonPath examples
+
+JsonPath is supported in all operations (`add`, `remove`, `copy`, `replace`, `move`, `test`).
+
+Examples of JsonPath:
+
+* `$.store.bicycle.price` - Get price of bicycle in store
+* `$.store.book[*].pages` - Get pages from all books in store
+* `$..book[*].pages` - Get pages from all books which are a descent of root node
+* `$.store.book[-1:].pages` - Get pages from last book in store
+* `$.store.book[:2].pages` - Get pages of first two books in store
+* `$.store.book[?(@.author=='J.R.R. Tolkien')].pages` - Get pages of books written by J.R.R. Tolkien
+* `$..book[?(@.isbn)].pages` - Get pages of books which contain `isbn` property
+* `$..book[?(!@.isbn)].pages` - Get pages of books which do not contain `isbn` property
+* `$..book[?(@.price < 8.99)].pages` - Get pages of books which price is lower than `8.99`
+* `$..book[?(@.author =~ /.*Tolkien/i)].pages` - Pages of books whose author name ends with Tolkien (case-insensitive).
+* `$..book[?(@.category == 'fiction' || @.category == 'reference')]` - All books in `fiction` or `reference` category
+* `$..book[?(@.category in ['fiction', 'reference'])]` - All books in `fiction` or `reference` category
+* `$..book[?(@.category nin ['fiction'])]` - All books not in `fiction` category
+* `$..book[?(@.category=='fiction' && @.price < 10)].pages` - List of pages of books in `fiction` category and price lower than `10`
+* `$..book[?(@.tags subsetof ['tag1', 'tag2'])]` - All books with list of tags which is subset of `['tag1', 'tag2']`
+* `$..book[?(@.tags contains 'tag2')]` - All books with list of tags containing `tag2`
+* `$..book[?(@.tags size 2)]` - All books with list of tags containing exactly 2 elements
+* `$..book[?(@.tags empty true)]` - All books with empty list of tags
+* `$..book[?(@.tags empty false)]` - All books with not empty list of tags
+
+### Limitations
+
+* `$..book[(@.length-1)].title` - not supported. Use `$..book[-1:].title` instead.
+
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
