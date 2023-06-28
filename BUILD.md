@@ -17,7 +17,7 @@ below:
 # Build, test the package
 ./gradlew test
 # Install in your local maven repository
-./gradlew clean install
+./gradlew build publishToMavenLocal
 ```
 
 If you try and play around with Gradle configuration files, in order to be

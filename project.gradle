@@ -20,7 +20,7 @@
 /*
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
-group = "com.gravity9.java-json-tools";
+group = "com.gravity9";
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax";
@@ -31,9 +31,9 @@ project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386)
 dependencies {
     compileOnly(group: "com.google.code.findbugs", name: "jsr305", version: "3.0.2");
     implementation(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.15.2");
-    implementation(group: 'com.jayway.jsonpath', name: 'json-path', version: '2.8.0')
-    implementation(group: "com.github.java-json-tools", name: "msg-simple", version: "1.2");
-    implementation(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0");
+    api(group: 'com.jayway.jsonpath', name: 'json-path', version: '2.8.0')
+    api(group: "com.github.java-json-tools", name: "msg-simple", version: "1.2");
+    api(group: "com.github.java-json-tools", name: "jackson-coreutils", version: "2.0");
     testImplementation(group: "org.testng", name: "testng", version: "7.1.0") {
         exclude(group: "junit", module: "junit");
         exclude(group: "org.beanshell", module: "bsh");
