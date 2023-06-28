@@ -20,7 +20,7 @@
 /*
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
-group = "com.gravity9.java-json-tools";
+group = "com.gravity9";
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 project.ext.description = "JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax";

@@ -38,7 +38,7 @@ With Gradle:
 
 ```groovy
 dependencies {
-  compile(group: "com.gravity9", name: "java-json-tools", version: "yourVersionHere");
+  compile(group: "com.gravity9", name: "json-patch-path", version: "yourVersionHere");
 }
 ```
 
@@ -47,7 +47,7 @@ With Maven:
 ```xml
 <dependency>
   <groupId>com.gravity9</groupId>
-  <artifactId>java-json-tools</artifactId>
+  <artifactId>json-patch-path</artifactId>
   <version>yourVersionHere</version>
 </dependency>
 ```
