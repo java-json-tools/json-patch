@@ -34,6 +34,7 @@ import com.gravity9.jsonpatch.JsonPatchException;
 import com.gravity9.jsonpatch.JsonPatchMessages;
 import com.gravity9.jsonpatch.JsonPatchOperation;
 import com.gravity9.jsonpatch.RemoveOperation;
+import com.jayway.jsonpath.PathNotFoundException;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
@@ -110,10 +111,11 @@ public final class JsonDiff {
 	 * @param target the expected result after applying the patch
 	 * @param fieldsToIgnore list of JsonPath or JsonPointer paths which should be ignored when generating diff. Non-existing fields are ignored.
 	 * @return the patch as a {@link JsonPatch}
-	 * @since 1.9
+	 * @throws JsonPatchException if fieldsToIgnored not in valid JsonPath or JsonPointer format
+	 * @since 2.0.0
 	 */
 	public static JsonPatch asJsonPatchIgnoringFields(final JsonNode source,
-										final JsonNode target, final List<String> fieldsToIgnore) {
+										final JsonNode target, final List<String> fieldsToIgnore) throws JsonPatchException {
 		BUNDLE.checkNotNull(source, "common.nullArgument");
 		BUNDLE.checkNotNull(target, "common.nullArgument");
 		final List<JsonPatchOperation> ignoredFieldsRemoveOperations = getJsonPatchRemoveOperationsForIgnoredFields(fieldsToIgnore);
@@ -129,7 +131,7 @@ public final class JsonDiff {
 		return processor.getPatch();
 	}
 
-	private static JsonNode removeIgnoredFields(JsonNode node, List<JsonPatchOperation> ignoredFieldsRemoveOperations) {
+	private static JsonNode removeIgnoredFields(JsonNode node, List<JsonPatchOperation> ignoredFieldsRemoveOperations) throws JsonPatchException {
 		JsonNode nodeWithoutIgnoredFields = node;
 		for (JsonPatchOperation operation : ignoredFieldsRemoveOperations) {
 			nodeWithoutIgnoredFields = removeIgnoredFieldOrIgnore(nodeWithoutIgnoredFields, operation);
@@ -137,15 +139,18 @@ public final class JsonDiff {
 		return nodeWithoutIgnoredFields;
 	}
 
-	private static JsonNode removeIgnoredFieldOrIgnore(JsonNode nodeWithoutIgnoredFields, JsonPatchOperation operation) {
+	private static JsonNode removeIgnoredFieldOrIgnore(JsonNode nodeWithoutIgnoredFields, JsonPatchOperation operation) throws JsonPatchException {
 		try {
 			List<JsonPatchOperation> operationsList = new ArrayList<>();
 			operationsList.add(operation);
 			return new JsonPatch(operationsList).apply(nodeWithoutIgnoredFields);
 		} catch (JsonPatchException e) {
-			// If remove for specific path failed, it means that node does not contain specific field which should be ignored.
+			// If remove for specific path throws PathNotFound, it means that node does not contain specific field which should be ignored.
 			// See more `empty patch if object does not contain ignored field` in diff.json file.
-			return nodeWithoutIgnoredFields;
+			if (e.getCause() instanceof PathNotFoundException) {
+				return nodeWithoutIgnoredFields;
+			}
+			throw e;
 		}
 	}
 
@@ -175,8 +180,10 @@ public final class JsonDiff {
 	 * @param target the expected result after applying the patch
 	 * @param fieldsToIgnore list of JsonPath or JsonPointer paths which should be ignored when generating diff. Non-existing fields are ignored.
 	 * @return the patch as a {@link JsonNode}
+	 * @throws JsonPatchException if fieldsToIgnored not in valid JsonPath or JsonPointer format
+	 * @since 2.0.0
 	 */
-	public static JsonNode asJsonIgnoringFields(final JsonNode source, final JsonNode target, List<String> fieldsToIgnore) {
+	public static JsonNode asJsonIgnoringFields(final JsonNode source, final JsonNode target, List<String> fieldsToIgnore) throws JsonPatchException {
 		final String s;
 		try {
 			s = MAPPER.writeValueAsString(asJsonPatchIgnoringFields(source, target, fieldsToIgnore));
@@ -229,9 +236,9 @@ public final class JsonDiff {
 											final JsonPointer pointer, final ObjectNode source,
 											final ObjectNode target) {
 		final Set<String> firstFields
-			= collect(source.fieldNames(), new TreeSet<String>());
+			= collect(source.fieldNames(), new TreeSet<>());
 		final Set<String> secondFields
-			= collect(target.fieldNames(), new TreeSet<String>());
+			= collect(target.fieldNames(), new TreeSet<>());
 
 		final Set<String> copy1 = new HashSet<>(firstFields);
 		copy1.removeAll(secondFields);

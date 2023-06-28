@@ -19,7 +19,9 @@
 
 package com.gravity9.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.google.common.collect.Lists;
@@ -33,6 +35,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class JsonDiffTest {
 
@@ -122,7 +125,7 @@ public final class JsonDiffTest {
 	)
 	public void generatedPatchesIgnoreFields(final String message,
 											 final JsonNode first, final JsonNode second, final JsonNode expected,
-											 final JsonNode ignoreFields) {
+											 final JsonNode ignoreFields) throws JsonPatchException {
 
 		final List<String> ignoreFieldsList = new ArrayList<>();
 		final Iterator<JsonNode> ignoreFieldsIterator = ignoreFields.elements();
@@ -136,5 +139,37 @@ public final class JsonDiffTest {
 				"patch is not what was expected\nscenario: %s\n"
 						+ "expected: %s\nactual: %s\n", message, expected, actual
 		).isTrue();
+	}
+
+	@DataProvider
+	public Iterator<Object[]> getInvalidIgnoreFieldsExpressions() {
+		final List<Object[]> list = Lists.newArrayList();
+		list.add(new Object[]{
+				"$.a[(@.length-1)]", "Could not parse token starting at position 3. Expected ?, ', 0-9, * "
+		});
+		list.add(new Object[]{
+				"/a/?", "Invalid path, `?` are not allowed in JsonPointer expressions."
+		});
+		return list.iterator();
+	}
+
+	@Test(
+			dataProvider = "getInvalidIgnoreFieldsExpressions"
+	)
+	public void shouldNotPerformDiffWhenIgnoreFieldsContainsInvalidExpression(String ignoreFieldsExpression, String expectedExceptionMessage) throws JsonProcessingException {
+		// given
+		JsonNode source = new ObjectMapper().readTree("{\"a\": \"1\"}");
+		JsonNode target = new ObjectMapper().readTree("{\"a\": \"1\"}");
+		List<String> ignoreFields = new ArrayList<>();
+		ignoreFields.add(ignoreFieldsExpression);
+
+		// when
+		assertThatThrownBy(() -> JsonDiff.asJsonIgnoringFields(source, target, ignoreFields))
+				.isExactlyInstanceOf(JsonPatchException.class)
+				.hasMessageStartingWith(expectedExceptionMessage);
+
+		assertThatThrownBy(() -> JsonDiff.asJsonPatchIgnoringFields(source, target, ignoreFields))
+				.isExactlyInstanceOf(JsonPatchException.class)
+				.hasMessageStartingWith(expectedExceptionMessage);
 	}
 }
