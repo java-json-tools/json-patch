@@ -19,38 +19,20 @@
 
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
-        maven {
-            url "https://repo.spring.io/plugins-snapshot";
-            content {
-                includeGroupByRegex "io\\.spring\\.gradle\\.*"
-            }
-        }
     }
     dependencies {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
-        classpath 'io.spring.gradle:propdeps-plugin:0.0.8-SNAPSHOT'
         classpath 'org.owasp:dependency-check-gradle:8.2.1'
     }
 };
 
 plugins {
-    id("net.ltgt.errorprone") version "0.8.1" apply false
-}
-
-configure(allprojects) {
-    apply(plugin: "propdeps");
-    apply(plugin: "propdeps-maven");
-    apply(plugin: "propdeps-idea");
-    apply(plugin: "propdeps-eclipse");
+    id("net.ltgt.errorprone") version "3.0.1" apply false
 }
 
 apply(plugin: "java");
-apply(plugin: "maven");
 apply(plugin: "biz.aQute.bnd.builder");
-apply(plugin: "idea");
-apply(plugin: "eclipse");
 apply(plugin: "net.ltgt.errorprone");
 apply(plugin: 'org.owasp.dependencycheck');
 apply(from: "project.gradle");
@@ -69,7 +51,6 @@ repositories {
  */
 dependencies {
     errorprone('com.google.errorprone:error_prone_core:2.20.0')
-    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
 /*
@@ -86,8 +67,8 @@ test {
  * Necessary to generate the source and javadoc jars
  */
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources";
     from sourceSets.main.allSource;
+    archiveClassifier.set("sources");
 }
 
 /*
@@ -105,8 +86,8 @@ allprojects {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc";
     from javadoc.destinationDir;
+    archiveClassifier.set("javadoc");
 }
 
 artifacts {
@@ -115,10 +96,7 @@ artifacts {
     archives javadocJar;
 }
 
-
 wrapper {
-    gradleVersion = "5.6.3";
+    gradleVersion = "7.6.1";
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
 }
-
-

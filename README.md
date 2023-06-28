@@ -1,6 +1,5 @@
 [![License LGPLv3][LGPLv3 badge]][LGPLv3]
 [![License ASL 2.0][ASL 2.0 badge]][ASL 2.0]
-[![Build Status][Travis badge]][Travis]
 [![Maven Central][Maven Central badge]][Maven]
 
 ## Read me first
@@ -21,7 +20,7 @@ maintain and extend it as the original library is no longer supported.
 This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [RFC
 7386 (JSON
 Merge Patch)](http://tools.ietf.org/html/rfc7386) written in Java,
-which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.2.x) at its core.
+which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.x) at its core.
 
 Its features are:
 
@@ -39,7 +38,7 @@ With Gradle:
 
 ```groovy
 dependencies {
-    compile(group: "com.github.java-json-tools", name: "json-patch", version: "yourVersionHere");
+  compile(group: "com.gravity9", name: "java-json-tools", version: "yourVersionHere");
 }
 ```
 
@@ -47,13 +46,14 @@ With Maven:
 
 ```xml
 <dependency>
-    <groupId>com.github.java-json-tools</groupId>
-    <artifactId>json-patch</artifactId>
-    <version>yourVersionHere</version>
+  <groupId>com.gravity9</groupId>
+  <artifactId>java-json-tools</artifactId>
+  <version>yourVersionHere</version>
 </dependency>
 ```
 
-Versions before 1.10 are available at `groupId` `com.github.fge`.
+Versions before 1.10 are available at `groupId` `com.github.fge` and `artifactId` `json-patch`.
+Versions 1.10 to 1.13 are available at `groupId` `com.github.java-json-tools` and `artifactId` `json-patch`.
 
 ## JSON "diff" factorization
 
@@ -443,11 +443,39 @@ Before:
   `{ "op": "test", "path": "/a", "value": "test-value" }`
 
 
+## JsonPath examples
+
+JsonPath is supported in all operations (`add`, `remove`, `copy`, `replace`, `move`, `test`).
+
+Examples of JsonPath:
+
+* `$.store.bicycle.price` - Get price of bicycle in store
+* `$.store.book[*].pages` - Get pages from all books in store
+* `$..book[*].pages` - Get pages from all books which are a descent of root node
+* `$.store.book[-1:].pages` - Get pages from last book in store
+* `$.store.book[:2].pages` - Get pages of first two books in store
+* `$.store.book[?(@.author=='J.R.R. Tolkien')].pages` - Get pages of books written by J.R.R. Tolkien
+* `$..book[?(@.isbn)].pages` - Get pages of books which contain `isbn` property
+* `$..book[?(!@.isbn)].pages` - Get pages of books which do not contain `isbn` property
+* `$..book[?(@.price < 8.99)].pages` - Get pages of books which price is lower than `8.99`
+* `$..book[?(@.author =~ /.*Tolkien/i)].pages` - Pages of books whose author name ends with Tolkien (case-insensitive).
+* `$..book[?(@.category == 'fiction' || @.category == 'reference')]` - All books in `fiction` or `reference` category
+* `$..book[?(@.category in ['fiction', 'reference'])]` - All books in `fiction` or `reference` category
+* `$..book[?(@.category nin ['fiction'])]` - All books not in `fiction` category
+* `$..book[?(@.category=='fiction' && @.price < 10)].pages` - List of pages of books in `fiction` category and price lower than `10`
+* `$..book[?(@.tags subsetof ['tag1', 'tag2'])]` - All books with list of tags which is subset of `['tag1', 'tag2']`
+* `$..book[?(@.tags contains 'tag2')]` - All books with list of tags containing `tag2`
+* `$..book[?(@.tags size 2)]` - All books with list of tags containing exactly 2 elements
+* `$..book[?(@.tags empty true)]` - All books with empty list of tags
+* `$..book[?(@.tags empty false)]` - All books with not empty list of tags
+
+### Limitations
+
+* `$..book[(@.length-1)].title` - not supported. Use `$..book[-1:].title` instead.
+
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
 [ASL 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
-[Travis Badge]: https://travis-ci.com/java-json-tools/json-patch.svg?branch=master
-[Travis]: https://travis-ci.com/java-json-tools/json-patch
 [Maven Central badge]: https://img.shields.io/maven-central/v/com.github.java-json-tools/json-patch.svg
 [Maven]: https://search.maven.org/artifact/com.github.java-json-tools/json-patch
