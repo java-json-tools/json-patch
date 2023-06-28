@@ -32,7 +32,8 @@ plugins {
     id "org.sonarqube" version "4.2.1.3168"
 }
 
-apply(plugin: "java");
+apply(plugin: "java-library");
+apply(plugin: "maven-publish");
 apply(plugin: "signing");
 apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "net.ltgt.errorprone");
@@ -101,7 +102,8 @@ artifacts {
 }
 
 signing {
-    sign configurations.archives
+    required { gradle.taskGraph.hasTask("publish") }
+    sign publishing.publications.mavenJava
 }
 
 wrapper {
