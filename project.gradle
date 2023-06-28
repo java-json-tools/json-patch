@@ -59,7 +59,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             pom {
-                name = 'json-patch-query'
+                name = 'json-patch-path'
                 description = 'JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax'
                 url = 'https://github.com/gravity9-tech/json-patch'
 
