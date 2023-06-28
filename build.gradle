@@ -35,9 +35,11 @@ apply(plugin: "java");
 apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "net.ltgt.errorprone");
 apply(plugin: 'org.owasp.dependencycheck');
+apply(plugin: 'maven-publish')
+apply(plugin: 'java-library')
 apply(from: "project.gradle");
 
-group = "com.gravity9.java-json-tools";
+group = "com.gravity9";
 
 /*
  * Repositories to use
@@ -99,4 +101,12 @@ artifacts {
 wrapper {
     gradleVersion = "7.6.1";
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
