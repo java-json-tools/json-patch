@@ -19,19 +19,23 @@
 
 package com.gravity9.jsonpatch.diff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.google.common.collect.Lists;
 import com.gravity9.jsonpatch.JsonPatch;
 import com.gravity9.jsonpatch.JsonPatchException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class JsonDiffTest {
 
@@ -50,7 +54,9 @@ public final class JsonDiffTest {
 		final List<Object[]> list = Lists.newArrayList();
 
 		for (final JsonNode node : testData)
-			list.add(new Object[]{node.get("first"), node.get("second")});
+			if (!node.has("ignoreFields")) {
+				list.add(new Object[]{node.get("first"), node.get("second")});
+			}
 
 		return list.iterator();
 	}
@@ -73,7 +79,7 @@ public final class JsonDiffTest {
 		final List<Object[]> list = Lists.newArrayList();
 
 		for (final JsonNode node : testData) {
-			if (!node.has("patch"))
+			if (!node.has("patch") || node.has("ignoreFields"))
 				continue;
 			list.add(new Object[]{
 				node.get("message").textValue(), node.get("first"),
@@ -96,5 +102,74 @@ public final class JsonDiffTest {
 			"patch is not what was expected\nscenario: %s\n"
 				+ "expected: %s\nactual: %s\n", message, expected, actual
 		).isTrue();
+	}
+
+	@DataProvider
+	public Iterator<Object[]> getDiffsWithIgnoredFields() {
+		final List<Object[]> list = Lists.newArrayList();
+
+		for (final JsonNode node : testData) {
+			if (node.has("ignoreFields")) {
+				list.add(new Object[]{
+						node.get("message").textValue(), node.get("first"),
+						node.get("second"), node.get("patch"), node.get("ignoreFields")
+				});
+			}
+		}
+
+		return list.iterator();
+	}
+
+	@Test(
+			dataProvider = "getDiffsWithIgnoredFields"
+	)
+	public void generatedPatchesIgnoreFields(final String message,
+											 final JsonNode first, final JsonNode second, final JsonNode expected,
+											 final JsonNode ignoreFields) throws JsonPatchException {
+
+		final List<String> ignoreFieldsList = new ArrayList<>();
+		final Iterator<JsonNode> ignoreFieldsIterator = ignoreFields.elements();
+		while (ignoreFieldsIterator.hasNext()) {
+			ignoreFieldsList.add(ignoreFieldsIterator.next().textValue());
+		}
+
+		final JsonNode actual = JsonDiff.asJsonIgnoringFields(first, second, ignoreFieldsList);
+
+		assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
+				"patch is not what was expected\nscenario: %s\n"
+						+ "expected: %s\nactual: %s\n", message, expected, actual
+		).isTrue();
+	}
+
+	@DataProvider
+	public Iterator<Object[]> getInvalidIgnoreFieldsExpressions() {
+		final List<Object[]> list = Lists.newArrayList();
+		list.add(new Object[]{
+				"$.a[(@.length-1)]", "Could not parse token starting at position 3. Expected ?, ', 0-9, * "
+		});
+		list.add(new Object[]{
+				"/a/?", "Invalid path, `?` are not allowed in JsonPointer expressions."
+		});
+		return list.iterator();
+	}
+
+	@Test(
+			dataProvider = "getInvalidIgnoreFieldsExpressions"
+	)
+	public void shouldNotPerformDiffWhenIgnoreFieldsContainsInvalidExpression(String ignoreFieldsExpression, String expectedExceptionMessage) throws JsonProcessingException {
+		// given
+		JsonNode source = new ObjectMapper().readTree("{\"a\": \"1\"}");
+		JsonNode target = new ObjectMapper().readTree("{\"a\": \"1\"}");
+		List<String> ignoreFields = new ArrayList<>();
+		ignoreFields.add(ignoreFieldsExpression);
+
+		// when
+		assertThatThrownBy(() -> JsonDiff.asJsonIgnoringFields(source, target, ignoreFields))
+				.isExactlyInstanceOf(JsonPatchException.class)
+				.hasMessageStartingWith(expectedExceptionMessage);
+
+		assertThatThrownBy(() -> JsonDiff.asJsonPatchIgnoringFields(source, target, ignoreFields))
+				.isExactlyInstanceOf(JsonPatchException.class)
+				.hasMessageStartingWith(expectedExceptionMessage);
 	}
 }

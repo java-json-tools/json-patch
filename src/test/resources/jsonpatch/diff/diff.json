@@ -1,5 +1,174 @@
 [
     {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": {"id": 1, "name":  "John"},
+        "second": {"id": 2, "name":  "John"},
+        "ignoreFields": ["/id"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            }
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 2
+            }
+        },
+        "ignoreFields": ["/id", "/address/houseNum"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if object does not contain ignored field",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            }
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1"
+            }
+        },
+        "ignoreFields": ["/id", "/address/houseNum"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 2
+            },
+            "cars": ["Audi", "Mercedes", "Skoda"]
+        },
+        "ignoreFields": ["/id", "/address/houseNum", "$.cars[-1:]"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 2
+            },
+            "cars": ["Audi", "Mercedes", "Skoda"]
+        },
+        "ignoreFields": ["/id", "/address/houseNum", "/cars/2"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": [
+            {"id": 1, "name":  "John"},
+            {"id": 2, "name":  "John"}
+        ],
+        "second": [
+            {"id": 2, "name":  "John"},
+            {"id": 3, "name":  "John"}
+        ],
+        "ignoreFields": ["$..id"],
+        "patch": []
+    },
+    {
+        "message": "empty patch if no changes in non-ignored fields",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "id": "3",
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "id": "4",
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "ignoreFields": ["$..id"],
+        "patch": []
+    },
+    {
+        "message": "Replace address id",
+        "first": {
+            "id": 1,
+            "name": "John",
+            "address": {
+                "id": "3",
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "second": {
+            "id": 2,
+            "name": "John",
+            "address": {
+                "id": "4",
+                "city": "Warsaw",
+                "street": "Street1",
+                "houseNum": 1
+            },
+            "cars": ["Audi", "Mercedes", "BMW"]
+        },
+        "ignoreFields": ["$.id"],
+        "patch": [{"op":"replace","path":"/address/id","value":"4"}]
+    },
+    {
         "message": "empty patch if no changes",
         "first": "hello",
         "second": "hello",

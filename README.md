@@ -132,6 +132,17 @@ final JsonPatch patch = JsonDiff.asJsonPatch(source, target);
 final JsonNode patchNode = JsonDiff.asJson(source, target);
 ```
 
+It's possible to ignore fields in Json Diff. List of ignored fields should be specified as JsonPointer 
+or JsonPath paths. If ignored field does not exist in target or source object, it's ignored.
+
+```java
+final List<String> fieldsToIgnore = new ArrayList<>();
+fieldsToIgnore.add("/id");
+fieldsToIgnore.add("$.cars[-1:]");
+final JsonPatch patch = JsonDiff.asJsonPatch(source, target, fieldsToIgnore);
+final JsonNode patchNode = JsonDiff.asJson(source, target, fieldsToIgnore);
+```
+
 **Important note**: the API offers **no guarantee at all** about patch "reuse";
 that is, the generated patch is only guaranteed to safely transform the given
 source to the given target. Do not expect it to give the result you expect on

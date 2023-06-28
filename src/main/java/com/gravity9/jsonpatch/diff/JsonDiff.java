@@ -30,16 +30,23 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
 import com.gravity9.jsonpatch.JsonPatch;
+import com.gravity9.jsonpatch.JsonPatchException;
 import com.gravity9.jsonpatch.JsonPatchMessages;
+import com.gravity9.jsonpatch.JsonPatchOperation;
+import com.gravity9.jsonpatch.RemoveOperation;
+import com.jayway.jsonpath.PathNotFoundException;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * JSON "diff" implementation
@@ -98,6 +105,57 @@ public final class JsonDiff {
 
 	/**
 	 * Generate a JSON patch for transforming the source node into the target
+	 * node ignoring given fields
+	 *
+	 * @param source the node to be patched
+	 * @param target the expected result after applying the patch
+	 * @param fieldsToIgnore list of JsonPath or JsonPointer paths which should be ignored when generating diff. Non-existing fields are ignored.
+	 * @return the patch as a {@link JsonPatch}
+	 * @throws JsonPatchException if fieldsToIgnored not in valid JsonPath or JsonPointer format
+	 * @since 2.0.0
+	 */
+	public static JsonPatch asJsonPatchIgnoringFields(final JsonNode source,
+										final JsonNode target, final List<String> fieldsToIgnore) throws JsonPatchException {
+		BUNDLE.checkNotNull(source, "common.nullArgument");
+		BUNDLE.checkNotNull(target, "common.nullArgument");
+		final List<JsonPatchOperation> ignoredFieldsRemoveOperations = getJsonPatchRemoveOperationsForIgnoredFields(fieldsToIgnore);
+
+		JsonNode sourceWithoutIgnoredFields = removeIgnoredFields(source, ignoredFieldsRemoveOperations);
+		JsonNode targetWithoutIgnoredFields = removeIgnoredFields(target, ignoredFieldsRemoveOperations);
+
+		final Map<JsonPointer, JsonNode> unchanged
+				= getUnchangedValues(sourceWithoutIgnoredFields, targetWithoutIgnoredFields);
+		final DiffProcessor processor = new DiffProcessor(unchanged);
+
+		generateDiffs(processor, JsonPointer.empty(), sourceWithoutIgnoredFields, targetWithoutIgnoredFields);
+		return processor.getPatch();
+	}
+
+	private static JsonNode removeIgnoredFields(JsonNode node, List<JsonPatchOperation> ignoredFieldsRemoveOperations) throws JsonPatchException {
+		JsonNode nodeWithoutIgnoredFields = node;
+		for (JsonPatchOperation operation : ignoredFieldsRemoveOperations) {
+			nodeWithoutIgnoredFields = removeIgnoredFieldOrIgnore(nodeWithoutIgnoredFields, operation);
+		}
+		return nodeWithoutIgnoredFields;
+	}
+
+	private static JsonNode removeIgnoredFieldOrIgnore(JsonNode nodeWithoutIgnoredFields, JsonPatchOperation operation) throws JsonPatchException {
+		try {
+			List<JsonPatchOperation> operationsList = new ArrayList<>();
+			operationsList.add(operation);
+			return new JsonPatch(operationsList).apply(nodeWithoutIgnoredFields);
+		} catch (JsonPatchException e) {
+			// If remove for specific path throws PathNotFound, it means that node does not contain specific field which should be ignored.
+			// See more `empty patch if object does not contain ignored field` in diff.json file.
+			if (e.getCause() instanceof PathNotFoundException) {
+				return nodeWithoutIgnoredFields;
+			}
+			throw e;
+		}
+	}
+
+	/**
+	 * Generate a JSON patch for transforming the source node into the target
 	 * node
 	 *
 	 * @param source the node to be patched
@@ -108,6 +166,27 @@ public final class JsonDiff {
 		final String s;
 		try {
 			s = MAPPER.writeValueAsString(asJsonPatch(source, target));
+			return MAPPER.readTree(s);
+		} catch (IOException e) {
+			throw new RuntimeException("cannot generate JSON diff", e);
+		}
+	}
+
+	/**
+	 * Generate a JSON patch for transforming the source node into the target
+	 * node ignoring given fields
+	 *
+	 * @param source the node to be patched
+	 * @param target the expected result after applying the patch
+	 * @param fieldsToIgnore list of JsonPath or JsonPointer paths which should be ignored when generating diff. Non-existing fields are ignored.
+	 * @return the patch as a {@link JsonNode}
+	 * @throws JsonPatchException if fieldsToIgnored not in valid JsonPath or JsonPointer format
+	 * @since 2.0.0
+	 */
+	public static JsonNode asJsonIgnoringFields(final JsonNode source, final JsonNode target, List<String> fieldsToIgnore) throws JsonPatchException {
+		final String s;
+		try {
+			s = MAPPER.writeValueAsString(asJsonPatchIgnoringFields(source, target, fieldsToIgnore));
 			return MAPPER.readTree(s);
 		} catch (IOException e) {
 			throw new RuntimeException("cannot generate JSON diff", e);
@@ -157,24 +236,24 @@ public final class JsonDiff {
 											final JsonPointer pointer, final ObjectNode source,
 											final ObjectNode target) {
 		final Set<String> firstFields
-			= collect(source.fieldNames(), new TreeSet<String>());
+			= collect(source.fieldNames(), new TreeSet<>());
 		final Set<String> secondFields
-			= collect(target.fieldNames(), new TreeSet<String>());
+			= collect(target.fieldNames(), new TreeSet<>());
 
-		final Set<String> copy1 = new HashSet<String>(firstFields);
+		final Set<String> copy1 = new HashSet<>(firstFields);
 		copy1.removeAll(secondFields);
 
 		for (final String field : Collections.unmodifiableSet(copy1))
 			processor.valueRemoved(pointer.append(field), source.get(field));
 
-		final Set<String> copy2 = new HashSet<String>(secondFields);
+		final Set<String> copy2 = new HashSet<>(secondFields);
 		copy2.removeAll(firstFields);
 
 
 		for (final String field : Collections.unmodifiableSet(copy2))
 			processor.valueAdded(pointer.append(field), target.get(field));
 
-		final Set<String> intersection = new HashSet<String>(firstFields);
+		final Set<String> intersection = new HashSet<>(firstFields);
 		intersection.retainAll(secondFields);
 
 		for (final String field : intersection)
@@ -222,7 +301,7 @@ public final class JsonDiff {
 
 	static Map<JsonPointer, JsonNode> getUnchangedValues(final JsonNode source,
 														 final JsonNode target) {
-		final Map<JsonPointer, JsonNode> ret = new HashMap<JsonPointer, JsonNode>();
+		final Map<JsonPointer, JsonNode> ret = new HashMap<>();
 		computeUnchanged(ret, JsonPointer.empty(), source, target);
 		return ret;
 	}
@@ -278,4 +357,13 @@ public final class JsonDiff {
 			computeUnchanged(ret, pointer.append(i), source.get(i),
 				target.get(i));
 	}
+
+	private static List<JsonPatchOperation> getJsonPatchRemoveOperationsForIgnoredFields(List<String> fieldsToIgnore) {
+		final List<JsonPatchOperation> ignoredFieldsRemoveOperations = new ArrayList<>();
+		for (String fieldToIgnore : fieldsToIgnore) {
+			ignoredFieldsRemoveOperations.add(new RemoveOperation(fieldToIgnore));
+		}
+		return ignoredFieldsRemoveOperations;
+	}
+
 }
