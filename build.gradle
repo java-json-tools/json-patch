@@ -37,7 +37,7 @@ apply(plugin: "net.ltgt.errorprone");
 apply(plugin: 'org.owasp.dependencycheck');
 apply(from: "project.gradle");
 
-group = "com.github.java-json-tools";
+group = "com.gravity9.java-json-tools";
 
 /*
  * Repositories to use
