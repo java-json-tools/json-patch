@@ -6,6 +6,7 @@ The project has been taken over by [gravity9](https://www.gravity9.com).
 * The library now uses Java 11 as base
 * Added support for JSON Path
 * Added support for ignoring fields in JSON diff
+* Added support for defining a custom ObjectMapper for JsonMergePatch
 * Added more test cases and examples
 * Upgraded versions of most libraries and tools used in the project
   * Fixed outstanding CVE vulnerabilities where possible
