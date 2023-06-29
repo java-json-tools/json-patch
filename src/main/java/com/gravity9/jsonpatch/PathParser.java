@@ -19,7 +19,7 @@ public class PathParser {
 	 * @throws JsonPatchException when invalid path provided
 	 * */
 	public static PathDetails getParentPathAndNewNodeName(String path) throws JsonPatchException {
-		final String fullJsonPath = JsonPathParser.tmfStringToJsonPath(path);
+		final String fullJsonPath = JsonPathParser.parsePathToJsonPath(path);
 		final Path compiledPath = compilePath(fullJsonPath);
 		String[] splitJsonPath = splitJsonPath(compiledPath);
 
