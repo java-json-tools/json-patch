@@ -64,7 +64,7 @@
                 "value": 1
             },
             "node": [],
-            "message": "jsonPatch.notAnIndex"
+            "message": "reference token is not an array index: /"
         },
         {
             "op": {
@@ -76,17 +76,46 @@
                 1,
                 2
             ],
-            "message": "jsonPatch.noSuchIndex"
+            "message": "no such index in target array: 3"
         },
         {
-            "op": { "op": "add", "path": "/-2", "value": 1 },
-            "node": [ 1, 2 ],
-            "message": "jsonPatch.noSuchIndex"
+            "op": {
+                "op": "add",
+                "path": "/-2",
+                "value": 1
+            },
+            "node": [
+                1,
+                2
+            ],
+            "message": "no such index in target array: -2"
         },
         {
-            "op": { "op": "add", "path": "/foo/f", "value": "bar" },
-            "node": { "foo": "bar" },
-            "message": "jsonPatch.parentNotContainer"
+            "op": {
+                "op": "add",
+                "path": "/foo/f",
+                "value": "bar"
+            },
+            "node": {
+                "foo": "bar"
+            },
+            "message": "parent of path to add to is not a container: $['foo']"
+        },
+        {
+            "op": {
+                "op": "add",
+                "path": "$.foo[*].objField2",
+                "value": "bar"
+            },
+            "node": {
+                "foo": [
+                    {
+                        "objField1": "field1value"
+                    },
+                    "nonObject"
+                ]
+            },
+            "message": "parent of path to add to is not a container: $['foo'][*] at index 1"
         }
     ],
     "ops": [
