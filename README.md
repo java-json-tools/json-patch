@@ -12,9 +12,9 @@ only.
 
 ## Fork
 
-This library was forked from the original repository(https://github.com/java-json-tools/json-patch) by
-gravity9(https://www.gravity9.com) to
-maintain and extend it as the original library is no longer supported.
+This library was forked by [gravity9](https://www.gravity9.com) from the
+original [repository](https://github.com/java-json-tools/json-patch)
+to maintain and extend it as the original library is no longer supported.
 
 ## What this is
 
