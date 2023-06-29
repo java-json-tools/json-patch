@@ -20,13 +20,11 @@
 package com.gravity9.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.github.fge.jackson.JacksonUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,30 +33,20 @@ import java.util.Map;
 import java.util.Set;
 
 final class JsonMergePatchDeserializer extends JsonDeserializer<JsonMergePatch> {
-	/*
-	 * FIXME! UGLY! HACK!
-	 *
-	 * We MUST have an ObjectCodec ready so that the parser in .deserialize()
-	 * can actually do something useful -- for instance, deserializing even a
-	 * JsonNode.
-	 *
-	 * Jackson does not do this automatically; I don't know why...
-	 */
-	private static final ObjectCodec CODEC = JacksonUtils.newMapper();
 
 	@Override
 	public JsonMergePatch deserialize(final JsonParser jp,
-									  final DeserializationContext ctxt)
-		throws IOException, JsonProcessingException {
-		// FIXME: see comment above
-		jp.setCodec(CODEC);
+									  final DeserializationContext ctxt) throws IOException {
+		ObjectMapper mapper = new ObjectMapper().setConfig(ctxt.getConfig());
+		jp.setCodec(mapper);
 		final JsonNode node = jp.readValueAsTree();
 
 		/*
 		 * Not an object: the simple case
 		 */
-		if (!node.isObject())
+		if (!node.isObject()) {
 			return new NonObjectMergePatch(node);
+		}
 
 		/*
 		 * The complicated case...
@@ -67,8 +55,8 @@ final class JsonMergePatchDeserializer extends JsonDeserializer<JsonMergePatch> 
 		 * members.
 		 */
 
-		final Set<String> removedMembers = new HashSet<String>();
-		final Map<String, JsonMergePatch> modifiedMembers = new HashMap<String, JsonMergePatch>();
+		final Set<String> removedMembers = new HashSet<>();
+		final Map<String, JsonMergePatch> modifiedMembers = new HashMap<>();
 		final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
 
 		Map.Entry<String, JsonNode> entry;

@@ -65,9 +65,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch implements JsonSerializable, Patch {
 
-	protected static final MessageBundle BUNDLE
-		= MessageBundles.getBundle(JsonPatchMessages.class);
-	private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
+	protected static final MessageBundle BUNDLE = MessageBundles.getBundle(JsonPatchMessages.class);
+	private static final ObjectMapper DEFAULT_MAPPER = JacksonUtils.newMapper();
 
 	/**
 	 * Build an instance from a JSON input
@@ -77,11 +76,25 @@ public abstract class JsonMergePatch implements JsonSerializable, Patch {
 	 * @throws JsonPatchException   failed to deserialize
 	 * @throws NullPointerException node is null
 	 */
-	public static JsonMergePatch fromJson(final JsonNode node)
-		throws JsonPatchException {
+	public static JsonMergePatch fromJson(final JsonNode node) throws JsonPatchException {
+		return fromJson(node, DEFAULT_MAPPER);
+	}
+
+	/**
+	 * Build an instance from a JSON input with a custom ObjectMapper.
+	 * This allows to customize the mapper used in deserialization of nodes.
+	 *
+	 * @param node   the input
+	 * @param mapper custom ObjectMapper
+	 * @return a JSON Merge Patch instance
+	 * @throws JsonPatchException   failed to deserialize
+	 * @throws NullPointerException node or mapper is null
+	 */
+	public static JsonMergePatch fromJson(final JsonNode node, ObjectMapper mapper) throws JsonPatchException {
 		BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
+		BUNDLE.checkNotNull(mapper, "jsonPatch.nullInput");
 		try {
-			return MAPPER.readValue(node.traverse(), JsonMergePatch.class);
+			return mapper.readValue(node.traverse(), JsonMergePatch.class);
 		} catch (IOException e) {
 			throw new JsonPatchException(
 				BUNDLE.getMessage("jsonPatch.deserFailed"), e);

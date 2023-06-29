@@ -19,8 +19,10 @@
 
 package com.gravity9.jsonpatch.mergepatch;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
@@ -34,6 +36,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
 
 public final class SerializationTest {
 
@@ -101,5 +104,18 @@ public final class SerializationTest {
 		final JsonNode serialized = JacksonUtils.getReader().readTree(out);
 
 		assertTrue(EQUIVALENCE.equivalent(input, serialized));
+	}
+
+	@Test
+	void testDecimalsKeptAfterPatchWithCustomObjectMapper() throws Exception {
+		ObjectMapper mapper = new ObjectMapper()
+			.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+			.setNodeFactory(new JsonNodeFactory(true));
+
+		JsonNode newer = mapper.readTree("25.000");
+		JsonNode older = mapper.readTree("24.444");
+		JsonNode apply = JsonMergePatch.fromJson(newer, mapper).apply(older);
+
+		assertEquals("25.000", apply.asText());
 	}
 }
