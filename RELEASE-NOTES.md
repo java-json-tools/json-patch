@@ -7,6 +7,7 @@ The project has been taken over by [gravity9](https://www.gravity9.com).
 * Added support for JSON Path
 * Added support for ignoring fields in JSON diff
 * Added support for defining a custom ObjectMapper for JsonMergePatch
+* Added more context to JsonPatchException thrown in all operations
 * Added more test cases and examples
 * Upgraded versions of most libraries and tools used in the project
   * Fixed outstanding CVE vulnerabilities where possible
