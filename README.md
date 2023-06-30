@@ -27,6 +27,7 @@ Its features are:
 * {de,}serialization of JSON Patch and JSON Merge Patch instances with Jackson;
 * full support for RFC 6902 operations, including `test`;
 * JSON "diff" (RFC 6902 only) with operation factorization.
+* support for `JsonPointer` and `JsonPath`
 
 ## Versions
 
@@ -264,6 +265,129 @@ final JsonNode patched = patch.apply(orig);
     }
     ```
     <br />
+
+### Add if not exists
+It's possible to add element to JsonNode if it does not exist using JsonPath expressions [see more examples of JsonPath](#jsonpath-examples)
+* Add `color` field to `bicycle` object if it doesn't exist  
+`{ "op": "add", "path": "$.store.bicycle[?(!@.color)].color", "value": "red" }`  
+
+    Before:
+    ```json
+    {
+      "store": {
+        "bicycle": {
+          "price": 19.95
+        }
+      }
+    }
+    ```
+  
+    After:
+    ```json
+    {
+      "store": {
+        "bicycle": {
+          "price": 19.95,
+          "color": "red"
+        }
+      }
+    }
+    ```
+* Add value for `color` field to `bicycle` object if it is equal to `null`  
+  `{ "op": "add", "path": "$.store.bicycle[?(@.color == null)].color", "value": "red" }`  
+
+  Before:
+    ```json
+    {
+      "store": {
+        "bicycle": {
+          "price": 19.95,
+          "color": null
+        }
+      }
+    }
+    ```
+
+  After:
+    ```json
+    {
+      "store": {
+        "bicycle": {
+          "price": 19.95,
+          "color": "red"
+        }
+      }
+    }
+    ```
+
+* Add field `pages` to `book` array if `book` does not contain this field, or it is equal to `null`   
+  `{ "op": "add", "path": "$..book[?(!@.pages || @.pages == null)].pages", "value": 250 }`
+
+  Before:
+    ```json
+    {
+        "store": {
+            "book": [
+                {
+                    "category": "reference",
+                    "author": "Nigel Rees",
+                    "title": "Sayings of the Century",
+                    "price": 8.95
+                },
+                {
+                    "category": "fiction",
+                    "author": "Herman Melville",
+                    "title": "Moby Dick",
+                    "isbn": "0-553-21311-3",
+                    "price": 8.99,
+                    "pages": null
+                },
+                {
+                    "category": "fiction",
+                    "author": "J.R.R. Tolkien",
+                    "title": "The Lord of the Rings",
+                    "isbn": "0-395-19395-8",
+                    "price": 22.99,
+                    "pages": 100
+                }
+            ]
+        }
+    }
+    ```
+
+  After:
+     ```json
+    {
+        "store": {
+            "book": [
+                {
+                    "category": "reference",
+                    "author": "Nigel Rees",
+                    "title": "Sayings of the Century",
+                    "price": 8.95,
+                    "pages": 250
+                },
+                {
+                    "category": "fiction",
+                    "author": "Herman Melville",
+                    "title": "Moby Dick",
+                    "isbn": "0-553-21311-3",
+                    "price": 8.99,
+                    "pages": 250
+                },
+                {
+                    "category": "fiction",
+                    "author": "J.R.R. Tolkien",
+                    "title": "The Lord of the Rings",
+                    "isbn": "0-395-19395-8",
+                    "price": 22.99,
+                    "pages": 100
+                }
+            ]
+        }
+    }
+    ```
+
 ### Remove operation
 
 * Remove element with name `a`  
