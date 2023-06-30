@@ -1,10 +1,16 @@
 package com.gravity9.jsonpatch;
 
-public class JsonPathParser {
+class JsonPathParser {
 
 	private static final String ARRAY_ELEMENT_REGEX = "(?<=\\.)(\\d+)";
 
-	public static String tmfStringToJsonPath(String path) throws JsonPatchException {
+	/**
+	 * Method parses JsonPointer or JsonPath path to JsonPath syntax
+	 * @param path String containing JsonPath or JsonPointer expression
+	 * @return String containing JsonPath expression
+	 * @throws JsonPatchException throws when invalid JsonPointer expression provided
+	 */
+	static String parsePathToJsonPath(String path) throws JsonPatchException {
 		if (path.startsWith("$")) {
 			return path;
 		} else if (path.contains("?")) {

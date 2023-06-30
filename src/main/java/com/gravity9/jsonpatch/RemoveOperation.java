@@ -22,13 +22,13 @@ package com.gravity9.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+
 import java.io.IOException;
 
 /**
@@ -51,23 +51,23 @@ public final class RemoveOperation extends JsonPatchOperation {
 		}
 
 		final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
-		final String jsonPath = JsonPathParser.tmfStringToJsonPath(path);
+		final String jsonPath = JsonPathParser.parsePathToJsonPath(path);
 		return nodeContext
 			.delete(jsonPath)
 			.read("$", JsonNode.class);
 	}
 
 	@Override
-	public void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
+	public void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
 		jgen.writeStartObject();
 		jgen.writeStringField("op", "remove");
-		jgen.writeStringField("path", path.toString());
+		jgen.writeStringField("path", path);
 		jgen.writeEndObject();
 	}
 
 	@Override
 	public void serializeWithType(final JsonGenerator jgen, final SerializerProvider provider, final TypeSerializer typeSer)
-		throws IOException, JsonProcessingException {
+		throws IOException {
 		serialize(jgen, provider);
 	}
 
