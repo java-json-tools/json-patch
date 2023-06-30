@@ -1,5 +1,6 @@
 [![License LGPLv3][LGPLv3 badge]][LGPLv3]
 [![License ASL 2.0][ASL 2.0 badge]][ASL 2.0]
+[![Pipeline][GitHub Acitons badge]][GitHub Acitons link]
 [![Maven Central][Maven Central badge]][Maven]
 
 ## Read me first
@@ -12,8 +13,9 @@ only.
 
 ## Fork
 
-This library was forked from the original repository(https://github.com/java-json-tools/json-patch) by gravity9 to
-maintain and extend it as the original library is no longer supported.
+This library was forked by [gravity9](https://www.gravity9.com) from the
+original [repository](https://github.com/java-json-tools/json-patch)
+to maintain and extend it as the original library is no longer supported.
 
 ## What this is
 
@@ -598,8 +600,17 @@ Examples of JsonPath:
 * `$..book[(@.length-1)].title` - not supported. Use `$..book[-1:].title` instead.
 
 [LGPLv3 badge]: https://img.shields.io/:license-LGPLv3-blue.svg
+
 [LGPLv3]: http://www.gnu.org/licenses/lgpl-3.0.html
+
 [ASL 2.0 badge]: https://img.shields.io/:license-Apache%202.0-blue.svg
+
 [ASL 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
+
+[GitHub Acitons badge]: https://github.com/gravity9-tech/json-patch-path/actions/workflows/push-workflow.yaml/badge.svg?branch=master
+
+[GitHub Acitons link]: https://github.com/gravity9-tech/json-patch-path/actions/workflows/push-workflow.yaml
+
 [Maven Central badge]: https://img.shields.io/maven-central/v/com.github.java-json-tools/json-patch.svg
+
 [Maven]: https://search.maven.org/artifact/com.github.java-json-tools/json-patch

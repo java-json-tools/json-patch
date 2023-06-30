@@ -52,10 +52,6 @@ public final class RemoveOperation extends JsonPatchOperation {
 
 		final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
 		final String jsonPath = JsonPathParser.parsePathToJsonPath(path);
-
-		if (nodeContext.read(jsonPath) == null) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
-		}
 		return nodeContext
 			.delete(jsonPath)
 			.read("$", JsonNode.class);

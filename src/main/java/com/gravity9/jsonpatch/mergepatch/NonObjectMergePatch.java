@@ -20,11 +20,9 @@
 package com.gravity9.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.gravity9.jsonpatch.JsonPatchException;
 import java.io.IOException;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -41,23 +39,21 @@ final class NonObjectMergePatch extends JsonMergePatch {
 	}
 
 	@Override
-	public JsonNode apply(final JsonNode input)
-		throws JsonPatchException {
+	public JsonNode apply(final JsonNode input) {
 		BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
 		return node;
 	}
 
 	@Override
 	public void serialize(final JsonGenerator jgen,
-						  final SerializerProvider provider)
-		throws IOException, JsonProcessingException {
+						  final SerializerProvider provider) throws IOException {
 		jgen.writeTree(node);
 	}
 
 	@Override
 	public void serializeWithType(final JsonGenerator jgen,
-								  final SerializerProvider provider, final TypeSerializer typeSer)
-		throws IOException, JsonProcessingException {
+								  final SerializerProvider provider,
+								  final TypeSerializer typeSer) throws IOException {
 		serialize(jgen, provider);
 	}
 }

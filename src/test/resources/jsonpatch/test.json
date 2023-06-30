@@ -8,12 +8,12 @@
         {
             "op": { "op": "test", "path": "", "value": true },
             "node": [ 1, 2 ],
-            "message": "jsonPatch.valueTestFailure"
+            "message": "value differs from expectations: expected 'true' but found '[1,2]'"
         },
         {
             "op": { "op": "test", "path": "/x", "value": -30.000 },
             "node": { "x": -29.020 },
-            "message": "jsonPatch.valueTestFailure"
+            "message": "value differs from expectations: expected '-3E+1' but found '-29.02'"
         }
     ],
     "ops": [
