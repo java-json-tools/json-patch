@@ -1,41 +1,26 @@
 package com.gravity9.jsonpatch;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
 public class JsonPathParserTest {
 
-	@Test
-	public void shouldConvertPointerToJsonPath() throws JsonPatchException {
-		String jsonPointerWithQuery = "/productPrice/prodPriceAlteration";
-		String expected = "$.productPrice.prodPriceAlteration";
-		String result = JsonPathParser.parsePathToJsonPath(jsonPointerWithQuery);
-		assertEquals(result, expected);
+	@DataProvider
+	public static Object[][] jsonPointerToJsonPathTestCases() {
+		return new Object[][] {
+				{"/productPrice/prodPriceAlteration", "$.productPrice.prodPriceAlteration"},
+				{"/productPrice/1/prodPriceAlteration", "$.productPrice.[1].prodPriceAlteration"},
+				{"/productPrice/prodPriceAlteration/1", "$.productPrice.prodPriceAlteration.[1]"},
+				{"/2/1/-", "$.[2].[1].-"}
+		};
 	}
 
-	@Test
-	public void shouldConvertPointerWithArrayToJsonPath() throws JsonPatchException {
-		String jsonPointerWithQuery = "/productPrice/1/prodPriceAlteration";
-		String expected = "$.productPrice.[1].prodPriceAlteration";
-		String result = JsonPathParser.parsePathToJsonPath(jsonPointerWithQuery);
-		assertEquals(result, expected);
-	}
-
-	@Test
-	public void shouldConvertPointerWithArrayAtTheEndToJsonPath() throws JsonPatchException {
-		String jsonPointerWithQuery = "/productPrice/prodPriceAlteration/1";
-		String expected = "$.productPrice.prodPriceAlteration.[1]";
-		String result = JsonPathParser.parsePathToJsonPath(jsonPointerWithQuery);
-		assertEquals(result, expected);
-	}
-
-	@Test
-	public void shouldConvertArrayPathToJsonPath() throws JsonPatchException {
-		String jsonPointer = "/2/1/-";
-		String expected = "$.[2].[1].-";
-		String result = JsonPathParser.parsePathToJsonPath(jsonPointer);
-		assertEquals(result, expected);
+	@Test(dataProvider = "jsonPointerToJsonPathTestCases")
+	public void shouldConvertPointerToJsonPath(String jsonPointerExpression, String expectedJsonPath) throws JsonPatchException {
+		String result = JsonPathParser.parsePathToJsonPath(jsonPointerExpression);
+		assertEquals(result, expectedJsonPath);
 	}
 
 	@Test

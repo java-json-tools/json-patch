@@ -79,6 +79,8 @@ public final class JsonDiff {
 	private static final JsonNumEquals EQUIVALENCE
 		= JsonNumEquals.getInstance();
 
+	private static final String NULL_ARGUMENT_KEY = "common.nullArgument";
+
 	private JsonDiff() {
 	}
 
@@ -93,8 +95,8 @@ public final class JsonDiff {
 	 */
 	public static JsonPatch asJsonPatch(final JsonNode source,
 										final JsonNode target) {
-		BUNDLE.checkNotNull(source, "common.nullArgument");
-		BUNDLE.checkNotNull(target, "common.nullArgument");
+		BUNDLE.checkNotNull(source, NULL_ARGUMENT_KEY);
+		BUNDLE.checkNotNull(target, NULL_ARGUMENT_KEY);
 		final Map<JsonPointer, JsonNode> unchanged
 			= getUnchangedValues(source, target);
 		final DiffProcessor processor = new DiffProcessor(unchanged);
@@ -116,8 +118,8 @@ public final class JsonDiff {
 	 */
 	public static JsonPatch asJsonPatchIgnoringFields(final JsonNode source,
 										final JsonNode target, final List<String> fieldsToIgnore) throws JsonPatchException {
-		BUNDLE.checkNotNull(source, "common.nullArgument");
-		BUNDLE.checkNotNull(target, "common.nullArgument");
+		BUNDLE.checkNotNull(source, NULL_ARGUMENT_KEY);
+		BUNDLE.checkNotNull(target, NULL_ARGUMENT_KEY);
 		final List<JsonPatchOperation> ignoredFieldsRemoveOperations = getJsonPatchRemoveOperationsForIgnoredFields(fieldsToIgnore);
 
 		JsonNode sourceWithoutIgnoredFields = removeIgnoredFields(source, ignoredFieldsRemoveOperations);
@@ -161,14 +163,15 @@ public final class JsonDiff {
 	 * @param source the node to be patched
 	 * @param target the expected result after applying the patch
 	 * @return the patch as a {@link JsonNode}
+	 * @throws JsonPatchException when cannot generate JSON diff
 	 */
-	public static JsonNode asJson(final JsonNode source, final JsonNode target) {
+	public static JsonNode asJson(final JsonNode source, final JsonNode target) throws JsonPatchException {
 		final String s;
 		try {
 			s = MAPPER.writeValueAsString(asJsonPatch(source, target));
 			return MAPPER.readTree(s);
 		} catch (IOException e) {
-			throw new RuntimeException("cannot generate JSON diff", e);
+			throw new JsonPatchException("cannot generate JSON diff", e);
 		}
 	}
 
@@ -189,7 +192,7 @@ public final class JsonDiff {
 			s = MAPPER.writeValueAsString(asJsonPatchIgnoringFields(source, target, fieldsToIgnore));
 			return MAPPER.readTree(s);
 		} catch (IOException e) {
-			throw new RuntimeException("cannot generate JSON diff", e);
+			throw new JsonPatchException("cannot generate JSON diff", e);
 		}
 	}
 
@@ -221,7 +224,7 @@ public final class JsonDiff {
 		}
 
 		/*
-		 * If we reach this point, both nodes are either objects or arrays;
+		 * If we reach this point, both nodes are either objects or arrays
 		 * delegate.
 		 */
 		if (firstType == NodeType.OBJECT)
@@ -262,12 +265,6 @@ public final class JsonDiff {
 	}
 
 	private static <T> Set<T> collect(Iterator<T> from, Set<T> to) {
-		if (from == null) {
-			throw new NullPointerException();
-		}
-		if (to == null) {
-			throw new NullPointerException();
-		}
 		while (from.hasNext()) {
 			to.add(from.next());
 		}

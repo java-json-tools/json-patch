@@ -31,11 +31,11 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-public final class JsonPatchTestSuite {
+public final class JsonPatchTests {
 
 	private final JsonNode testNode;
 
-	public JsonPatchTestSuite()
+	public JsonPatchTests()
 		throws IOException {
 		testNode = JsonLoader.fromResource("/jsonpatch/testsuite.json");
 	}

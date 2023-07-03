@@ -72,7 +72,7 @@ final class ObjectMergePatch extends JsonMergePatch {
 			 * the modifiedMembers map, values are JsonMergePatch instances:
 			 *
 			 * * if it is a NonObjectMergePatch, the value is replaced
-			 *   unconditionally;
+			 *   unconditionally
 			 * * if it is an ObjectMergePatch, we get back here; the value will
 			 *   be replaced with a JSON Object anyway before being processed.
 			 */

@@ -20,11 +20,11 @@
 package com.gravity9.jsonpatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+
 import java.io.IOException;
 
 /**
@@ -48,17 +48,17 @@ public abstract class PathValueOperation extends JsonPatchOperation {
 	}
 
 	@Override
-	public final void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException, JsonProcessingException {
+	public final void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
 		jgen.writeStartObject();
 		jgen.writeStringField("op", op);
-		jgen.writeStringField("path", path.toString());
+		jgen.writeStringField("path", path);
 		jgen.writeFieldName("value");
 		jgen.writeTree(value);
 		jgen.writeEndObject();
 	}
 
 	@Override
-	public final void serializeWithType(final JsonGenerator jgen, final SerializerProvider provider, final TypeSerializer typeSer) throws IOException, JsonProcessingException {
+	public final void serializeWithType(final JsonGenerator jgen, final SerializerProvider provider, final TypeSerializer typeSer) throws IOException {
 		serialize(jgen, provider);
 	}
 

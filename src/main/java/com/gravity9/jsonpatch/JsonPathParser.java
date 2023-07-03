@@ -2,6 +2,8 @@ package com.gravity9.jsonpatch;
 
 class JsonPathParser {
 
+	private JsonPathParser() {}
+
 	private static final String ARRAY_ELEMENT_REGEX = "(?<=\\.)(\\d+)";
 
 	/**

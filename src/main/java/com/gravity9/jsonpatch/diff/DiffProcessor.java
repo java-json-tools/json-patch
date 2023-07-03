@@ -25,14 +25,14 @@ import com.gravity9.jsonpatch.JsonPatch;
 import com.gravity9.jsonpatch.JsonPatchOperation;
 import com.gravity9.jsonpatch.jackson.JsonNumEquals;
 
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
-// TODO: cleanup
 final class DiffProcessor {
 
 	private static final JsonNumEquals EQUIVALENCE
@@ -40,10 +40,10 @@ final class DiffProcessor {
 
 	private final Map<JsonPointer, JsonNode> unchanged;
 
-	private final List<DiffOperation> diffs = new ArrayList<DiffOperation>();
+	private final List<DiffOperation> diffs = new ArrayList<>();
 
 	DiffProcessor(final Map<JsonPointer, JsonNode> unchanged) {
-		this.unchanged = Collections.unmodifiableMap(new HashMap<JsonPointer, JsonNode>(unchanged));
+		this.unchanged = Collections.unmodifiableMap(new HashMap<>(unchanged));
 	}
 
 	void valueReplaced(final JsonPointer pointer, final JsonNode oldValue,
@@ -73,7 +73,7 @@ final class DiffProcessor {
 	}
 
 	JsonPatch getPatch() {
-		final List<JsonPatchOperation> list = new ArrayList<JsonPatchOperation>();
+		final List<JsonPatchOperation> list = new ArrayList<>();
 
 		for (final DiffOperation op : diffs)
 			list.add(op.asJsonPatchOperation());
