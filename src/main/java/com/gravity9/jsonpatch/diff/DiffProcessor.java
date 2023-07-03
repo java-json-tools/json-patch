@@ -20,10 +20,11 @@
 package com.gravity9.jsonpatch.diff;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.gravity9.jsonpatch.JsonPatch;
 import com.gravity9.jsonpatch.JsonPatchOperation;
+import com.gravity9.jsonpatch.jackson.JsonNumEquals;
+
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

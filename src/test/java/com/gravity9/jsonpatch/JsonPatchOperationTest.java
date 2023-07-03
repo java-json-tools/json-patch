@@ -23,11 +23,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jackson.JsonNumEquals;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import com.gravity9.jsonpatch.jackson.JsonNumEquals;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
