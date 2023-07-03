@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
-import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.NodeType;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.msgsimple.bundle.MessageBundle;
@@ -34,6 +33,7 @@ import com.gravity9.jsonpatch.JsonPatchException;
 import com.gravity9.jsonpatch.JsonPatchMessages;
 import com.gravity9.jsonpatch.JsonPatchOperation;
 import com.gravity9.jsonpatch.RemoveOperation;
+import com.gravity9.jsonpatch.jackson.JsonNumEquals;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import javax.annotation.ParametersAreNonnullByDefault;

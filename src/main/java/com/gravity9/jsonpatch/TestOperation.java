@@ -22,7 +22,7 @@ package com.gravity9.jsonpatch;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonNumEquals;
+import com.gravity9.jsonpatch.jackson.JsonNumEquals;
 import com.jayway.jsonpath.JsonPath;
 
 /**

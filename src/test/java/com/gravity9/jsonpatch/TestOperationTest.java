@@ -19,12 +19,46 @@
 
 package com.gravity9.jsonpatch;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.testng.annotations.Test;
+
 import java.io.IOException;
 
 public final class TestOperationTest extends JsonPatchOperationTest {
 
+	private static final TestDomain DOMAIN_TO_PATCH = new TestDomain(2022.4321f);
+	private static final String testOperation = "[{\"op\":\"test\",\"path\":\"/myValue\",\"value\":2022.4321}]";
+
 	public TestOperationTest()
 		throws IOException {
 		super("test");
+	}
+
+	@Test
+	void testPatchValueIsDoubleDomainValueIsFloat() throws Exception {
+		JsonPatch jsonPatch = new ObjectMapper().readValue(testOperation, JsonPatch.class);
+
+		JsonNode jsonNode = new ObjectMapper().valueToTree(DOMAIN_TO_PATCH);
+
+		jsonPatch.apply(jsonNode);
+	}
+
+	@SuppressWarnings("UnusedMethod")
+	private static class TestDomain {
+
+		private Float myValue;
+
+		public TestDomain(Float myValue) {
+			this.myValue = myValue;
+		}
+
+		public Float getMyValue() {
+			return myValue;
+		}
+
+		public void setMyValue(Float myValue) {
+			this.myValue = myValue;
+		}
 	}
 }
