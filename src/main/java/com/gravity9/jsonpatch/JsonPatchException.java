@@ -19,6 +19,8 @@
 
 package com.gravity9.jsonpatch;
 
+import static com.gravity9.jsonpatch.JsonPatchOperation.BUNDLE;
+
 public final class JsonPatchException extends Exception {
 
 	public JsonPatchException(final String message) {
@@ -27,5 +29,22 @@ public final class JsonPatchException extends Exception {
 
 	public JsonPatchException(final String message, final Throwable cause) {
 		super(message, cause);
+	}
+
+	public static JsonPatchException valueTestFailure(Object expected, Object found) {
+		return new JsonPatchException(BUNDLE.getMessage("jsonPatch.valueTestFailure") +
+			": expected '" + expected + "' but found '" + found + "'");
+	}
+
+	public static JsonPatchException notAnIndex(String index) {
+		return new JsonPatchException(BUNDLE.getMessage("jsonPatch.notAnIndex") + ": " + index);
+	}
+
+	public static JsonPatchException noSuchIndex(Integer index) {
+		return new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchIndex") + ": " + index);
+	}
+
+	public static JsonPatchException parentNotContainer(String path) {
+		return new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer") + ": " + path);
 	}
 }

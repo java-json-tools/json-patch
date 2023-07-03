@@ -82,18 +82,15 @@ public final class AddOperation extends PathValueOperation {
 
 		final DocumentContext nodeContext = JsonPath.parse(node.deepCopy());
 		final JsonNode evaluatedJsonParents = nodeContext.read(pathToParent);
-		if (evaluatedJsonParents == null) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchParent"));
-		}
 		if (!evaluatedJsonParents.isContainerNode()) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
+			throw JsonPatchException.parentNotContainer(pathToParent);
 		}
 
 		if (pathDetails.doesContainFiltersOrMultiIndexesNotation()) { // json filter result is always a list
 			for (int i = 0; i < evaluatedJsonParents.size(); i++) {
 				JsonNode parentNode = evaluatedJsonParents.get(i);
 				if (!parentNode.isContainerNode()) {
-					throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.parentNotContainer"));
+					throw JsonPatchException.parentNotContainer(pathToParent + " at index " + i);
 				}
 				DocumentContext containerContext = JsonPath.parse(parentNode);
 				if (parentNode.isArray()) {
@@ -133,11 +130,13 @@ public final class AddOperation extends PathValueOperation {
 		try {
 			index = Integer.parseInt(stringIndex);
 		} catch (NumberFormatException ignored) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.notAnIndex"));
+			throw JsonPatchException.notAnIndex(stringIndex);
 		}
+
 		if (index < 0 || index > size) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchIndex"));
+			throw JsonPatchException.noSuchIndex(index);
 		}
+
 		return index;
 	}
 }

@@ -20,7 +20,6 @@
 package com.gravity9.jsonpatch.mergepatch;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -44,13 +43,12 @@ final class ObjectMergePatch extends JsonMergePatch {
 
 	ObjectMergePatch(final Set<String> removedMembers,
 					 final Map<String, JsonMergePatch> modifiedMembers) {
-		this.removedMembers = Collections.unmodifiableSet(new HashSet<String>(removedMembers));
-		this.modifiedMembers = Collections.unmodifiableMap(new HashMap<String, JsonMergePatch>(modifiedMembers));
+		this.removedMembers = Collections.unmodifiableSet(new HashSet<>(removedMembers));
+		this.modifiedMembers = Collections.unmodifiableMap(new HashMap<>(modifiedMembers));
 	}
 
 	@Override
-	public JsonNode apply(final JsonNode input)
-		throws JsonPatchException {
+	public JsonNode apply(final JsonNode input) throws JsonPatchException {
 		BUNDLE.checkNotNull(input, "jsonPatch.nullValue");
 		/*
 		 * If the input is an object, we make a deep copy of it
@@ -90,8 +88,7 @@ final class ObjectMergePatch extends JsonMergePatch {
 
 	@Override
 	public void serialize(final JsonGenerator jgen,
-						  final SerializerProvider provider)
-		throws IOException, JsonProcessingException {
+						  final SerializerProvider provider) throws IOException {
 		jgen.writeStartObject();
 
 		/*
@@ -114,8 +111,8 @@ final class ObjectMergePatch extends JsonMergePatch {
 
 	@Override
 	public void serializeWithType(final JsonGenerator jgen,
-								  final SerializerProvider provider, final TypeSerializer typeSer)
-		throws IOException, JsonProcessingException {
+								  final SerializerProvider provider,
+								  final TypeSerializer typeSer) throws IOException {
 		serialize(jgen, provider);
 	}
 }

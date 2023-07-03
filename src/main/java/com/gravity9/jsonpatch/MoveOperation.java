@@ -73,11 +73,8 @@ public final class MoveOperation extends DualPathOperation {
 		if (from.equals(path)) {
 			return node.deepCopy();
 		}
-		String jsonPath = JsonPathParser.tmfStringToJsonPath(from);
+		String jsonPath = JsonPathParser.parsePathToJsonPath(from);
 		final JsonNode movedNode = JsonPath.parse(node.deepCopy()).read(jsonPath, JsonNode.class);
-		if (movedNode == null) {
-			throw new JsonPatchException(BUNDLE.getMessage("jsonPatch.noSuchPath"));
-		}
 		final JsonPatchOperation remove = new RemoveOperation(from);
 		final JsonPatchOperation add = new AddOperation(path, movedNode);
 		return add.apply(remove.apply(node));

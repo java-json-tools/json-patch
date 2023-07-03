@@ -23,8 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
-import com.github.fge.msgsimple.bundle.MessageBundle;
-import com.github.fge.msgsimple.load.MessageBundles;
+import com.github.fge.jackson.JsonNumEquals;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.Iterator;
@@ -41,9 +40,6 @@ import static org.testng.Assert.fail;
 
 @Test
 public abstract class JsonPatchOperationTest {
-
-	private static final MessageBundle BUNDLE
-		= MessageBundles.getBundle(JsonPatchMessages.class);
 
 	private static final JsonNumEquals EQUIVALENCE
 		= JsonNumEquals.getInstance();
@@ -69,7 +65,7 @@ public abstract class JsonPatchOperationTest {
 			list.add(new Object[]{
 				node.get("op"),
 				node.get("node"),
-				BUNDLE.getMessage(node.get("message").textValue())
+				node.get("message").textValue()
 			});
 
 		return list.iterator();
