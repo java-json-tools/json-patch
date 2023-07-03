@@ -74,26 +74,36 @@ publishing {
                         id = 'Piotr-Dytkowski'
                         name = 'Piotr Dytkowski'
                         email = 'piotr.dytkowski@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
                     }
                     developer {
                         id = 'Bartlomiej-Styczynski'
                         name = 'Bartlomiej Styczynski'
                         email = 'bartlomiej.styczynski@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
                     }
                     developer {
                         id = 'Piotr-Bugara'
                         name = 'Piotr Bugara'
                         email = 'piotr.bugara@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
                     }
                     developer {
                         id = 'Garry-Newball'
                         name = 'Garry Newball'
                         email = 'garry.newball@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
                     }
                     developer {
                         id = 'Mateusz-Zaremba'
                         name = 'Mateusz Zaremba'
                         email = 'mateusz.zaremba@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
                     }
                 }
                 scm {
