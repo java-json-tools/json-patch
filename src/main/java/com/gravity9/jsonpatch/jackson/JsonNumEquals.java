@@ -147,20 +147,6 @@ public final class JsonNumEquals
 		return ret;
 	}
 
-//	private static boolean numEquals(final JsonNode a, final JsonNode b)
-//	{
-//		/*
-//		 * If both numbers are integers, delegate to JsonNode.
-//		 */
-//		if (a.isIntegralNumber() && b.isIntegralNumber())
-//			return a.equals(b);
-//
-//		/*
-//		 * Otherwise, compare decimal values.
-//		 */
-//		return a.decimalValue().compareTo(b.decimalValue()) == 0;
-//	}
-
 	private boolean numEquals(JsonNode a, JsonNode b) {
 		return a.isNumber() && b.isNumber()
 				? areNumberNodesNumericallyEqual(a, b)
