@@ -32,9 +32,6 @@ final class NonObjectMergePatch extends JsonMergePatch {
 	private final JsonNode node;
 
 	NonObjectMergePatch(final JsonNode node) {
-		if (node == null) {
-			throw new NullPointerException();
-		}
 		this.node = node;
 	}
 

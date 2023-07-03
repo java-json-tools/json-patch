@@ -7,6 +7,8 @@ import java.util.List;
 
 public class PathParser {
 
+	private PathParser() {}
+
 	private static final String FILTER_PLACEHOLDER = "[?]";
 
 	/**
@@ -55,7 +57,7 @@ public class PathParser {
 		String pathWithoutBracket = path
 				.replace("[", "")
 				.replace("]", "");
-		return !pathWithoutBracket.startsWith("'") && !pathWithoutBracket.matches("[0-9]+");
+		return !pathWithoutBracket.startsWith("'") && !pathWithoutBracket.matches("\\d+");
 	}
 
 	private static String getNewNodeName(String[] splitJsonPath) {

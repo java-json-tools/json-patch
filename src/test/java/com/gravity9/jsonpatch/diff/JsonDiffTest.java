@@ -95,7 +95,7 @@ public final class JsonDiffTest {
 		dependsOnMethods = "generatedPatchAppliesCleanly"
 	)
 	public void generatedPatchesAreWhatIsExpected(final String message,
-												  final JsonNode first, final JsonNode second, final JsonNode expected) {
+												  final JsonNode first, final JsonNode second, final JsonNode expected) throws JsonPatchException {
 		final JsonNode actual = JsonDiff.asJson(first, second);
 
 		assertThat(EQUIVALENCE.equivalent(expected, actual)).overridingErrorMessage(
