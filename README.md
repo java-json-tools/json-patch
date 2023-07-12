@@ -33,7 +33,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.13**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
+The current version is **2.0.0**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 
@@ -51,12 +51,12 @@ With Maven:
 <dependency>
   <groupId>com.gravity9</groupId>
   <artifactId>json-patch-path</artifactId>
-  <version>yourVersionHere</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
 Versions before 1.10 are available at `groupId` `com.github.fge` and `artifactId` `json-patch`.
-Versions 1.10 to 1.13 are available at `groupId` `com.github.java-json-tools` and `artifactId` `json-patch`.
+Versions before 1.13 are available at `groupId` `com.github.java-json-tools` and `artifactId` `json-patch`.
 
 ## JSON "diff" factorization
 
