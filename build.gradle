@@ -38,7 +38,6 @@ apply(plugin: "signing");
 apply(plugin: "biz.aQute.bnd.builder");
 apply(plugin: "net.ltgt.errorprone");
 apply(plugin: 'org.owasp.dependencycheck');
-apply(plugin: 'maven-publish')
 apply(plugin: 'java-library')
 apply(from: "project.gradle");
 
@@ -101,20 +100,93 @@ artifacts {
     archives javadocJar;
 }
 
-signing {
-    required { gradle.taskGraph.hasTask("publish") }
-    sign publishing.publications.mavenJava
-}
 
 wrapper {
     gradleVersion = "7.6.1";
     distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip";
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
+            artifactId = 'json-patch-path'
             from components.java
+            pom {
+                name = 'json-patch-path'
+                description = 'JSON Patch (RFC 6902) and JSON Merge Patch (RFC 7386) implementation in Java, using extended TMF620 JsonPath syntax'
+                url = 'https://github.com/gravity9-tech/json-patch'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Piotr-Dytkowski'
+                        name = 'Piotr Dytkowski'
+                        email = 'piotr.dytkowski@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
+                    }
+                    developer {
+                        id = 'Bartlomiej-Styczynski'
+                        name = 'Bartlomiej Styczynski'
+                        email = 'bartlomiej.styczynski@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
+                    }
+                    developer {
+                        id = 'Piotr-Bugara'
+                        name = 'Piotr Bugara'
+                        email = 'piotr.bugara@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
+                    }
+                    developer {
+                        id = 'Garry-Newball'
+                        name = 'Garry Newball'
+                        email = 'garry.newball@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
+                    }
+                    developer {
+                        id = 'Mateusz-Zaremba'
+                        name = 'Mateusz Zaremba'
+                        email = 'mateusz.zaremba@gravity9.com'
+                        organization = 'gravity9'
+                        organizationUrl = 'https://www.gravity9.com/'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/java-json-tools/json-patch.git'
+                    developerConnection = 'scm:git:ssh://github.com:java-json-tools/json-patch.git'
+                    url = 'https://github.com/gravity9-tech/json-patch'
+                }
+            }
         }
     }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("publish") }
+    sign publishing.publications.mavenJava
 }
