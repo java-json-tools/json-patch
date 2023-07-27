@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Added public access to JsonPathParser
+
 ## 2.0.0
 
 The project has been taken over by [gravity9](https://www.gravity9.com).
