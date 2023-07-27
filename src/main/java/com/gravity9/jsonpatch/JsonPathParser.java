@@ -1,6 +1,6 @@
 package com.gravity9.jsonpatch;
 
-class JsonPathParser {
+public class JsonPathParser {
 
 	private JsonPathParser() {}
 
@@ -12,7 +12,7 @@ class JsonPathParser {
 	 * @return String containing JsonPath expression
 	 * @throws JsonPatchException throws when invalid JsonPointer expression provided
 	 */
-	static String parsePathToJsonPath(String path) throws JsonPatchException {
+	public static String parsePathToJsonPath(String path) throws JsonPatchException {
 		if (path.startsWith("$")) {
 			return path;
 		} else if (path.contains("?")) {
