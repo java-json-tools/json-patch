@@ -1090,6 +1090,24 @@
                 },
                 "expensive": 10
             }
+        },
+        {
+            "op": { "op": "move", "from": "/5gStringToMove", "path": "/5gStringMoved" },
+            "node": {
+                "5gStringToMove":"exists"
+            },
+            "expected": {
+                "5gStringMoved":"exists"
+            }
+        },
+        {
+            "op": { "op": "move", "from": "/String123ToMove", "path": "/StringMoved5g" },
+            "node": {
+                "String123ToMove":"exists"
+            },
+            "expected": {
+                "StringMoved5g":"exists"
+            }
         }
     ]
 }
