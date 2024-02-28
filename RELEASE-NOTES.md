@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Fix bug with wrong parsing tokens containing numbers detected by @laurent-gougeon.
+  See [issue 61](https://github.com/gravity9-tech/json-patch-path/issues/61).
+
 ## 2.0.1
 
 * Added public access to JsonPathParser
