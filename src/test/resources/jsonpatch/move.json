@@ -1108,6 +1108,15 @@
             "expected": {
                 "StringMoved5g":"exists"
             }
+        },
+        {
+            "op": { "op": "move", "from": "/data/0/1", "path": "/data/0/2" },
+            "node": {
+                "data":[["abc", "move", "def"]]
+            },
+            "expected": {
+                "data":[["abc", "def", "move"]]
+            }
         }
     ]
 }
