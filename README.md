@@ -33,7 +33,7 @@ Its features are:
 
 ## Versions
 
-The current version is **2.0.1**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
+The current version is **2.0.2**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 
@@ -51,7 +51,7 @@ With Maven:
 <dependency>
   <groupId>com.gravity9</groupId>
   <artifactId>json-patch-path</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 
