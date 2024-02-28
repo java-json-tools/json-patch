@@ -1090,6 +1090,33 @@
                 },
                 "expensive": 10
             }
+        },
+        {
+            "op": { "op": "move", "from": "/5gStringToMove", "path": "/5gStringMoved" },
+            "node": {
+                "5gStringToMove":"exists"
+            },
+            "expected": {
+                "5gStringMoved":"exists"
+            }
+        },
+        {
+            "op": { "op": "move", "from": "/String123ToMove", "path": "/StringMoved5g" },
+            "node": {
+                "String123ToMove":"exists"
+            },
+            "expected": {
+                "StringMoved5g":"exists"
+            }
+        },
+        {
+            "op": { "op": "move", "from": "/data/0/1", "path": "/data/0/2" },
+            "node": {
+                "data":[["abc", "move", "def"]]
+            },
+            "expected": {
+                "data":[["abc", "def", "move"]]
+            }
         }
     ]
 }
