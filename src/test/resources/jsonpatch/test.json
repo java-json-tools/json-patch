@@ -14,6 +14,21 @@
             "op": { "op": "test", "path": "/x", "value": -30.000 },
             "node": { "x": -29.020 },
             "message": "value differs from expectations: expected '-3E+1' but found '-29.02'"
+        },
+        {
+            "op": { "op": "test", "path": "/y", "value": "test" },
+            "node": {"y": "result"},
+            "message": "value differs from expectations: expected '\"test\"' but found '\"result\"'"
+        },
+        {
+            "op": { "op": "test", "path": "/age", "value": 25 },
+            "node": {"age": 30 },
+            "message": "value differs from expectations: expected '25' but found '30'"
+        },
+        {
+            "op": { "op": "test", "path": "/isActive", "value": false },
+            "node": {"isActive": true },
+            "message": "value differs from expectations: expected 'false' but found 'true'"
         }
     ],
     "ops": [
