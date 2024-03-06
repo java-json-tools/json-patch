@@ -29,6 +29,17 @@
             "op": { "op": "test", "path": "/isActive", "value": false },
             "node": {"isActive": true },
             "message": "value differs from expectations: expected 'false' but found 'true'"
+        },
+        {
+            "op": { "op": "test", "path": "/menu/1", "value": {"value": "Close", "onclick": "OpenDoc()"}},
+            "node": {
+                "menu": [
+                    {"value": "New", "onclick": "CreateNewDoc()"},
+                    {"value": "Open", "onclick": "OpenDoc()"},
+                    {"value": "Close", "onclick": "CloseDoc()"}
+                ]
+            },
+            "message": "value differs from expectations: expected '{\"value\":\"Close\",\"onclick\":\"OpenDoc()\"}' but found '{\"value\":\"Open\",\"onclick\":\"OpenDoc()\"}'"
         }
     ],
     "ops": [
