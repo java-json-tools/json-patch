@@ -84,6 +84,28 @@
                 ]
             },
             "message": "value differs from expectations: expected '{\"value\":{},\"onclick\":\"CreateNewDoc()\"}' but found '{\"value\":\"New\",\"onclick\":\"CreateNewDoc()\"}'"
+        },
+        {
+            "op": { "op": "test", "path": "/menu/1", "value": {"value": "Open", "onclick": {}}},
+            "node": {
+                "menu": [
+                    {"value": "New", "onclick": "CreateNewDoc()"},
+                    {"value": "Open", "onclick": "OpenDoc()"},
+                    {"value": "Close", "onclick": "CloseDoc()"}
+                ]
+            },
+            "message": "value differs from expectations: expected '{\"value\":\"Open\",\"onclick\":{}}' but found '{\"value\":\"Open\",\"onclick\":\"OpenDoc()\"}'"
+        },
+        {
+            "op": { "op": "test", "path": "/menu/2", "value": {"value": {}, "onclick": {}}},
+            "node": {
+                "menu": [
+                    {"value": "New", "onclick": "CreateNewDoc()"},
+                    {"value": "Open", "onclick": "OpenDoc()"},
+                    {"value": "Close", "onclick": "CloseDoc()"}
+                ]
+            },
+            "message": "value differs from expectations: expected '{\"value\":{},\"onclick\":{}}' but found '{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}'"
         }
     ],
     "ops": [
