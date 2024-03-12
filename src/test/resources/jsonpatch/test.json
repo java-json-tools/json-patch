@@ -106,6 +106,17 @@
                 ]
             },
             "message": "value differs from expectations: expected '{\"value\":{},\"onclick\":{}}' but found '{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}'"
+        },
+        {
+            "op": { "op": "test", "path": "/menu/3", "value": {"value": {}, "onclick": {}}},
+            "node": {
+                "menu": [
+                    {"value": "New", "onclick": "CreateNewDoc()"},
+                    {"value": "Open", "onclick": "OpenDoc()"},
+                    {"value": "Close", "onclick": "CloseDoc()"}
+                ]
+            },
+            "message": "value differs from expectations: expected '{\"value\":{},\"onclick\":{}}' but found 'null'"
         }
     ],
     "ops": [
