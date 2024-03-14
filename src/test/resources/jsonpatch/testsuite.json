@@ -1078,6 +1078,30 @@
     },
 
     {
+        "comment": "test, add, and replace fields",
+        "doc": {
+            "status": "pending",
+            "info": {
+                "name": "John Doe",
+                "age": 30
+            }
+        },
+        "patch": [
+            {"op": "test", "path": "/status", "value": "pending"},
+            {"op": "add", "path": "/info/email", "value": "johndoe@example.com"},
+            {"op": "replace", "path": "/info/age", "value": 31}
+        ],
+        "expected": {
+            "status": "pending",
+            "info": {
+                "name": "John Doe",
+                "age": 31,
+                "email": "johndoe@example.com"
+            }
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
