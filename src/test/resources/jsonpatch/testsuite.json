@@ -1135,6 +1135,49 @@
     },
 
     {
+        "comment": "complex combination of operations including moving and copying",
+        "doc": {
+            "items": {
+                "item1": {
+                    "name": "Laptop",
+                    "price": 1200
+                },
+                "item2": {
+                    "name": "Smartphone",
+                    "price": 800
+                }
+            }
+        },
+        "patch": [
+            {"op": "test", "path": "/items/item1/price", "value": 1200},
+            {"op": "replace", "path": "/items/item1/price", "value": 1100},
+            {"op": "add", "path": "/items/item3", "value": {"name": "Tablet", "price": 600}},
+            {"op": "move", "from": "/items/item2", "path": "/items/item4"},
+            {"op": "copy", "from": "/items/item3", "path": "/items/item5"}
+        ],
+        "expected": {
+            "items": {
+                "item1": {
+                    "name": "Laptop",
+                    "price": 1100
+                },
+                "item3": {
+                    "name": "Tablet",
+                    "price": 600
+                },
+                "item4": {
+                    "name": "Smartphone",
+                    "price": 800
+                },
+                "item5": {
+                    "name": "Tablet",
+                    "price": 600
+                }
+            }
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
