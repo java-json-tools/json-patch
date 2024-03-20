@@ -1200,6 +1200,34 @@
     },
 
     {
+        "comment": "complex combination with nested operations",
+        "doc": {
+            "company": {
+                "name": "ABC Inc.",
+                "employees": [
+                    {"name": "Alice", "department": "HR"},
+                    {"name": "Bob", "department": "IT"}
+                ]
+            }
+        },
+        "patch": [
+            {"op": "replace", "path": "/company/employees/0/department", "value": "Finance"},
+            {"op": "add", "path": "/company/employees/-", "value": {"name": "Charlie", "department": "Marketing"}},
+            {"op": "remove", "path": "/company/employees/1"},
+            {"op": "replace", "path": "/company/name", "value": "XYZ Corp."}
+        ],
+        "expected": {
+            "company": {
+                "name": "XYZ Corp.",
+                "employees": [
+                    {"name": "Alice", "department": "Finance"},
+                    {"name": "Charlie", "department": "Marketing"}
+                ]
+            }
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
