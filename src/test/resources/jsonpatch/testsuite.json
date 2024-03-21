@@ -1228,6 +1228,30 @@
     },
 
     {
+        "comment": "complex combination with array operations and additional users",
+        "doc": {
+            "users": [
+                {"name": "Alice", "age": 30},
+                {"name": "Bob", "age": 35}
+            ]
+        },
+        "patch": [
+            {"op": "test", "path": "/users/0/name", "value": "Alice"},
+            {"op": "replace", "path": "/users/0/age", "value": 31},
+            {"op": "add", "path": "/users/-", "value": {"name": "Charlie", "age": 25}},
+            {"op": "add", "path": "/users/-", "value": {"name": "David", "age": 40}},
+            {"op": "remove", "path": "/users/1"}
+        ],
+        "expected": {
+            "users": [
+                {"name": "Alice", "age": 31},
+                {"name": "Charlie", "age": 25},
+                {"name": "David", "age": 40}
+            ]
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
