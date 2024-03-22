@@ -1078,6 +1078,204 @@
     },
 
     {
+        "comment": "test, add, and replace fields",
+        "doc": {
+            "status": "pending",
+            "info": {
+                "name": "John Doe",
+                "age": 30
+            }
+        },
+        "patch": [
+            {"op": "test", "path": "/status", "value": "pending"},
+            {"op": "add", "path": "/info/email", "value": "johndoe@example.com"},
+            {"op": "replace", "path": "/info/age", "value": 31}
+        ],
+        "expected": {
+            "status": "pending",
+            "info": {
+                "name": "John Doe",
+                "age": 31,
+                "email": "johndoe@example.com"
+            }
+        }
+    },
+
+    {
+        "comment": "remove, test, and add nested fields",
+        "doc": {
+            "user": {
+                "credentials": {
+                    "username": "user1",
+                    "password": "pass123"
+                },
+                "profile": {
+                    "email": "user1@example.com",
+                    "phone": "123-456-7890"
+                }
+            }
+        },
+        "patch": [
+            {"op": "remove", "path": "/user/credentials/password"},
+            {"op": "test", "path": "/user/profile/email", "value": "user1@example.com"},
+            {"op": "add", "path": "/user/profile/age", "value": 25}
+        ],
+        "expected": {
+            "user": {
+                "credentials": {
+                    "username": "user1"
+                },
+                "profile": {
+                    "email": "user1@example.com",
+                    "phone": "123-456-7890",
+                    "age": 25
+                }
+            }
+        }
+    },
+
+    {
+        "comment": "complex combination of operations including moving and copying",
+        "doc": {
+            "items": {
+                "item1": {
+                    "name": "Laptop",
+                    "price": 1200
+                },
+                "item2": {
+                    "name": "Smartphone",
+                    "price": 800
+                }
+            }
+        },
+        "patch": [
+            {"op": "test", "path": "/items/item1/price", "value": 1200},
+            {"op": "replace", "path": "/items/item1/price", "value": 1100},
+            {"op": "add", "path": "/items/item3", "value": {"name": "Tablet", "price": 600}},
+            {"op": "move", "from": "/items/item2", "path": "/items/item4"},
+            {"op": "copy", "from": "/items/item3", "path": "/items/item5"}
+        ],
+        "expected": {
+            "items": {
+                "item1": {
+                    "name": "Laptop",
+                    "price": 1100
+                },
+                "item3": {
+                    "name": "Tablet",
+                    "price": 600
+                },
+                "item4": {
+                    "name": "Smartphone",
+                    "price": 800
+                },
+                "item5": {
+                    "name": "Tablet",
+                    "price": 600
+                }
+            }
+        }
+    },
+
+    {
+        "comment": "complex combination with array operations",
+        "doc": {
+            "users": [
+                {"name": "Alice", "age": 30},
+                {"name": "Bob", "age": 35}
+            ]
+        },
+        "patch": [
+            {"op": "test", "path": "/users/0/name", "value": "Alice"},
+            {"op": "replace", "path": "/users/0/age", "value": 31},
+            {"op": "add", "path": "/users/-", "value": {"name": "Charlie", "age": 25}},
+            {"op": "remove", "path": "/users/1"}
+        ],
+        "expected": {
+            "users": [
+                {"name": "Alice", "age": 31},
+                {"name": "Charlie", "age": 25}
+            ]
+        }
+    },
+
+    {
+        "comment": "complex combination with nested operations",
+        "doc": {
+            "company": {
+                "name": "ABC Inc.",
+                "employees": [
+                    {"name": "Alice", "department": "HR"},
+                    {"name": "Bob", "department": "IT"}
+                ]
+            }
+        },
+        "patch": [
+            {"op": "replace", "path": "/company/employees/0/department", "value": "Finance"},
+            {"op": "add", "path": "/company/employees/-", "value": {"name": "Charlie", "department": "Marketing"}},
+            {"op": "remove", "path": "/company/employees/1"},
+            {"op": "replace", "path": "/company/name", "value": "XYZ Corp."}
+        ],
+        "expected": {
+            "company": {
+                "name": "XYZ Corp.",
+                "employees": [
+                    {"name": "Alice", "department": "Finance"},
+                    {"name": "Charlie", "department": "Marketing"}
+                ]
+            }
+        }
+    },
+
+    {
+        "comment": "complex combination with array operations and additional users",
+        "doc": {
+            "users": [
+                {"name": "Alice", "age": 30},
+                {"name": "Bob", "age": 35}
+            ]
+        },
+        "patch": [
+            {"op": "test", "path": "/users/0/name", "value": "Alice"},
+            {"op": "replace", "path": "/users/0/age", "value": 31},
+            {"op": "add", "path": "/users/-", "value": {"name": "Charlie", "age": 25}},
+            {"op": "add", "path": "/users/-", "value": {"name": "David", "age": 40}},
+            {"op": "remove", "path": "/users/1"}
+        ],
+        "expected": {
+            "users": [
+                {"name": "Alice", "age": 31},
+                {"name": "Charlie", "age": 25},
+                {"name": "David", "age": 40}
+            ]
+        }
+    },
+
+    {
+        "comment": "Test removing and then adding a password in user credentials",
+        "doc": {
+            "user": {
+                "credentials": {
+                    "username": "example_user",
+                    "password": "old_password"
+                }
+            }
+        },
+        "patch": [
+            {"op": "remove", "path": "/user/credentials/password"},
+            {"op": "add", "path": "/user/credentials/password", "value": "new_password"}
+        ],
+        "expected": {
+            "user": {
+                "credentials": {
+                    "username": "example_user",
+                    "password": "new_password"
+                }
+            }
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
