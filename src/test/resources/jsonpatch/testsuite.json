@@ -1252,6 +1252,30 @@
     },
 
     {
+        "comment": "Test removing and then adding a password in user credentials",
+        "doc": {
+            "user": {
+                "credentials": {
+                    "username": "example_user",
+                    "password": "old_password"
+                }
+            }
+        },
+        "patch": [
+            {"op": "remove", "path": "/user/credentials/password"},
+            {"op": "add", "path": "/user/credentials/password", "value": "new_password"}
+        ],
+        "expected": {
+            "user": {
+                "credentials": {
+                    "username": "example_user",
+                    "password": "new_password"
+                }
+            }
+        }
+    },
+
+    {
         "comment": "tests complete"
     }
 ]
