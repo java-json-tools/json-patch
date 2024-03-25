@@ -30,6 +30,7 @@ buildscript {
 plugins {
     id("net.ltgt.errorprone") version "3.0.1" apply false
     id "org.sonarqube" version "4.2.1.3168"
+    id "jacoco"
 }
 
 apply(plugin: "java-library");
@@ -65,6 +66,11 @@ test {
     useTestNG() {
         useDefaultListeners = true;
     };
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
 }
 
 /*
@@ -100,6 +106,12 @@ artifacts {
     archives javadocJar;
 }
 
+jacocoTestReport{
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
 
 wrapper {
     gradleVersion = "7.6.1";
