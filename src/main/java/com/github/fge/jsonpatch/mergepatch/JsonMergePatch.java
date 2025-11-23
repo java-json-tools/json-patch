@@ -19,10 +19,10 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.JacksonSerializable;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
@@ -33,6 +33,8 @@ import com.github.fge.msgsimple.load.MessageBundles;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
 
 /**
  * Implementation of JSON Merge Patch (RFC 7386)
@@ -65,7 +67,7 @@ import java.io.IOException;
 @ParametersAreNonnullByDefault
 @JsonDeserialize(using = JsonMergePatchDeserializer.class)
 public abstract class JsonMergePatch
-    implements JsonSerializable, Patch
+    implements JacksonSerializable, Patch
 {
     private static final ObjectMapper MAPPER = JacksonUtils.newMapper();
     protected static final MessageBundle BUNDLE
@@ -84,8 +86,9 @@ public abstract class JsonMergePatch
     {
         BUNDLE.checkNotNull(node, "jsonPatch.nullInput");
         try {
-            return MAPPER.readValue(node.traverse(), JsonMergePatch.class);
-        } catch (IOException e) {
+            JsonParser parser = MAPPER.treeAsTokens(node);
+            return MAPPER.readValue(parser, JsonMergePatch.class);
+        } catch (JacksonException e) {
             throw new JsonPatchException(
                 BUNDLE.getMessage("jsonPatch.deserFailed"), e);
         }

@@ -19,13 +19,13 @@
 
 package com.github.fge.jsonpatch;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public final class JsonPatchTestSuite
     public Iterator<Object[]> getTests()
         throws IOException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         boolean valid;
         JsonPatch patch;

@@ -19,13 +19,13 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 import com.github.fge.jackson.JacksonUtils;
 
 import java.io.IOException;
@@ -35,9 +35,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 final class JsonMergePatchDeserializer
-    extends JsonDeserializer<JsonMergePatch>
+    extends ValueDeserializer<JsonMergePatch>
 {
     /*
      * FIXME! UGLY! HACK!
@@ -48,15 +50,14 @@ final class JsonMergePatchDeserializer
      *
      * Jackson does not do this automatically; I don't know why...
      */
-    private static final ObjectCodec CODEC = JacksonUtils.newMapper();
+    private static final ObjectMapper CODEC = JacksonUtils.newMapper();
+    private static final ObjectReader READER = CODEC.readerFor(JsonMergePatch.class);
 
     @Override
     public JsonMergePatch deserialize(final JsonParser jp,
         final DeserializationContext ctxt)
-        throws IOException, JsonProcessingException
+        throws JacksonException
     {
-        // FIXME: see comment above
-        jp.setCodec(CODEC);
         final JsonNode node = jp.readValueAsTree();
 
         /*
@@ -74,21 +75,16 @@ final class JsonMergePatchDeserializer
 
         final Set<String> removedMembers = new HashSet<String>();
         final Map<String, JsonMergePatch> modifiedMembers = new HashMap<String, JsonMergePatch>();
-        final Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
-
-        Map.Entry<String, JsonNode> entry;
-
-        while (iterator.hasNext()) {
-            entry = iterator.next();
-            if (entry.getValue().isNull())
-                removedMembers.add(entry.getKey());
+        
+        for (Map.Entry<String, JsonNode> property: node.properties()) {
+            if (property.getValue().isNull())
+                removedMembers.add(property.getKey());
             else {
-                final JsonMergePatch value
-                    = deserialize(entry.getValue().traverse(), ctxt);
-                modifiedMembers.put(entry.getKey(), value);
+                final JsonMergePatch value = READER.readValue(property.getValue());
+                modifiedMembers.put(property.getKey(), value);
             }
         }
-
+        
         return new ObjectMergePatch(removedMembers, modifiedMembers);
     }
 
@@ -97,8 +93,7 @@ final class JsonMergePatchDeserializer
      * not what we want.
      */
     @Override
-    @SuppressWarnings("deprecation")
-    public JsonMergePatch getNullValue()
+    public JsonMergePatch getNullValue(DeserializationContext ctxt)
     {
         return new NonObjectMergePatch(NullNode.getInstance());
     }

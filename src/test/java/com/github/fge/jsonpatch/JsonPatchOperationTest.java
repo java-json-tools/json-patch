@@ -19,18 +19,18 @@
 
 package com.github.fge.jsonpatch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectReader;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -63,7 +63,7 @@ public abstract class JsonPatchOperationTest
     public final Iterator<Object[]> getErrors()
         throws NoSuchFieldException, IllegalAccessException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: errors)
             list.add(new Object[]{
@@ -93,7 +93,7 @@ public abstract class JsonPatchOperationTest
     @DataProvider
     public final Iterator<Object[]> getOps()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: ops)
             list.add(new Object[]{
@@ -116,7 +116,7 @@ public abstract class JsonPatchOperationTest
         assertTrue(EQUIVALENCE.equivalent(actual, expected),
             "patched node differs from expectations: expected " + expected
             + " but found " + actual);
-        if (EQUIVALENCE.equivalent(node, actual) && node.isContainerNode())
+        if (EQUIVALENCE.equivalent(node, actual) && node.isContainer())
             assertNotSame(node, actual,
                 "operation didn't make a copy of the input node");
     }

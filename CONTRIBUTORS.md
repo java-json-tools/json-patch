@@ -1,3 +1,7 @@
+## Kovács Zoltán (https://github.com/kz282)
+
+* Upgrade to Jackson 3.0
+
 ## Ryan Lopopolo (https://github.com/lopopolo)
 
 * Fix bug in JSON Patch add where target path is not a container node

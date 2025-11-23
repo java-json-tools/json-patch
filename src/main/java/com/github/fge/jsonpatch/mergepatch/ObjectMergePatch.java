@@ -19,13 +19,13 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jsonpatch.JsonPatchException;
 
@@ -94,8 +94,8 @@ final class ObjectMergePatch
 
     @Override
     public void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        final SerializationContext context)
+        throws JacksonException
     {
         jgen.writeStartObject();
 
@@ -103,15 +103,15 @@ final class ObjectMergePatch
          * Write removed members as JSON nulls
          */
         for (final String member: removedMembers)
-            jgen.writeNullField(member);
+            jgen.writeNullProperty(member);
 
         /*
          * Write modified members; delegate to serialization for writing values
          */
         for (final Map.Entry<String, JsonMergePatch> entry:
             modifiedMembers.entrySet()) {
-            jgen.writeFieldName(entry.getKey());
-            entry.getValue().serialize(jgen, provider);
+            jgen.writeName(entry.getKey());
+            entry.getValue().serialize(jgen, context);
         }
 
         jgen.writeEndObject();
@@ -119,9 +119,9 @@ final class ObjectMergePatch
 
     @Override
     public void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        final SerializationContext context, final TypeSerializer typeSer)
+        throws JacksonException
     {
-        serialize(jgen, provider);
+        serialize(jgen, context);
     }
 }

@@ -19,11 +19,11 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jsonpatch.JsonPatchException;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -53,17 +53,17 @@ final class NonObjectMergePatch
 
     @Override
     public void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        final SerializationContext context)
+        throws JacksonException
     {
         jgen.writeTree(node);
     }
 
     @Override
     public void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        final SerializationContext context, final TypeSerializer typeSer)
+        throws JacksonException
     {
-        serialize(jgen, provider);
+        serialize(jgen, context);
     }
 }

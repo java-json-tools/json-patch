@@ -19,10 +19,10 @@
 
 package com.github.fge.jsonpatch.diff;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jackson.NodeType;
@@ -108,7 +108,7 @@ public final class JsonDiff
         try {
             s = MAPPER.writeValueAsString(asJsonPatch(source, target));
             return MAPPER.readTree(s);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("cannot generate JSON diff", e);
         }
     }
@@ -136,7 +136,7 @@ public final class JsonDiff
          *
          * If this is not a container, generate a replace operation.
          */
-        if (!source.isContainerNode()) {
+        if (!source.isContainer()) {
             processor.valueReplaced(pointer, source, target);
             return;
         }
@@ -157,10 +157,9 @@ public final class JsonDiff
         final JsonPointer pointer, final ObjectNode source,
         final ObjectNode target)
     {
-        final Set<String> firstFields
-                = collect(source.fieldNames(), new TreeSet<String>());
-        final Set<String> secondFields
-                = collect(target.fieldNames(), new TreeSet<String>());
+        final Set<String> firstFields = Collections.unmodifiableSet(new TreeSet<>(source.propertyNames()));
+        
+        final Set<String> secondFields = Collections.unmodifiableSet(new TreeSet<>(target.propertyNames()));
 
         final Set<String> copy1 = new HashSet<String>(firstFields);
         copy1.removeAll(secondFields);
@@ -182,21 +181,6 @@ public final class JsonDiff
             generateDiffs(processor, pointer.append(field), source.get(field),
                 target.get(field));
     }
-
-    private static <T> Set<T> collect(Iterator<T> from, Set<T> to) {
-        if (from == null) {
-            throw new NullPointerException();
-        }
-        if (to == null) {
-            throw new NullPointerException();
-        }
-        while (from.hasNext()) {
-            to.add(from.next());
-        }
-        return Collections.unmodifiableSet(to);
-    }
-
-
 
     private static void generateArrayDiffs(final DiffProcessor processor,
         final JsonPointer pointer, final ArrayNode source,
@@ -263,16 +247,12 @@ public final class JsonDiff
         final JsonPointer pointer, final JsonNode source,
         final JsonNode target)
     {
-        final Iterator<String> firstFields = source.fieldNames();
-
-        String name;
-
-        while (firstFields.hasNext()) {
-            name = firstFields.next();
+        
+        for (String name : source.propertyNames()) {
             if (!target.has(name))
                 continue;
-            computeUnchanged(ret, pointer.append(name), source.get(name),
-                target.get(name));
+            computeUnchanged(ret, pointer.append(name), source.get(name), 
+                    target.get(name));
         }
     }
 

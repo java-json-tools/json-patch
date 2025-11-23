@@ -19,12 +19,12 @@
 
 package com.github.fge.jsonpatch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.ser.std.ToStringSerializer;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 
 import java.io.IOException;
@@ -54,22 +54,22 @@ public abstract class DualPathOperation
 
     @Override
     public final void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException, JsonProcessingException
+        final SerializationContext context)
+        throws JacksonException
     {
         jgen.writeStartObject();
-        jgen.writeStringField("op", op);
-        jgen.writeStringField("path", path.toString());
-        jgen.writeStringField("from", from.toString());
+        jgen.writeStringProperty("op", op);
+        jgen.writeStringProperty("path", path.toString());
+        jgen.writeStringProperty("from", from.toString());
         jgen.writeEndObject();
     }
 
     @Override
     public final void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException, JsonProcessingException
+        final SerializationContext context, final TypeSerializer typeSer)
+        throws JacksonException
     {
-        serialize(jgen, provider);
+        serialize(jgen, context);
     }
 
     public final JsonPointer getFrom() {

@@ -20,11 +20,11 @@
 package com.github.fge.jsonpatch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.JacksonSerializable;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.jsontype.TypeSerializer;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.msgsimple.bundle.MessageBundle;
 import com.github.fge.msgsimple.load.MessageBundles;
@@ -91,7 +91,7 @@ import java.util.List;
  * constructor for this class ({@link JsonPatch#fromJson(JsonNode)} is used.</p>
  */
 public final class JsonPatch
-    implements JsonSerializable, Patch
+    implements JacksonSerializable, Patch
 {
     private static final MessageBundle BUNDLE
         = MessageBundles.getBundle(JsonPatchMessages.class);
@@ -163,20 +163,18 @@ public final class JsonPatch
 
     @Override
     public void serialize(final JsonGenerator jgen,
-        final SerializerProvider provider)
-        throws IOException
+        final SerializationContext context)
     {
         jgen.writeStartArray();
         for (final JsonPatchOperation op: operations)
-            op.serialize(jgen, provider);
+            op.serialize(jgen, context);
         jgen.writeEndArray();
     }
 
     @Override
     public void serializeWithType(final JsonGenerator jgen,
-        final SerializerProvider provider, final TypeSerializer typeSer)
-        throws IOException
+        final SerializationContext context, final TypeSerializer typeSer)
     {
-        serialize(jgen, provider);
+        serialize(jgen, context);
     }
 }

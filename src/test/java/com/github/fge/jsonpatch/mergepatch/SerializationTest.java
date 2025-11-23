@@ -19,16 +19,16 @@
 
 package com.github.fge.jsonpatch.mergepatch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public final class SerializationTest
     @DataProvider
     public Iterator<Object[]> getNonObjectInputs()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: nonObjectTestData)
             list.add(new Object[] { node });
@@ -84,7 +84,7 @@ public final class SerializationTest
     @DataProvider
     public Iterator<Object[]> getObjectInputs()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: objectTestData)
             list.add(new Object[] { node });

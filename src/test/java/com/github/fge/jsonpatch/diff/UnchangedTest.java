@@ -19,17 +19,17 @@
 
 package com.github.fge.jsonpatch.diff;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.JacksonUtils;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,12 +57,17 @@ public final class UnchangedTest
     public Iterator<Object[]> getTestData()
         throws IOException
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
-        for (final JsonNode node: testData)
-            list.add(new Object[] { node.get("first"), node.get("second"),
-                MAPPER.readValue(node.get("unchanged").traverse(), TYPE_REF)});
-
+        for (final JsonNode node: testData) {
+            Map<JsonPointer, JsonNode> unchangedMap = 
+                    MAPPER.treeToValue(node.get("unchanged"), TYPE_REF);
+            list.add(new Object[] { 
+                node.get("first"), 
+                node.get("second"),
+                unchangedMap
+            });
+        }
         return list.iterator();
     }
 

@@ -16,7 +16,7 @@ only.
 This is an implementation of [RFC 6902 (JSON Patch)](http://tools.ietf.org/html/rfc6902) and [RFC
 7386 (JSON
 Merge Patch)](http://tools.ietf.org/html/rfc7386) written in Java,
-which uses [Jackson](https://github.com/FasterXML/jackson-databind) (2.2.x) at its core.
+which uses [Jackson](https://github.com/FasterXML/jackson-databind) (3.0.x) at its core.
 
 Its features are:
 
@@ -26,7 +26,7 @@ Its features are:
 
 ## Versions
 
-The current version is **1.13**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
+The current version is **2.0**. See file `RELEASE-NOTES.md` for details of releases before 1.11.
 
 ## Using it in your project
 

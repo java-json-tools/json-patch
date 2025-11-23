@@ -19,16 +19,16 @@
 
 package com.github.fge.jsonpatch.diff;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.collect.Lists;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public final class JsonDiffTest
     @DataProvider
     public Iterator<Object[]> getPatchesOnly()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: testData)
             list.add(new Object[] { node.get("first"), node.get("second") });
@@ -75,7 +75,7 @@ public final class JsonDiffTest
     @DataProvider
     public Iterator<Object[]> getLiteralPatches()
     {
-        final List<Object[]> list = Lists.newArrayList();
+        final List<Object[]> list = new ArrayList<>();
 
         for (final JsonNode node: testData) {
             if (!node.has("patch"))
