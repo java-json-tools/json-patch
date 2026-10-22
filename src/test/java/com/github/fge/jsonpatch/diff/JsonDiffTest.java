@@ -20,6 +20,8 @@
 package com.github.fge.jsonpatch.diff;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jackson.JsonNumEquals;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -56,6 +58,30 @@ public final class JsonDiffTest
             list.add(new Object[] { node.get("first"), node.get("second") });
 
         return list.iterator();
+    }
+
+    @Test
+    public void smallArrayPairsRoundTrip()
+        throws IOException, JsonPatchException
+    {
+        final JsonNode arrays = JsonLoader.fromString(
+            "[[], [0], [1], [0, 0], [0, 1], [1, 0], [1, 1]]");
+        final List<JsonNode> documents = Lists.newArrayList();
+        for (final JsonNode left: arrays)
+            for (final JsonNode right: arrays) {
+                final ObjectNode document = JsonNodeFactory.instance.objectNode();
+                document.set("a", left);
+                document.set("b", right);
+                documents.add(document);
+            }
+
+        for (final JsonNode source: documents)
+            for (final JsonNode target: documents) {
+                final JsonNode actual = JsonDiff.asJsonPatch(source, target)
+                    .apply(source);
+                assertThat(actual).as("patch from %s to %s", source, target)
+                    .isEqualTo(target);
+            }
     }
 
     @Test(dataProvider = "getPatchesOnly")

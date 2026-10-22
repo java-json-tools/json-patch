@@ -93,14 +93,16 @@ final class DiffProcessor
 
     private int findPreviouslyRemoved(final JsonNode value)
     {
-        DiffOperation op;
+        if (diffs.isEmpty())
+            return -1;
 
-        for (int i = 0; i < diffs.size(); i++) {
-            op = diffs.get(i);
-            if (op.getType() == DiffOperation.Type.REMOVE
-                && EQUIVALENCE.equivalent(value, op.getOldValue()))
-                return i;
-        }
+        // Intervening operations may depend on a removal having already
+        // happened, especially when it shifts subsequent array elements.
+        final int index = diffs.size() - 1;
+        final DiffOperation op = diffs.get(index);
+        if (op.getType() == DiffOperation.Type.REMOVE
+            && EQUIVALENCE.equivalent(value, op.getOldValue()))
+            return index;
         return -1;
     }
 }

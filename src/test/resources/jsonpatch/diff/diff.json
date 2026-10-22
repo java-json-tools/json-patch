@@ -134,5 +134,25 @@
         "patch": [
             { "op": "move", "path": "/c", "from": "/a" }
         ]
+    },
+    {
+        "message": "a moved value must not be postponed past another array removal",
+        "first": { "a": [1, 2], "b": [] },
+        "second": { "a": [], "b": [1] }
+    },
+    {
+        "message": "a removed array prefix must not change the moved value",
+        "first": { "a": [0, 1, 2], "b": [3] },
+        "second": { "a": [0], "b": [3, 1] }
+    },
+    {
+        "message": "nested arrays must preserve moved objects",
+        "first": { "a": [{"x": 1}, {"x": 2}], "b": {"c": []} },
+        "second": { "a": [], "b": {"c": [{"x": 1}]} }
+    },
+    {
+        "message": "the last removal can still be factored into a move",
+        "first": { "a": [1, 2], "b": [] },
+        "second": { "a": [], "b": [2] }
     }
 ]
